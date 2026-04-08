@@ -1,0 +1,69 @@
+{
+  "category": "github_release_control",
+  "generatedAt": "2026-04-08T03:38:42.124Z",
+  "items": [
+    {
+      "name": "staging environment",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": true,
+      "blocksProduction": false
+    },
+    {
+      "name": "production environment",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": false,
+      "blocksProduction": true
+    },
+    {
+      "name": "required reviewers",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": false,
+      "blocksProduction": true
+    },
+    {
+      "name": "prevent self-review",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": false,
+      "blocksProduction": true
+    },
+    {
+      "name": "deployment branch/tag policy",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": false,
+      "blocksProduction": true
+    },
+    {
+      "name": "artifact/evidence upload policy",
+      "state": "missing",
+      "details": "not confirmed",
+      "owner": "repo admin / release manager",
+      "blocksStaging": true,
+      "blocksProduction": true
+    }
+  ],
+  "summary": {
+    "missing": 6,
+    "invalid": 0,
+    "verified": 0,
+    "blockerCount": 6,
+    "status": "blocker"
+  },
+  "values": {
+    "stagingReady": false,
+    "productionReady": false,
+    "reviewersReady": false,
+    "preventSelfReview": false,
+    "policyReady": false,
+    "evidenceArtifactsReady": false
+  }
+}

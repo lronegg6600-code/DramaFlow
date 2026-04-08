@@ -1,0 +1,20 @@
+{
+  "title": "DramaFlow Platform Overview",
+  "uid": "dramaflow-platform-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(rate(dramaflow_http_errors_total[5m])) by (service)", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP P95 Latency",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(dramaflow_http_request_duration_seconds_bucket[5m])) by (le, service))", "refId": "A" }]
+    }
+  ]
+}

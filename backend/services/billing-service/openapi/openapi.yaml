@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow Billing Service API
+  version: 0.5.0
+  description: |
+    Contract markers:
+    - request.invalid
+servers:
+  - url: http://localhost:8087
+paths:
+  /v1/billing/google-play/purchases:sync:
+    post:
+      security:
+        - bearerAuth: []
+      responses:
+        '202':
+          description: Purchase sync accepted.
+  /v1/billing/google-play/rtdn:
+    post:
+      responses:
+        '202':
+          description: RTDN accepted.
+  /v1/billing/google-play/purchases/{purchaseToken}/resync:
+    post:
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: purchaseToken
+          required: true
+          schema: { type: string }
+      responses:
+        '202':
+          description: Purchase resync accepted.
+  /v1/billing/me/subscription-status:
+    get:
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current subscription status.
+  /v1/dev/billing/mock-rtdn:
+    post:
+      responses:
+        '202':
+          description: Dev RTDN accepted.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

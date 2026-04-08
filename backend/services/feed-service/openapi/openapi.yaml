@@ -1,0 +1,97 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow Feed Service API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8083
+paths:
+  /v1/feed/home:
+    get:
+      summary: Fetch the home feed.
+      responses:
+        '200':
+          description: Home feed data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeFeedEnvelope'
+  /v1/feed/continue-watching:
+    get:
+      summary: Fetch continue watching shelf for the current user when available.
+      responses:
+        '200':
+          description: Continue watching shelf.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContinueWatchingEnvelope'
+components:
+  schemas:
+    FeedItem:
+      type: object
+      required: [dramaId, title, shortDescription, posterUrl, coverUrl, tags, isFeatured, isPremium]
+      properties:
+        dramaId:
+          type: string
+        title:
+          type: string
+        shortDescription:
+          type: string
+        posterUrl:
+          type: string
+        coverUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        isFeatured:
+          type: boolean
+        isPremium:
+          type: boolean
+    ContinueWatchingItem:
+      type: object
+      required: [dramaId, episodeId, title, progressPercent, updatedAt]
+      properties:
+        dramaId:
+          type: string
+        episodeId:
+          type: string
+        title:
+          type: string
+        progressPercent:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+    HomeFeed:
+      type: object
+      properties:
+        featured:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedItem'
+        trending:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedItem'
+        recommended:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedItem'
+        continueWatching:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinueWatchingItem'
+    HomeFeedEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/HomeFeed'
+    ContinueWatchingEnvelope:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinueWatchingItem'

@@ -1,0 +1,7 @@
+image_tag: "ghcr.io/example/dramaflow/backend:rc-2026.04.08.1"
+image_digest: "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+admin_build_artifact_id: "admin-web-build-2481"
+workflow_run_id: "248100123"
+workflow_sha: "1234567890abcdef1234567890abcdef12345678"
+registry: "ghcr.io/example/dramaflow"
+provenance_url: "https://github.example.com/org/dramaflow/actions/runs/248100123"

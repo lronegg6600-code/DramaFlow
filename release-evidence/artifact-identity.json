@@ -1,0 +1,23 @@
+{
+  "category": "artifact_identity",
+  "status": "blocker",
+  "generatedAt": "2026-04-08T03:27:35.844Z",
+  "values": {
+    "imageTag": null,
+    "imageDigest": null,
+    "adminBuildArtifact": null,
+    "workflowRunId": null,
+    "workflowRunNumber": null,
+    "workflowName": null,
+    "githubSha": null,
+    "registry": null
+  },
+  "blockers": [
+    "docker image tag is missing",
+    "docker image digest is missing",
+    "admin build artifact id is missing",
+    "workflow run id is missing",
+    "workflow github sha is missing",
+    "registry identity is missing"
+  ]
+}

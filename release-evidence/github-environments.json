@@ -1,0 +1,21 @@
+{
+  "category": "github_release_control",
+  "status": "blocker",
+  "generatedAt": "2026-04-08T03:27:35.845Z",
+  "values": {
+    "stagingConfigured": false,
+    "productionConfigured": false,
+    "requiredReviewersConfigured": false,
+    "preventSelfReview": false,
+    "branchPolicyConfigured": false,
+    "evidenceArtifactsConfigured": false
+  },
+  "blockers": [
+    "GitHub staging environment is not confirmed",
+    "GitHub production environment is not confirmed",
+    "required reviewers are not confirmed",
+    "prevent self-review policy is not confirmed",
+    "deployment branch/tag policy is not confirmed",
+    "artifact/evidence upload policy is not confirmed"
+  ]
+}

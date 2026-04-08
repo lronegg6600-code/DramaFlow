@@ -1,0 +1,36 @@
+name: Blocker Reply
+description: Structured reply when external owner has provided requested input or needs clarification.
+title: "[Blocker Reply] <blocker_id>"
+labels:
+  - release-blocker-reply
+body:
+  - type: input
+    id: blocker_id
+    attributes:
+      label: Blocker ID
+      placeholder: AI-01
+    validations:
+      required: true
+  - type: dropdown
+    id: reply_type
+    attributes:
+      label: Reply type
+      options:
+        - input_provided
+        - clarification_needed
+        - blocker_closed
+    validations:
+      required: true
+  - type: textarea
+    id: artifact_location
+    attributes:
+      label: Input location
+      description: Where the input was dropped or how engineering can retrieve it.
+      placeholder: platform-intake/received/artifact-identity/artifact-identity.yaml
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      placeholder: Added image tag and digest, ready for validator rerun

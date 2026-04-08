@@ -1,0 +1,396 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow Playback Service API
+  version: 0.1.0
+  description: |
+    Contract markers:
+    - playback.entitlement_required
+servers:
+  - url: http://localhost:8085
+paths:
+  /v1/playback/sessions:
+    post:
+      summary: Create a short-lived playback session for an episode.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlaybackSessionRequest'
+      responses:
+        '201':
+          description: Playback descriptor created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaybackDescriptorEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /v1/playback/sessions/{sessionId}:
+    get:
+      summary: Read one playback session.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Playback session detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetailEnvelope'
+  /v1/playback/sessions/{sessionId}/heartbeat:
+    post:
+      summary: Keep a playback session alive and receive refresh guidance.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HeartbeatRequest'
+      responses:
+        '200':
+          description: Heartbeat accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeartbeatEnvelope'
+        '410':
+          $ref: '#/components/responses/ExpiredError'
+  /v1/playback/sessions/{sessionId}/complete:
+    post:
+      summary: Mark a playback session as completed.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteRequest'
+      responses:
+        '200':
+          description: Completion accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteEnvelope'
+  /v1/playback/sessions/{sessionId}/refresh:
+    post:
+      summary: Refresh a playback URL before it expires.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Playback descriptor refreshed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshEnvelope'
+        '410':
+          $ref: '#/components/responses/ExpiredError'
+  /v1/dev/entitlements/grant-premium:
+    post:
+      summary: Grant temporary dev premium access. Dev and staging only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrantDevEntitlementRequest'
+      responses:
+        '202':
+          description: Accepted.
+  /v1/dev/entitlements/revoke-premium:
+    post:
+      summary: Revoke temporary dev premium access. Dev and staging only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeDevEntitlementRequest'
+      responses:
+        '202':
+          description: Accepted.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    ValidationError:
+      description: Validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    UnauthorizedError:
+      description: Authorization required or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ForbiddenError:
+      description: User is not allowed to access full playback.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFoundError:
+      description: Session or episode was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ExpiredError:
+      description: Playback session has expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    DeviceContext:
+      type: object
+      properties:
+        platform:
+          type: string
+        appVersion:
+          type: string
+        networkType:
+          type: string
+    CreatePlaybackSessionRequest:
+      type: object
+      required: [episodeId, sourcePage]
+      properties:
+        episodeId:
+          type: string
+        sourcePage:
+          type: string
+        autoNext:
+          type: boolean
+        preferredQuality:
+          type: string
+          nullable: true
+        deviceContext:
+          $ref: '#/components/schemas/DeviceContext'
+    HeaderKV:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    NextEpisodeHint:
+      type: object
+      properties:
+        episodeId:
+          type: string
+        title:
+          type: string
+    AnalyticsContext:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        dramaId:
+          type: string
+        episodeId:
+          type: string
+        playbackMode:
+          type: string
+        sourcePage:
+          type: string
+        signerMode:
+          type: string
+    PlaybackDescriptor:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        playbackMode:
+          type: string
+        mediaUrl:
+          type: string
+        requestHeaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeaderKV'
+        expiresAt:
+          type: string
+          format: date-time
+        previewSeconds:
+          type: integer
+        heartbeatIntervalSeconds:
+          type: integer
+        refreshAfterSeconds:
+          type: integer
+        nextEpisodeHint:
+          $ref: '#/components/schemas/NextEpisodeHint'
+        analyticsContext:
+          $ref: '#/components/schemas/AnalyticsContext'
+    SessionDetail:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        userId:
+          type: string
+        dramaId:
+          type: string
+        episodeId:
+          type: string
+        playbackMode:
+          type: string
+        sessionStatus:
+          type: string
+        mediaPath:
+          type: string
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+    HeartbeatRequest:
+      type: object
+      properties:
+        positionSeconds:
+          type: integer
+        bufferedPositionSeconds:
+          type: integer
+        isPlaying:
+          type: boolean
+        networkType:
+          type: string
+          nullable: true
+        playerState:
+          type: string
+        clientTime:
+          type: string
+    HeartbeatResponse:
+      type: object
+      properties:
+        keepAlive:
+          type: boolean
+        expiresAt:
+          type: string
+          format: date-time
+        shouldRefreshUrl:
+          type: boolean
+        previewRemainingSeconds:
+          type: integer
+          nullable: true
+        nextAction:
+          type: string
+          nullable: true
+    CompleteRequest:
+      type: object
+      properties:
+        finalPositionSeconds:
+          type: integer
+        completed:
+          type: boolean
+        watchedSeconds:
+          type: integer
+        clientTime:
+          type: string
+    GrantDevEntitlementRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        entitlementType:
+          type: string
+        dramaId:
+          type: string
+          nullable: true
+        episodeId:
+          type: string
+          nullable: true
+        expiresAt:
+          type: string
+          nullable: true
+    RevokeDevEntitlementRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+    CompleteResponse:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        nextEpisodeId:
+          type: string
+          nullable: true
+    PlaybackDescriptorEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlaybackDescriptor'
+    SessionDetailEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SessionDetail'
+    HeartbeatEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/HeartbeatResponse'
+    CompleteEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CompleteResponse'
+    RefreshEnvelope:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            descriptor:
+              $ref: '#/components/schemas/PlaybackDescriptor'
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true

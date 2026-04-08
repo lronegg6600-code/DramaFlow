@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+}
+
+a {
+  @apply text-inherit no-underline;
+}
+
+.panel {
+  @apply rounded-2xl border border-border bg-surface shadow-panel;
+}
+
+.input {
+  @apply w-full rounded-xl border border-border bg-white px-3 py-2 text-sm outline-none transition focus:border-accent;
+}
+
+.button-primary {
+  @apply inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:opacity-95;
+}
+
+.button-secondary {
+  @apply inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2 text-sm font-medium text-foreground transition hover:bg-slate-50;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full bg-accentSoft px-2.5 py-1 text-xs font-medium text-accent;
+}

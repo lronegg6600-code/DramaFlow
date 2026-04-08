@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-04-08T13:12:23.698Z",
+  "mode": "live_sync",
+  "gh_available": true,
+  "gh_executable": "Z:\\Tools\\GitHubCLI\\bin\\gh.exe",
+  "token_available": true,
+  "repo_available": true,
+  "total_blockers": 41,
+  "staging_blockers": 36,
+  "production_only_blockers": 5,
+  "provider_role_distribution": {
+    "repo owner": 3,
+    "release manager": 4,
+    "repo admin": 11,
+    "platform": 4,
+    "admin owner": 1,
+    "registry admin": 4,
+    "ops": 7,
+    "platform security": 7
+  },
+  "milestone_distribution": {
+    "staging-unblock": 36,
+    "production-readiness": 5
+  },
+  "created_count": 41,
+  "failed_count": 0,
+  "launch_state": "launch_completed",
+  "failures": [],
+  "summary": {
+    "total": 41,
+    "not_created": 0,
+    "created_unassigned": 0,
+    "assigned": 0,
+    "awaiting_reply": 41,
+    "replied_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  }
+}

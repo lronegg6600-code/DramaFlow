@@ -1,0 +1,15 @@
+{
+  "generatedBy": "Phase 14 blocker launch taxonomy",
+  "milestones": [
+    {
+      "title": "staging-unblock",
+      "description": "All blockers that must be closed before real staging rehearsal can start",
+      "state": "open"
+    },
+    {
+      "title": "production-readiness",
+      "description": "Blockers that remain after staging and must be closed before production approval",
+      "state": "open"
+    }
+  ]
+}

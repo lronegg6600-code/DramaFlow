@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-04-08T11:50:29.560Z",
+  "configFile": "Z:\\Projects\\DramaFlow\\.github\\projects\\blocker-project-config.json",
+  "fieldsFile": "Z:\\Projects\\DramaFlow\\.github\\projects\\blocker-project-fields.json",
+  "viewsFile": "Z:\\Projects\\DramaFlow\\.github\\projects\\blocker-project-views.md",
+  "config": {
+    "projectName": "DramaFlow Release Blockers",
+    "projectType": "github-project-v2",
+    "description": "Tracks external blocker execution from ticket creation to verified closeout",
+    "defaultView": "Daily Unblock",
+    "statusField": "Status",
+    "automationNotes": [
+      "Scripts update verification and ticket lifecycle evidence in release-evidence/",
+      "GitHub project values should mirror release-evidence/unblock-status-board.json"
+    ]
+  },
+  "fields": {
+    "fields": [
+      {
+        "name": "Status",
+        "type": "single_select",
+        "options": [
+          "Not Created",
+          "Created",
+          "Assigned",
+          "Awaiting Reply",
+          "Replied Invalid",
+          "Verified",
+          "Closed",
+          "Escalated"
+        ]
+      },
+      {
+        "name": "Blocker Category",
+        "type": "single_select",
+        "options": [
+          "Repository identity",
+          "Artifact identity",
+          "Cluster access",
+          "Deployment tooling",
+          "GitHub release control",
+          "Secrets / config"
+        ]
+      },
+      {
+        "name": "Provider Role",
+        "type": "single_select",
+        "options": [
+          "repo owner",
+          "repo admin",
+          "platform",
+          "admin owner",
+          "registry admin",
+          "ops",
+          "release manager",
+          "platform security",
+          "security",
+          "cloud admin"
+        ]
+      },
+      {
+        "name": "SLA Level",
+        "type": "single_select",
+        "options": [
+          "same_day",
+          "next_business_day",
+          "two_business_days"
+        ]
+      },
+      {
+        "name": "Blocks Staging",
+        "type": "single_select",
+        "options": [
+          "yes",
+          "no"
+        ]
+      },
+      {
+        "name": "Blocks Production",
+        "type": "single_select",
+        "options": [
+          "yes",
+          "no"
+        ]
+      },
+      {
+        "name": "Due Bucket",
+        "type": "single_select",
+        "options": [
+          "same_day",
+          "next_business_day",
+          "two_business_days"
+        ]
+      },
+      {
+        "name": "Verification State",
+        "type": "single_select",
+        "options": [
+          "not_received",
+          "received_but_invalid",
+          "received_and_verified"
+        ]
+      }
+    ]
+  }
+}

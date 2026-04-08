@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-08T11:50:29.396Z",
+  "sourceFile": "Z:\\Projects\\DramaFlow\\.github\\labels\\blocker-milestones.json",
+  "total": 2,
+  "mode": "real",
+  "repo": "lronegg6600-code/DramaFlow",
+  "milestones": [
+    {
+      "title": "staging-unblock",
+      "description": "All blockers that must be closed before real staging rehearsal can start",
+      "state": "open"
+    },
+    {
+      "title": "production-readiness",
+      "description": "Blockers that remain after staging and must be closed before production approval",
+      "state": "open"
+    }
+  ],
+  "created": [
+    "staging-unblock",
+    "production-readiness"
+  ],
+  "skipped": [],
+  "failures": []
+}

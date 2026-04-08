@@ -1,0 +1,22 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow API Index
+  version: 0.1.0
+  description: Aggregate index for service-level OpenAPI specs.
+x-service-specs:
+  - name: admin-service
+    path: ../../services/admin-service/openapi/openapi.yaml
+  - name: auth-service
+    path: ../../services/auth-service/openapi/openapi.yaml
+  - name: billing-service
+    path: ../../services/billing-service/openapi/openapi.yaml
+  - name: content-service
+    path: ../../services/content-service/openapi/openapi.yaml
+  - name: entitlement-service
+    path: ../../services/entitlement-service/openapi/openapi.yaml
+  - name: feed-service
+    path: ../../services/feed-service/openapi/openapi.yaml
+  - name: playback-service
+    path: ../../services/playback-service/openapi/openapi.yaml
+  - name: progress-service
+    path: ../../services/progress-service/openapi/openapi.yaml

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-04-08T13:07:15.746Z",
+  "realReplies": 0,
+  "newInputs": 0,
+  "validatorPassed": 0,
+  "validatorRejected": 0,
+  "lifecycle": {
+    "awaiting_reply": 41,
+    "replied_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  },
+  "staging": {
+    "total": 36,
+    "awaiting_reply": 36,
+    "replied_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "remaining": 36
+  },
+  "reminders": {
+    "secondReminderDispatched": 0,
+    "secondReminderQueued": 0,
+    "escalated": 0
+  },
+  "readyForRealStagingGateRecheck": false
+}

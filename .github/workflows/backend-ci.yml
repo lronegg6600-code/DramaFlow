@@ -1,0 +1,39 @@
+name: backend-ci
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci.yml"
+  push:
+    branches: ["main"]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.0"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: sh deployments/scripts/migration_check.sh
+      - run: go test ./...
+      - run: go vet ./...
+      - run: node tests/contract/check_openapi.mjs
+      - run: docker compose -f deployments/docker-compose/docker-compose.yml config
+      - run: |
+          {
+            echo "## Backend CI"
+            echo "- migration pair check: passed"
+            echo "- go test: passed"
+            echo "- go vet: passed"
+            echo "- contract check: passed"
+            echo "- compose config: passed"
+            echo "- release smoke script present: $(test -f tests/release/smoke_release.mjs && echo yes || echo no)"
+          } >> "$GITHUB_STEP_SUMMARY"

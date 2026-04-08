@@ -1,0 +1,30 @@
+{
+  "title": "DramaFlow Release Gate",
+  "uid": "dramaflow-release-gate",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Services Up",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(up{job=~\"admin-service|auth-service|billing-service|content-service|entitlement-service|feed-service|playback-service|progress-service\"})", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "5xx Rate",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [{ "expr": "sum(rate(dramaflow_http_errors_total[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Critical Release Watch Metrics",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        { "expr": "sum(rate(admin_login_error_total[5m]))", "refId": "A", "legendFormat": "admin_login_error" },
+        { "expr": "sum(rate(billing_purchase_sync_error_total[5m]))", "refId": "B", "legendFormat": "billing_sync_error" },
+        { "expr": "sum(rate(dramaflow_playback_session_create_error_total[5m]))", "refId": "C", "legendFormat": "playback_create_error" }
+      ]
+    }
+  ]
+}

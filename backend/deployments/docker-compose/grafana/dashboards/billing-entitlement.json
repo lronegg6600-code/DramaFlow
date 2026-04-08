@@ -1,0 +1,20 @@
+{
+  "title": "DramaFlow Billing and Entitlement",
+  "uid": "dramaflow-billing-entitlement",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Purchase Sync Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(rate(billing_purchase_sync_error_total[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Entitlement Mutations",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "sum(rate(entitlement_grant_total[5m])) + sum(rate(entitlement_revoke_total[5m])) + sum(rate(entitlement_recompute_total[5m]))", "refId": "A" }]
+    }
+  ]
+}

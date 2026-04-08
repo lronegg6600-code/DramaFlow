@@ -1,0 +1,62 @@
+{
+  "category": "cluster_access_input_package",
+  "generatedAt": "2026-04-08T04:00:58.557Z",
+  "sourceFile": null,
+  "items": [
+    {
+      "blocker_id": "CA-01",
+      "blocker_title": "kubeconfig 文件路径",
+      "current_status": "not_received",
+      "field": "kubeconfig_path",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-02",
+      "blocker_title": "current-context",
+      "current_status": "not_received",
+      "field": "current_context",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-03",
+      "blocker_title": "staging context",
+      "current_status": "not_received",
+      "field": "staging_context",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-04",
+      "blocker_title": "namespace",
+      "current_status": "not_received",
+      "field": "namespace",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-05",
+      "blocker_title": "RBAC role",
+      "current_status": "not_received",
+      "field": "rbac_role",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-06",
+      "blocker_title": "get deployments 权限",
+      "current_status": "not_received",
+      "field": "can_get_deployments",
+      "notes": "未收到 cluster access 输入包"
+    },
+    {
+      "blocker_id": "CA-07",
+      "blocker_title": "patch deployments 权限",
+      "current_status": "not_received",
+      "field": "can_patch_deployments",
+      "notes": "未收到 cluster access 输入包"
+    }
+  ],
+  "summary": {
+    "not_received": 7,
+    "received_but_invalid": 0,
+    "received_and_verified": 0,
+    "overall_status": "blocked"
+  }
+}

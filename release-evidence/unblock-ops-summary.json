@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-04-08T13:14:25.253Z",
+  "readyForExternalExecutionAtScale": true,
+  "readyForRealStagingExecution": false,
+  "launch_state": "launch_completed",
+  "summary": {
+    "generatedAt": "2026-04-08T13:14:25.253Z",
+    "total": 41,
+    "launch_state": "launch_completed",
+    "ready_to_launch_tickets": true,
+    "tickets_launched": true,
+    "partially_launched": false,
+    "not_created": 0,
+    "created_unassigned": 0,
+    "assigned": 0,
+    "awaiting_reply": 41,
+    "replied_invalid": 0,
+    "verified": 0,
+    "closed": 0
+  }
+}

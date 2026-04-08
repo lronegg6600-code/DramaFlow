@@ -1,0 +1,31 @@
+name: blocker-ticket-sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Sync live issue metadata
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node backend/tests/release/sync_live_issue_metadata.mjs
+      - name: Summarize launch state
+        run: node backend/tests/release/summarize_ticket_launch_state.mjs
+      - name: Upload sync evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: blocker-ticket-sync
+          path: |
+            release-evidence/blocker-ticket-map.json
+            release-evidence/blocker-issue-launch-summary.json
+            release-evidence/unblock-ops-summary.json

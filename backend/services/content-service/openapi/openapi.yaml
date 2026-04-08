@@ -1,0 +1,175 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow Content Service API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8082
+paths:
+  /v1/dramas:
+    get:
+      summary: List published dramas.
+      responses:
+        '200':
+          description: Published dramas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DramaListEnvelope'
+  /v1/dramas/{dramaId}:
+    get:
+      summary: Get one drama.
+      parameters:
+        - $ref: '#/components/parameters/DramaId'
+      responses:
+        '200':
+          description: Drama detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DramaEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /v1/dramas/{dramaId}/episodes:
+    get:
+      summary: List published episodes for a drama.
+      parameters:
+        - $ref: '#/components/parameters/DramaId'
+      responses:
+        '200':
+          description: Episodes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeListEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /v1/episodes/{episodeId}:
+    get:
+      summary: Get one episode.
+      parameters:
+        - $ref: '#/components/parameters/EpisodeId'
+      responses:
+        '200':
+          description: Episode detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+components:
+  parameters:
+    DramaId:
+      name: dramaId
+      in: path
+      required: true
+      schema:
+        type: string
+    EpisodeId:
+      name: episodeId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFoundError:
+      description: Requested entity was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+  schemas:
+    Drama:
+      type: object
+      required:
+        [id, title, shortDescription, longDescription, posterUrl, coverUrl, tags, region, language, publishStatus, isFeatured]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        posterUrl:
+          type: string
+        coverUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        region:
+          type: string
+        language:
+          type: string
+        publishStatus:
+          type: string
+        isFeatured:
+          type: boolean
+    Episode:
+      type: object
+      required:
+        [id, dramaId, episodeNo, title, description, durationSeconds, previewSeconds, isPremium, streamKeyPlaceholder, publishStatus, sortOrder]
+      properties:
+        id:
+          type: string
+        dramaId:
+          type: string
+        episodeNo:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        durationSeconds:
+          type: integer
+        previewSeconds:
+          type: integer
+        isPremium:
+          type: boolean
+        streamKeyPlaceholder:
+          type: string
+        publishStatus:
+          type: string
+        sortOrder:
+          type: integer
+    DramaListEnvelope:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Drama'
+    DramaEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Drama'
+    EpisodeListEnvelope:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+    EpisodeEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Episode'
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true

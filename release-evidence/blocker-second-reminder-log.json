@@ -1,0 +1,296 @@
+{
+  "generatedAt": "2026-04-08T13:07:16.648Z",
+  "mode": "real",
+  "total": 41,
+  "dispatched": 0,
+  "queued_not_due": 41,
+  "items": [
+    {
+      "blocker_id": "RI-01",
+      "issue_number": 1,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "RI-02",
+      "issue_number": 2,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "RI-03",
+      "issue_number": 3,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "RI-04",
+      "issue_number": 4,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "RI-05",
+      "issue_number": 5,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "next_business_day"
+    },
+    {
+      "blocker_id": "RI-06",
+      "issue_number": 6,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "next_business_day"
+    },
+    {
+      "blocker_id": "RI-07",
+      "issue_number": 7,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-01",
+      "issue_number": 8,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-02",
+      "issue_number": 9,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-03",
+      "issue_number": 10,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-04",
+      "issue_number": 11,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-05",
+      "issue_number": 12,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-06",
+      "issue_number": 13,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "AI-07",
+      "issue_number": 14,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "next_business_day"
+    },
+    {
+      "blocker_id": "CA-01",
+      "issue_number": 15,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-02",
+      "issue_number": 16,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-03",
+      "issue_number": 17,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-04",
+      "issue_number": 18,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-05",
+      "issue_number": 19,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-06",
+      "issue_number": 20,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "CA-07",
+      "issue_number": 21,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-01",
+      "issue_number": 22,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-02",
+      "issue_number": 23,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "next_business_day"
+    },
+    {
+      "blocker_id": "GH-03",
+      "issue_number": 24,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-04",
+      "issue_number": 25,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-05",
+      "issue_number": 26,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-06",
+      "issue_number": 27,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "GH-07",
+      "issue_number": 28,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "next_business_day"
+    },
+    {
+      "blocker_id": "SC-01",
+      "issue_number": 29,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-02",
+      "issue_number": 30,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-03",
+      "issue_number": 31,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-04",
+      "issue_number": 32,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-05",
+      "issue_number": 33,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-06",
+      "issue_number": 34,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-07",
+      "issue_number": 35,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-08",
+      "issue_number": 36,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-09",
+      "issue_number": 37,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-10",
+      "issue_number": 38,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-11",
+      "issue_number": 39,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "SC-12",
+      "issue_number": 40,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    },
+    {
+      "blocker_id": "DT-01",
+      "issue_number": 41,
+      "mode": "real",
+      "status": "queued_not_due",
+      "due_bucket": "same_day"
+    }
+  ]
+}

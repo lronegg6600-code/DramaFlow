@@ -1,0 +1,20 @@
+{
+  "title": "DramaFlow Admin Operations",
+  "uid": "dramaflow-admin-operations",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Admin Login Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(rate(admin_login_error_total[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Admin Mutation Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "sum(rate(admin_mutation_error_total[5m])) by (action)", "refId": "A" }]
+    }
+  ]
+}

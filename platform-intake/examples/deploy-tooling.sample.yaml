@@ -1,0 +1,5 @@
+helm_available: "true"
+helm_version: "v3.16.1"
+values_overlay_file: "backend/deployments/helm/values/staging.values.yaml"
+release_name: "dramaflow-staging"
+chart_path: "backend/deployments/helm/dramaflow"

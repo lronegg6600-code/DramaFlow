@@ -1,0 +1,217 @@
+{
+  "generatedAt": "2026-04-08T11:50:27.340Z",
+  "sourceFile": "Z:\\Projects\\DramaFlow\\.github\\labels\\blocker-labels.json",
+  "total": 34,
+  "mode": "real",
+  "repo": "lronegg6600-code/DramaFlow",
+  "labels": [
+    {
+      "name": "blocker",
+      "color": "B60205",
+      "description": "Release blocker work item"
+    },
+    {
+      "name": "blocker:repo-identity",
+      "color": "5319E7",
+      "description": "Repository identity blocker"
+    },
+    {
+      "name": "blocker:artifact-identity",
+      "color": "1D76DB",
+      "description": "Artifact identity blocker"
+    },
+    {
+      "name": "blocker:cluster-access",
+      "color": "0052CC",
+      "description": "Cluster access blocker"
+    },
+    {
+      "name": "blocker:deploy-tooling",
+      "color": "0E8A16",
+      "description": "Deployment tooling blocker"
+    },
+    {
+      "name": "blocker:github-env",
+      "color": "006B75",
+      "description": "GitHub environment blocker"
+    },
+    {
+      "name": "blocker:secrets",
+      "color": "D93F0B",
+      "description": "Secrets and config blocker"
+    },
+    {
+      "name": "blocker:staging",
+      "color": "FBCA04",
+      "description": "Blocks staging execution"
+    },
+    {
+      "name": "blocker:production",
+      "color": "BFD4F2",
+      "description": "Blocks production readiness"
+    },
+    {
+      "name": "blocker:external",
+      "color": "C5DEF5",
+      "description": "Needs external provider input"
+    },
+    {
+      "name": "blocker:waiting",
+      "color": "F9D0C4",
+      "description": "Waiting for external reply"
+    },
+    {
+      "name": "blocker:invalid-reply",
+      "color": "D73A4A",
+      "description": "Reply received but invalid"
+    },
+    {
+      "name": "blocker:verified",
+      "color": "0E8A16",
+      "description": "Input verified by engineering"
+    },
+    {
+      "name": "blocker:closed",
+      "color": "6A737D",
+      "description": "Blocker closed"
+    },
+    {
+      "name": "severity:p0",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "severity:p1",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "severity:p2",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:repo-admin",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:release-manager",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:registry-admin",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:platform",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:ops",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:security",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "owner:billing-owner",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:repo-owner",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:release-manager",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:repo-admin",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:platform",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:admin-owner",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:registry-admin",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:ops",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "provider:platform-security",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "sla:same-day",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    },
+    {
+      "name": "sla:next-business-day",
+      "color": "C2E0C6",
+      "description": "Generated launch metadata label"
+    }
+  ],
+  "created": [
+    "blocker",
+    "blocker:repo-identity",
+    "blocker:artifact-identity",
+    "blocker:cluster-access",
+    "blocker:deploy-tooling",
+    "blocker:github-env",
+    "blocker:secrets",
+    "blocker:staging",
+    "blocker:production",
+    "blocker:external",
+    "blocker:waiting",
+    "blocker:invalid-reply",
+    "blocker:verified",
+    "blocker:closed",
+    "severity:p0",
+    "severity:p1",
+    "severity:p2",
+    "owner:repo-admin",
+    "owner:release-manager",
+    "owner:registry-admin",
+    "owner:platform",
+    "owner:ops",
+    "owner:security",
+    "owner:billing-owner",
+    "provider:repo-owner",
+    "provider:release-manager",
+    "provider:repo-admin",
+    "provider:platform",
+    "provider:admin-owner",
+    "provider:registry-admin",
+    "provider:ops",
+    "provider:platform-security",
+    "sla:same-day",
+    "sla:next-business-day"
+  ],
+  "skipped": [],
+  "failures": []
+}

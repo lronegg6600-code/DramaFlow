@@ -1,0 +1,5 @@
+context_name=dramaflow-staging
+cluster_name=dramaflow-staging-cluster
+namespace=dramaflow-staging
+required_rbac_role=edit
+kubeconfig_source=platform-managed-secret

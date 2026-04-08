@@ -1,0 +1,49 @@
+{{- if .Values.services.feed.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-feed
+spec:
+  replicas: {{ .Values.services.feed.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-feed
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-feed
+    spec:
+      containers:
+        - name: feed-service
+          image: {{ .Values.services.feed.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.feed.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.feed.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.feed.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-feed
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-feed
+  ports:
+    - port: {{ .Values.services.feed.port }}
+      targetPort: {{ .Values.services.feed.port }}
+{{- end }}

@@ -1,0 +1,5 @@
+context_name=dramaflow-production
+cluster_name=dramaflow-production-cluster
+namespace=dramaflow-production
+required_rbac_role=deployer
+kubeconfig_source=platform-managed-secret

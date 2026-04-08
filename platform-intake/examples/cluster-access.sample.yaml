@@ -1,0 +1,7 @@
+kubeconfig_path: "C:/secure/dramaflow/staging.kubeconfig"
+current_context: "dramaflow-staging"
+staging_context: "dramaflow-staging"
+namespace: "dramaflow-staging"
+rbac_role: "dramaflow-release-deployer"
+can_get_deployments: "true"
+can_patch_deployments: "true"

@@ -1,0 +1,291 @@
+{
+  "generatedAt": "2026-04-08T03:38:56.353Z",
+  "readyForRealStagingExecution": false,
+  "checks": [
+    {
+      "category": "repository_identity",
+      "file": "real-repo-identity.json",
+      "passed": false,
+      "blockerCount": 4
+    },
+    {
+      "category": "artifact_identity",
+      "file": "real-artifact-identity.json",
+      "passed": false,
+      "blockerCount": 6
+    },
+    {
+      "category": "cluster_access",
+      "file": "real-cluster-access.json",
+      "passed": false,
+      "blockerCount": 6
+    },
+    {
+      "category": "github_release_control",
+      "file": "real-github-environments.json",
+      "passed": false,
+      "blockerCount": 6
+    },
+    {
+      "category": "secrets_config",
+      "file": "real-secret-readiness.json",
+      "passed": false,
+      "blockerCount": 12
+    }
+  ],
+  "blockerCategoriesRemaining": 6,
+  "blockers": [
+    {
+      "category": "repository_identity",
+      "blockerCount": 4,
+      "items": [
+        {
+          "name": ".git checkout",
+          "state": "missing",
+          "details": "workspace has no git root",
+          "owner": "repo owner / release manager"
+        },
+        {
+          "name": "commit SHA",
+          "state": "missing",
+          "details": "git rev-parse HEAD unavailable",
+          "owner": "repo owner / release manager"
+        },
+        {
+          "name": "branch",
+          "state": "missing",
+          "details": "git branch unavailable",
+          "owner": "repo owner / release manager"
+        },
+        {
+          "name": "tag or RC version",
+          "state": "missing",
+          "details": "tag/version unavailable",
+          "owner": "release manager"
+        },
+        {
+          "name": "changed files summary",
+          "state": "missing",
+          "details": "git unavailable",
+          "owner": "repo owner / release manager"
+        }
+      ]
+    },
+    {
+      "category": "artifact_identity",
+      "blockerCount": 6,
+      "items": [
+        {
+          "name": "docker image tag",
+          "state": "missing",
+          "details": "DRAMAFLOW_IMAGE_TAG not set",
+          "owner": "CI / platform"
+        },
+        {
+          "name": "docker image digest",
+          "state": "missing",
+          "details": "DRAMAFLOW_IMAGE_DIGEST not set",
+          "owner": "CI / platform"
+        },
+        {
+          "name": "admin web artifact id",
+          "state": "missing",
+          "details": "DRAMAFLOW_ADMIN_BUILD_ARTIFACT not set",
+          "owner": "CI / admin owner"
+        },
+        {
+          "name": "workflow run id",
+          "state": "missing",
+          "details": "GITHUB_RUN_ID not set",
+          "owner": "repo admin / CI"
+        },
+        {
+          "name": "workflow sha",
+          "state": "missing",
+          "details": "GITHUB_SHA not set",
+          "owner": "repo admin / CI"
+        },
+        {
+          "name": "registry identity",
+          "state": "missing",
+          "details": "DRAMAFLOW_REGISTRY not set",
+          "owner": "platform / registry admin"
+        }
+      ]
+    },
+    {
+      "category": "cluster_access",
+      "blockerCount": 6,
+      "items": [
+        {
+          "name": "current context",
+          "state": "missing",
+          "details": "kubectl current-context unavailable",
+          "owner": "platform / ops"
+        },
+        {
+          "name": "target context list",
+          "state": "missing",
+          "details": "no contexts configured",
+          "owner": "platform / ops"
+        },
+        {
+          "name": "kubeconfig source",
+          "state": "missing",
+          "details": "DRAMAFLOW_KUBECONFIG_SOURCE not set",
+          "owner": "platform / ops"
+        },
+        {
+          "name": "RBAC role",
+          "state": "missing",
+          "details": "DRAMAFLOW_CLUSTER_RBAC_ROLE not set",
+          "owner": "platform / ops"
+        },
+        {
+          "name": "deployment read access",
+          "state": "missing",
+          "details": "kubectl auth can-i get deployments unavailable",
+          "owner": "platform / ops"
+        },
+        {
+          "name": "deployment patch access",
+          "state": "missing",
+          "details": "kubectl auth can-i patch deployments unavailable",
+          "owner": "platform / ops"
+        }
+      ]
+    },
+    {
+      "category": "github_release_control",
+      "blockerCount": 6,
+      "items": [
+        {
+          "name": "staging environment",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        },
+        {
+          "name": "production environment",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        },
+        {
+          "name": "required reviewers",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        },
+        {
+          "name": "prevent self-review",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        },
+        {
+          "name": "deployment branch/tag policy",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        },
+        {
+          "name": "artifact/evidence upload policy",
+          "state": "missing",
+          "details": "not confirmed",
+          "owner": "repo admin / release manager"
+        }
+      ]
+    },
+    {
+      "category": "secrets_config",
+      "blockerCount": 12,
+      "items": [
+        {
+          "name": "DRAMAFLOW_POSTGRES_DSN",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "DRAMAFLOW_REDIS_ADDR",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "DRAMAFLOW_JWT_SECRET",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "ADMIN_SESSION_SECRET",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "ADMIN_BOOTSTRAP_PASSWORD",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "release manager / security"
+        },
+        {
+          "name": "GOOGLE_PLAY_SERVICE_ACCOUNT_JSON",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "BILLING_RTDN_PUSH_SECRET",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "DRAMAFLOW_REGISTRY",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform / registry admin"
+        },
+        {
+          "name": "DRAMAFLOW_REGISTRY_USERNAME",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform / registry admin"
+        },
+        {
+          "name": "DRAMAFLOW_REGISTRY_PASSWORD",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform / registry admin"
+        },
+        {
+          "name": "DRAMAFLOW_CLOUD_SERVICE_ACCOUNT",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "platform/security"
+        },
+        {
+          "name": "DRAMAFLOW_DEPLOY_TOKEN",
+          "state": "missing",
+          "details": "not provided",
+          "owner": "repo admin / platform"
+        }
+      ]
+    },
+    {
+      "category": "deploy_tooling",
+      "blockerCount": 1,
+      "items": [
+        {
+          "name": "deploy tooling",
+          "state": "invalid",
+          "details": "helm missing or tooling incomplete",
+          "owner": "platform / ops"
+        }
+      ]
+    }
+  ]
+}

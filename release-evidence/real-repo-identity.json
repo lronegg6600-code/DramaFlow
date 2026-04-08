@@ -1,0 +1,61 @@
+{
+  "category": "repository_identity",
+  "generatedAt": "2026-04-08T03:38:41.904Z",
+  "items": [
+    {
+      "name": ".git checkout",
+      "state": "missing",
+      "details": "workspace has no git root",
+      "owner": "repo owner / release manager",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "commit SHA",
+      "state": "missing",
+      "details": "git rev-parse HEAD unavailable",
+      "owner": "repo owner / release manager",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "branch",
+      "state": "missing",
+      "details": "git branch unavailable",
+      "owner": "repo owner / release manager",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "tag or RC version",
+      "state": "missing",
+      "details": "tag/version unavailable",
+      "owner": "release manager",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "changed files summary",
+      "state": "missing",
+      "details": "git unavailable",
+      "owner": "repo owner / release manager",
+      "blocksStaging": false,
+      "blocksProduction": false
+    }
+  ],
+  "summary": {
+    "missing": 5,
+    "invalid": 0,
+    "verified": 0,
+    "blockerCount": 4,
+    "status": "blocker"
+  },
+  "values": {
+    "gitRoot": null,
+    "commitSha": null,
+    "branch": null,
+    "tag": null,
+    "releaseVersion": null,
+    "changedFiles": []
+  }
+}

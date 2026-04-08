@@ -1,0 +1,10 @@
+{
+  "region": "US",
+  "language": "zh-CN",
+  "draftPayload": {
+    "featured": [{ "dramaId": "dramaflow-seed-drama-1" }],
+    "trending": [{ "dramaId": "dramaflow-seed-drama-1" }],
+    "recommended": [{ "dramaId": "dramaflow-seed-drama-1" }],
+    "banners": []
+  }
+}

@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: DramaFlow Admin Service API
+  version: 0.1.0
+  description: |
+    Contract markers:
+    - resource.not_found
+servers:
+  - url: http://localhost:8088
+paths:
+  /v1/admin/auth/login:
+    post:
+      summary: Admin login
+  /v1/admin/auth/logout:
+    post:
+      summary: Admin logout
+  /v1/admin/auth/me:
+    get:
+      summary: Get current admin session
+  /v1/admin/dashboard:
+    get:
+      summary: Dashboard stats
+  /v1/admin/dramas:
+    get:
+      summary: List dramas
+    post:
+      summary: Create drama
+  /v1/admin/dramas/{dramaId}:
+    get:
+      summary: Get drama
+    put:
+      summary: Update drama
+  /v1/admin/dramas/{dramaId}/episodes:
+    get:
+      summary: List episodes
+    post:
+      summary: Create episode
+  /v1/admin/episodes/{episodeId}:
+    put:
+      summary: Update episode
+  /v1/admin/episodes/{episodeId}/publish:
+    post:
+      summary: Publish episode
+  /v1/admin/episodes/{episodeId}/unpublish:
+    post:
+      summary: Unpublish episode
+  /v1/admin/feed-config/home:
+    get:
+      summary: Get feed config
+    put:
+      summary: Save feed config draft
+  /v1/admin/feed-config/home/publish:
+    post:
+      summary: Publish feed config
+  /v1/admin/feed-config/home/rollback:
+    post:
+      summary: Rollback feed config draft
+  /v1/admin/users:
+    get:
+      summary: Search users
+  /v1/admin/users/{userId}:
+    get:
+      summary: Get user
+  /v1/admin/purchases:
+    get:
+      summary: Search purchases
+  /v1/admin/purchases/{purchaseToken}:
+    get:
+      summary: Get purchase
+  /v1/admin/purchases/{purchaseToken}/resync:
+    post:
+      summary: Resync purchase
+  /v1/admin/entitlements:
+    get:
+      summary: Search entitlements
+  /v1/admin/entitlements/{userId}:
+    get:
+      summary: Get user entitlements
+  /v1/admin/entitlements/{userId}/recompute:
+    post:
+      summary: Recompute entitlements
+  /v1/admin/entitlements/{userId}/grant-temp:
+    post:
+      summary: Grant temporary entitlement
+  /v1/admin/entitlements/{userId}/revoke:
+    post:
+      summary: Revoke entitlement
+  /v1/admin/rtdn-events:
+    get:
+      summary: Search RTDN events
+  /v1/admin/rtdn-events/{messageId}/replay:
+    post:
+      summary: Replay RTDN event
+  /v1/admin/playback/sessions:
+    get:
+      summary: Search playback sessions
+  /v1/admin/playback/sessions/{sessionId}:
+    get:
+      summary: Get playback session
+  /v1/admin/audit-logs:
+    get:
+      summary: Search audit logs

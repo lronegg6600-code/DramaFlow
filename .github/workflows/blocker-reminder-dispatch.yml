@@ -1,0 +1,30 @@
+name: blocker-reminder-dispatch
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 1-5"
+
+jobs:
+  reminders:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Queue reminders
+        run: node backend/tests/release/queue_reminders_from_sla.mjs
+      - name: Queue escalations
+        run: node backend/tests/release/queue_escalations_from_sla.mjs
+      - name: Upload reminder evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: blocker-reminders
+          path: |
+            release-evidence/blocker-reminder-queue.json
+            release-evidence/blocker-escalation-queue.json
+            release-evidence/blocker-daily-view.json
+            release-evidence/blocker-weekly-escalation-view.json

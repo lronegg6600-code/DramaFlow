@@ -1,0 +1,62 @@
+{
+  "category": "repo_identity_input_package",
+  "generatedAt": "2026-04-08T04:00:58.556Z",
+  "sourceFile": null,
+  "items": [
+    {
+      "blocker_id": "RI-01",
+      "blocker_title": "真实 .git checkout",
+      "current_status": "not_received",
+      "field": "repo_root",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-02",
+      "blocker_title": "commit SHA",
+      "current_status": "not_received",
+      "field": "commit_sha",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-03",
+      "blocker_title": "branch",
+      "current_status": "not_received",
+      "field": "branch",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-04",
+      "blocker_title": "tag 或 RC version",
+      "current_status": "not_received",
+      "field": "tag_or_version",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-05",
+      "blocker_title": "changed files summary",
+      "current_status": "not_received",
+      "field": "changed_files_summary",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-06",
+      "blocker_title": "release notes 链接",
+      "current_status": "not_received",
+      "field": "release_notes_url",
+      "notes": "未收到 repo identity 输入包"
+    },
+    {
+      "blocker_id": "RI-07",
+      "blocker_title": "仓库管理员确认",
+      "current_status": "not_received",
+      "field": "repo_admin_confirmed",
+      "notes": "未收到 repo identity 输入包"
+    }
+  ],
+  "summary": {
+    "not_received": 7,
+    "received_but_invalid": 0,
+    "received_and_verified": 0,
+    "overall_status": "blocked"
+  }
+}

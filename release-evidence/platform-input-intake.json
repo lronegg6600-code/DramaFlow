@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-04-08T04:04:48.617Z",
+  "intakeRoot": "platform-intake/received",
+  "categories": [
+    {
+      "category": "repo-identity",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    },
+    {
+      "category": "artifact-identity",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    },
+    {
+      "category": "cluster-access",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    },
+    {
+      "category": "github-environments",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    },
+    {
+      "category": "secrets",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    },
+    {
+      "category": "deploy-tooling",
+      "receivedCount": 0,
+      "files": [],
+      "status": "not_received"
+    }
+  ]
+}

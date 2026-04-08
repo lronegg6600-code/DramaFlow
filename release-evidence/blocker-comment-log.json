@@ -1,0 +1,374 @@
+{
+  "generatedAt": "2026-04-08T12:49:35.682Z",
+  "items": [
+    {
+      "blocker_id": "RI-01",
+      "issue_number": 1,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/1",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-01`.\n\n- required_input: `repo_root`\n- provider_role: `repo owner`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-02",
+      "issue_number": 2,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/2",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-02`.\n\n- required_input: `commit_sha`\n- provider_role: `repo owner`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-03",
+      "issue_number": 3,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/3",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-03`.\n\n- required_input: `branch`\n- provider_role: `repo owner`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-04",
+      "issue_number": 4,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/4",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-04`.\n\n- required_input: `tag_or_version`\n- provider_role: `release manager`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-05",
+      "issue_number": 5,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/5",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-05`.\n\n- required_input: `changed_files_summary`\n- provider_role: `release manager`\n- due_bucket: `next_business_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `production readiness`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-06",
+      "issue_number": 6,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/6",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-06`.\n\n- required_input: `release_notes_url`\n- provider_role: `release manager`\n- due_bucket: `next_business_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `production readiness`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "RI-07",
+      "issue_number": 7,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/7",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `RI-07`.\n\n- required_input: `repo_admin_confirmed`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_repo_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-01",
+      "issue_number": 8,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/8",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-01`.\n\n- required_input: `image_tag`\n- provider_role: `platform`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-02",
+      "issue_number": 9,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/9",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-02`.\n\n- required_input: `image_digest`\n- provider_role: `platform`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-03",
+      "issue_number": 10,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/10",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-03`.\n\n- required_input: `admin_build_artifact_id`\n- provider_role: `admin owner`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-04",
+      "issue_number": 11,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/11",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-04`.\n\n- required_input: `workflow_run_id`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-05",
+      "issue_number": 12,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/12",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-05`.\n\n- required_input: `workflow_sha`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-06",
+      "issue_number": 13,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/13",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-06`.\n\n- required_input: `registry`\n- provider_role: `registry admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "AI-07",
+      "issue_number": 14,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/14",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `AI-07`.\n\n- required_input: `provenance_url`\n- provider_role: `platform`\n- due_bucket: `next_business_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_artifact_input_package.mjs`\n- impact_if_missing: `production readiness`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-01",
+      "issue_number": 15,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/15",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-01`.\n\n- required_input: `kubeconfig_path`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-02",
+      "issue_number": 16,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/16",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-02`.\n\n- required_input: `current_context`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-03",
+      "issue_number": 17,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/17",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-03`.\n\n- required_input: `staging_context`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-04",
+      "issue_number": 18,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/18",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-04`.\n\n- required_input: `namespace`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-05",
+      "issue_number": 19,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/19",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-05`.\n\n- required_input: `rbac_role`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-06",
+      "issue_number": 20,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/20",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-06`.\n\n- required_input: `can_get_deployments`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "CA-07",
+      "issue_number": 21,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/21",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `CA-07`.\n\n- required_input: `can_patch_deployments`\n- provider_role: `ops`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_cluster_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-01",
+      "issue_number": 22,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/22",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-01`.\n\n- required_input: `staging_environment`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-02",
+      "issue_number": 23,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/23",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-02`.\n\n- required_input: `production_environment`\n- provider_role: `repo admin`\n- due_bucket: `next_business_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `production readiness`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-03",
+      "issue_number": 24,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/24",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-03`.\n\n- required_input: `required_reviewers`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-04",
+      "issue_number": 25,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/25",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-04`.\n\n- required_input: `prevent_self_review`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-05",
+      "issue_number": 26,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/26",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-05`.\n\n- required_input: `deployment_policy`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-06",
+      "issue_number": 27,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/27",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-06`.\n\n- required_input: `environment_secrets_manifest`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "GH-07",
+      "issue_number": 28,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/28",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `GH-07`.\n\n- required_input: `evidence_upload_enabled`\n- provider_role: `repo admin`\n- due_bucket: `next_business_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_github_env_input_package.mjs`\n- impact_if_missing: `production readiness`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-01",
+      "issue_number": 29,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/29",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-01`.\n\n- required_input: `postgres_dsn_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-02",
+      "issue_number": 30,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/30",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-02`.\n\n- required_input: `redis_addr_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-03",
+      "issue_number": 31,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/31",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-03`.\n\n- required_input: `jwt_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-04",
+      "issue_number": 32,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/32",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-04`.\n\n- required_input: `admin_session_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-05",
+      "issue_number": 33,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/33",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-05`.\n\n- required_input: `admin_bootstrap_password_ref`\n- provider_role: `release manager`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-06",
+      "issue_number": 34,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/34",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-06`.\n\n- required_input: `google_play_service_account_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-07",
+      "issue_number": 35,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/35",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-07`.\n\n- required_input: `billing_rtdn_push_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-08",
+      "issue_number": 36,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/36",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-08`.\n\n- required_input: `registry_host`\n- provider_role: `registry admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-09",
+      "issue_number": 37,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/37",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-09`.\n\n- required_input: `registry_username_secret_ref`\n- provider_role: `registry admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-10",
+      "issue_number": 38,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/38",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-10`.\n\n- required_input: `registry_password_secret_ref`\n- provider_role: `registry admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-11",
+      "issue_number": 39,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/39",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-11`.\n\n- required_input: `cloud_service_account_secret_ref`\n- provider_role: `platform security`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "SC-12",
+      "issue_number": 40,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/40",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `SC-12`.\n\n- required_input: `deploy_token_secret_ref`\n- provider_role: `repo admin`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_secret_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    },
+    {
+      "blocker_id": "DT-01",
+      "issue_number": 41,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/41",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z",
+      "body": "Release blocker reminder for `DT-01`.\n\n- required_input: `helm_available / helm_version / values_overlay_file / release_name / chart_path`\n- provider_role: `platform`\n- due_bucket: `same_day`\n- upload_location: `platform-intake/received/`\n- verification_command: `node backend/tests/release/validate_deploy_tooling_input_package.mjs`\n- impact_if_missing: `real staging execution`\n\nPlease upload the requested package and reply on this issue once the files are available."
+    }
+  ]
+}

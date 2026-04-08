@@ -1,0 +1,19 @@
+{
+  "category": "repository_identity",
+  "status": "blocker",
+  "generatedAt": "2026-04-08T03:27:35.882Z",
+  "git": {
+    "root": null,
+    "commitSha": null,
+    "branch": null,
+    "tag": null,
+    "changedFiles": []
+  },
+  "candidateVersion": null,
+  "blockers": [
+    "workspace has no .git metadata",
+    "commit SHA is not provable",
+    "branch is not provable",
+    "tag/version is not provided"
+  ]
+}

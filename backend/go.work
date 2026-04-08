@@ -1,0 +1,13 @@
+go 1.25.0
+
+use (
+	./shared
+	./services/admin-service
+	./services/auth-service
+	./services/billing-service
+	./services/content-service
+	./services/entitlement-service
+	./services/feed-service
+	./services/playback-service
+	./services/progress-service
+)

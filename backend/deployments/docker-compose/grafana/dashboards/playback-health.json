@@ -1,0 +1,24 @@
+{
+  "title": "DramaFlow Playback Health",
+  "uid": "dramaflow-playback-health",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Playback Session Create Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(rate(dramaflow_playback_session_create_error_total[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Playback Access Mix",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "sum(rate(dramaflow_playback_access_full_total[5m]))", "refId": "A", "legendFormat": "full" },
+        { "expr": "sum(rate(dramaflow_playback_access_preview_total[5m]))", "refId": "B", "legendFormat": "preview" },
+        { "expr": "sum(rate(dramaflow_playback_access_none_total[5m]))", "refId": "C", "legendFormat": "none" }
+      ]
+    }
+  ]
+}

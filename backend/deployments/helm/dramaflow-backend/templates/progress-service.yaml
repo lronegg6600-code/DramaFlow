@@ -1,0 +1,49 @@
+{{- if .Values.services.progress.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-progress
+spec:
+  replicas: {{ .Values.services.progress.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-progress
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-progress
+    spec:
+      containers:
+        - name: progress-service
+          image: {{ .Values.services.progress.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.progress.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.progress.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.progress.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-progress
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-progress
+  ports:
+    - port: {{ .Values.services.progress.port }}
+      targetPort: {{ .Values.services.progress.port }}
+{{- end }}

@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-04-08T03:10:09.439Z",
+  "workspace": "Z:\\Projects\\DramaFlow",
+  "git": {
+    "available": false,
+    "root": null,
+    "commitSha": null,
+    "branch": null,
+    "tag": null,
+    "changedFiles": []
+  },
+  "github": {
+    "runId": null,
+    "runNumber": null,
+    "workflow": null,
+    "ref": null,
+    "sha": null
+  },
+  "deploy": {
+    "targetEnvironment": null,
+    "controlPlane": null,
+    "dryRun": true,
+    "kubectlAvailable": true,
+    "kubeContext": null,
+    "kubeContexts": [],
+    "namespace": null,
+    "imageTag": null,
+    "imageDigest": null,
+    "adminBuildArtifact": null
+  },
+  "blockers": [
+    "workspace has no .git metadata; commit SHA and tag cannot be proven",
+    "kubectl has no current context; real cluster rehearsal cannot execute",
+    "image tag is not set"
+  ]
+}

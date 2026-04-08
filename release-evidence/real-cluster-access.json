@@ -1,0 +1,88 @@
+{
+  "category": "cluster_access",
+  "generatedAt": "2026-04-08T03:38:42.491Z",
+  "targetEnv": "staging",
+  "items": [
+    {
+      "name": "kubectl binary",
+      "state": "verified",
+      "details": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "current context",
+      "state": "missing",
+      "details": "kubectl current-context unavailable",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "target context list",
+      "state": "missing",
+      "details": "no contexts configured",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "namespace",
+      "state": "verified",
+      "details": "dramaflow-staging",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "kubeconfig source",
+      "state": "missing",
+      "details": "DRAMAFLOW_KUBECONFIG_SOURCE not set",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "RBAC role",
+      "state": "missing",
+      "details": "DRAMAFLOW_CLUSTER_RBAC_ROLE not set",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "deployment read access",
+      "state": "missing",
+      "details": "kubectl auth can-i get deployments unavailable",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "deployment patch access",
+      "state": "missing",
+      "details": "kubectl auth can-i patch deployments unavailable",
+      "owner": "platform / ops",
+      "blocksStaging": true,
+      "blocksProduction": true
+    }
+  ],
+  "summary": {
+    "missing": 6,
+    "invalid": 0,
+    "verified": 2,
+    "blockerCount": 6,
+    "status": "blocker"
+  },
+  "values": {
+    "kubectlPath": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe",
+    "currentContext": null,
+    "contexts": [],
+    "namespace": "dramaflow-staging",
+    "kubeconfigSource": null,
+    "rbacRole": null,
+    "canReadDeployments": null,
+    "canPatchDeployments": null
+  }
+}

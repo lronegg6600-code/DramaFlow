@@ -1,0 +1,48 @@
+{
+  "category": "deploy_tooling_input_package",
+  "generatedAt": "2026-04-08T04:00:58.561Z",
+  "sourceFile": null,
+  "items": [
+    {
+      "blocker_id": "DT-01",
+      "blocker_title": "helm 可用",
+      "current_status": "not_received",
+      "field": "helm_available",
+      "notes": "未收到 deploy tooling 输入包"
+    },
+    {
+      "blocker_id": "DT-02",
+      "blocker_title": "helm version",
+      "current_status": "not_received",
+      "field": "helm_version",
+      "notes": "未收到 deploy tooling 输入包"
+    },
+    {
+      "blocker_id": "DT-03",
+      "blocker_title": "values overlay file",
+      "current_status": "not_received",
+      "field": "values_overlay_file",
+      "notes": "未收到 deploy tooling 输入包"
+    },
+    {
+      "blocker_id": "DT-04",
+      "blocker_title": "release name",
+      "current_status": "not_received",
+      "field": "release_name",
+      "notes": "未收到 deploy tooling 输入包"
+    },
+    {
+      "blocker_id": "DT-05",
+      "blocker_title": "chart path",
+      "current_status": "not_received",
+      "field": "chart_path",
+      "notes": "未收到 deploy tooling 输入包"
+    }
+  ],
+  "summary": {
+    "not_received": 5,
+    "received_but_invalid": 0,
+    "received_and_verified": 0,
+    "overall_status": "blocked"
+  }
+}

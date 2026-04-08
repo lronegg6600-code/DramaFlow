@@ -1,0 +1,68 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(dramaflow_http_requests_total[5m])) by (service)",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP P95 Latency",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(dramaflow_http_request_duration_seconds_bucket[5m])) by (le, service))",
+          "legendFormat": "{{service}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Playback Session Create Errors",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "increase(dramaflow_playback_session_create_error_total[5m])",
+          "legendFormat": "playback"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Billing / Entitlement Core Mutations",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "increase(billing_purchase_sync_total[5m])",
+          "legendFormat": "billing sync"
+        },
+        {
+          "expr": "increase(entitlement_grant_total[5m])",
+          "legendFormat": "grant"
+        },
+        {
+          "expr": "increase(entitlement_revoke_total[5m])",
+          "legendFormat": "revoke"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["dramaflow", "phase7"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "DramaFlow Phase 7 Overview",
+  "version": 1
+}

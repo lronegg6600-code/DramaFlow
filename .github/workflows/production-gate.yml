@@ -1,0 +1,40 @@
+name: production-gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: production gate target
+        required: true
+        default: production
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate production gate
+        run: |
+          chmod +x deployments/scripts/*.sh
+          DRAMAFLOW_TARGET_ENV="${{ inputs.target_environment }}" \
+          DRAMAFLOW_REAL_RUN=1 \
+          DRAMAFLOW_CONTROL_PLANE="${{ vars.DRAMAFLOW_CONTROL_PLANE || 'kubernetes' }}" \
+          DRAMAFLOW_KUBE_NAMESPACE="${{ vars.DRAMAFLOW_KUBE_NAMESPACE || 'dramaflow-production' }}" \
+          DRAMAFLOW_EVIDENCE_DIR="${{ github.workspace }}/backend/release-evidence/production-gate" \
+          sh deployments/scripts/final_go_no_go_check.sh
+      - name: Upload production gate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-gate-evidence
+          path: backend/release-evidence/production-gate
+      - name: Step summary
+        run: |
+          echo "## Production gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "- target_environment: ${{ inputs.target_environment }}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,258 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dramaflow-postgres
+    environment:
+      POSTGRES_DB: dramaflow
+      POSTGRES_USER: dramaflow
+      POSTGRES_PASSWORD: dramaflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../../sql/migrations:/docker-entrypoint-initdb.d/01-migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dramaflow -d dramaflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: dramaflow-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    container_name: dramaflow-otel
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4318:4318"
+      - "8889:8889"
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: dramaflow-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus-rules.yml:/etc/prometheus/prometheus-rules.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - alertmanager
+      - admin-service
+      - auth-service
+      - billing-service
+      - content-service
+      - entitlement-service
+      - feed-service
+      - playback-service
+      - progress-service
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    container_name: dramaflow-alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    ports:
+      - "9093:9093"
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: dramaflow-grafana
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+
+  auth-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/auth-service/Dockerfile
+    environment: &dramaflow-env
+      DRAMAFLOW_ENV: local
+      DRAMAFLOW_GIN_MODE: debug
+      DRAMAFLOW_POSTGRES_DSN: postgres://dramaflow:dramaflow@postgres:5432/dramaflow?sslmode=disable
+      DRAMAFLOW_REDIS_ADDR: redis:6379
+      DRAMAFLOW_JWT_SECRET: replace-with-local-secret
+      DRAMAFLOW_JWT_ISSUER: dramaflow.local
+      DRAMAFLOW_ACCESS_TOKEN_TTL: 15m
+      DRAMAFLOW_REFRESH_TOKEN_TTL: 720h
+      DRAMAFLOW_OTEL_ENDPOINT: http://otel-collector:4318/v1/traces
+      DRAMAFLOW_HTTP_READ_TIMEOUT: 10s
+      DRAMAFLOW_HTTP_WRITE_TIMEOUT: 10s
+      DRAMAFLOW_PLAYBACK_SIGNER_MODE: dev_passthrough
+      DRAMAFLOW_PLAYBACK_URL_TTL_SECONDS: 300
+      DRAMAFLOW_PLAYBACK_HEARTBEAT_INTERVAL_SECONDS: 15
+      DRAMAFLOW_PLAYBACK_REFRESH_BEFORE_SECONDS: 45
+      DRAMAFLOW_PLAYBACK_CDN_BASE_URL: https://storage.googleapis.com/exoplayer-test-media-0
+      DRAMAFLOW_CONTENT_SERVICE_BASE_URL: http://content-service:8082
+      DRAMAFLOW_FEED_SERVICE_BASE_URL: http://feed-service:8083
+      DRAMAFLOW_PLAYBACK_SERVICE_BASE_URL: http://playback-service:8085
+      DRAMAFLOW_ENTITLEMENT_SERVICE_BASE_URL: http://entitlement-service:8086
+      DRAMAFLOW_BILLING_SERVICE_BASE_URL: http://billing-service:8087
+      DRAMAFLOW_ADMIN_SERVICE_BASE_URL: http://admin-service:8088
+      GOOGLE_PLAY_PACKAGE_NAME: com.dramaflow.app
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ""
+      GOOGLE_PLAY_PUBLISHER_SCOPE: https://www.googleapis.com/auth/androidpublisher
+      BILLING_SYNC_ACK_MODE: record_only
+      BILLING_RTDN_ENABLED: "true"
+      BILLING_RTDN_PUSH_SECRET: local-rtdn-secret
+      ENTITLEMENT_DEFAULT_PREVIEW_SECONDS: "15"
+      ENTITLEMENT_GRACE_POLICY_ENABLED: "true"
+      ADMIN_SESSION_SECRET: replace-with-admin-session-secret
+      ADMIN_BOOTSTRAP_EMAIL: admin@dramaflow.local
+      ADMIN_BOOTSTRAP_PASSWORD: change-me-now
+      ADMIN_ALLOWED_ORIGINS: http://localhost:3000
+      ADMIN_ENABLE_DEV_OPERATIONS: "true"
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  content-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/content-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  feed-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/feed-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  progress-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/progress-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  playback-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/playback-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+      entitlement-service:
+        condition: service_started
+
+  entitlement-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/entitlement-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  billing-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/billing-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8087:8087"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+      entitlement-service:
+        condition: service_started
+
+  admin-service:
+    build:
+      context: ../../../
+      dockerfile: backend/services/admin-service/Dockerfile
+    environment: *dramaflow-env
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+  admin-web:
+    build:
+      context: ../../../
+      dockerfile: admin/Dockerfile
+    environment:
+      ADMIN_API_INTERNAL_BASE_URL: http://admin-service:8088
+      NEXT_PUBLIC_ADMIN_API_BASE_URL: http://localhost:8088
+    ports:
+      - "3000:3000"
+    depends_on:
+      admin-service:
+        condition: service_started
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -1,0 +1,7 @@
+repo_root: "C:/repos/dramaflow"
+commit_sha: "1234567890abcdef1234567890abcdef12345678"
+branch: "release/2026.04.08"
+tag_or_version: "rc-2026.04.08.1"
+changed_files_summary: "admin/, backend/, docs/"
+release_notes_url: "https://github.example.com/org/dramaflow/releases/tag/rc-2026.04.08.1"
+repo_admin_confirmed: "true"

@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-08T13:07:15.746Z",
+  "readyForRealStagingGateRecheck": false,
+  "staging": {
+    "total": 36,
+    "awaiting_reply": 36,
+    "replied_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "remaining": 36
+  },
+  "nextAction": "Continue waiting on external replies and prioritize remaining staging blockers"
+}

@@ -1,0 +1,62 @@
+{
+  "category": "github_environment_input_package",
+  "generatedAt": "2026-04-08T04:00:58.556Z",
+  "sourceFile": null,
+  "items": [
+    {
+      "blocker_id": "GH-01",
+      "blocker_title": "staging environment",
+      "current_status": "not_received",
+      "field": "staging_environment",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-02",
+      "blocker_title": "production environment",
+      "current_status": "not_received",
+      "field": "production_environment",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-03",
+      "blocker_title": "required reviewers",
+      "current_status": "not_received",
+      "field": "required_reviewers",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-04",
+      "blocker_title": "prevent self-review",
+      "current_status": "not_received",
+      "field": "prevent_self_review",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-05",
+      "blocker_title": "branch/tag restrictions",
+      "current_status": "not_received",
+      "field": "deployment_policy",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-06",
+      "blocker_title": "environment secrets/vars",
+      "current_status": "not_received",
+      "field": "environment_secrets_manifest",
+      "notes": "未收到 GitHub environment 输入包"
+    },
+    {
+      "blocker_id": "GH-07",
+      "blocker_title": "artifact/evidence upload policy",
+      "current_status": "not_received",
+      "field": "evidence_upload_enabled",
+      "notes": "未收到 GitHub environment 输入包"
+    }
+  ],
+  "summary": {
+    "not_received": 7,
+    "received_but_invalid": 0,
+    "received_and_verified": 0,
+    "overall_status": "blocked"
+  }
+}

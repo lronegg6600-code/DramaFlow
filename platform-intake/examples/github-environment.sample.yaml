@@ -1,0 +1,7 @@
+staging_environment: "staging"
+production_environment: "production"
+required_reviewers: "release-manager, ops-reviewer"
+prevent_self_review: "true"
+deployment_policy: "release/* branches and rc-* tags only"
+environment_secrets_manifest: "staging env secrets configured"
+evidence_upload_enabled: "true"

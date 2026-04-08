@@ -1,0 +1,335 @@
+{
+  "generatedAt": "2026-04-08T12:48:08.890Z",
+  "mode": "real",
+  "total": 41,
+  "items": [
+    {
+      "blocker_id": "RI-01",
+      "issue_number": 1,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/1",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-02",
+      "issue_number": 2,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/2",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-03",
+      "issue_number": 3,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/3",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-04",
+      "issue_number": 4,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/4",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-05",
+      "issue_number": 5,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/5",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-06",
+      "issue_number": 6,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/6",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "RI-07",
+      "issue_number": 7,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/7",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-01",
+      "issue_number": 8,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/8",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-02",
+      "issue_number": 9,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/9",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-03",
+      "issue_number": 10,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/10",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-04",
+      "issue_number": 11,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/11",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-05",
+      "issue_number": 12,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/12",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-06",
+      "issue_number": 13,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/13",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "AI-07",
+      "issue_number": 14,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/14",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-01",
+      "issue_number": 15,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/15",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-02",
+      "issue_number": 16,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/16",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-03",
+      "issue_number": 17,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/17",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-04",
+      "issue_number": 18,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/18",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-05",
+      "issue_number": 19,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/19",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-06",
+      "issue_number": 20,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/20",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "CA-07",
+      "issue_number": 21,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/21",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-01",
+      "issue_number": 22,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/22",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-02",
+      "issue_number": 23,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/23",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-03",
+      "issue_number": 24,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/24",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-04",
+      "issue_number": 25,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/25",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-05",
+      "issue_number": 26,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/26",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-06",
+      "issue_number": 27,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/27",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "GH-07",
+      "issue_number": 28,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/28",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-01",
+      "issue_number": 29,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/29",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-02",
+      "issue_number": 30,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/30",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-03",
+      "issue_number": 31,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/31",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-04",
+      "issue_number": 32,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/32",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-05",
+      "issue_number": 33,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/33",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-06",
+      "issue_number": 34,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/34",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-07",
+      "issue_number": 35,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/35",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-08",
+      "issue_number": 36,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/36",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-09",
+      "issue_number": 37,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/37",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-10",
+      "issue_number": 38,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/38",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-11",
+      "issue_number": 39,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/39",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "SC-12",
+      "issue_number": 40,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/40",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    },
+    {
+      "blocker_id": "DT-01",
+      "issue_number": 41,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/41",
+      "mode": "real",
+      "comment_type": "first_reminder",
+      "created_at": "2026-04-08T12:48:08.890Z"
+    }
+  ]
+}

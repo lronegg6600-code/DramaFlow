@@ -1,0 +1,49 @@
+{{- if .Values.services.entitlement.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-entitlement
+spec:
+  replicas: {{ .Values.services.entitlement.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-entitlement
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-entitlement
+    spec:
+      containers:
+        - name: entitlement-service
+          image: {{ .Values.services.entitlement.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.entitlement.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.entitlement.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.entitlement.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-entitlement
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-entitlement
+  ports:
+    - port: {{ .Values.services.entitlement.port }}
+      targetPort: {{ .Values.services.entitlement.port }}
+{{- end }}

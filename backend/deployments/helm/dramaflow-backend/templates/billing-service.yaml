@@ -1,0 +1,49 @@
+{{- if .Values.services.billing.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-billing
+spec:
+  replicas: {{ .Values.services.billing.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-billing
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-billing
+    spec:
+      containers:
+        - name: billing-service
+          image: {{ .Values.services.billing.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.billing.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.billing.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.billing.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-billing
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-billing
+  ports:
+    - port: {{ .Values.services.billing.port }}
+      targetPort: {{ .Values.services.billing.port }}
+{{- end }}

@@ -1,0 +1,50 @@
+name: release-gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Deploy target"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+      release_sha:
+        description: "Release candidate commit SHA"
+        required: true
+        type: string
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    environment: ${{ inputs.target_environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.0"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: sh deployments/scripts/pre_deploy_check.sh
+      - run: sh deployments/scripts/staging_deploy.sh
+        if: inputs.target_environment == 'staging'
+      - run: sh deployments/scripts/post_deploy_verify.sh
+      - run: sh deployments/scripts/canary_check.sh
+      - run: sh deployments/scripts/release_watch.sh
+      - run: sh deployments/scripts/rollback_verify.sh
+      - run: |
+          {
+            echo "## Release Gate"
+            echo "- target: ${{ inputs.target_environment }}"
+            echo "- release sha: ${{ inputs.release_sha }}"
+            echo "- pre deploy: passed"
+            echo "- post deploy verify: passed"
+            echo "- canary check script executed"
+            echo "- rollback verification script executed"
+          } >> "$GITHUB_STEP_SUMMARY"

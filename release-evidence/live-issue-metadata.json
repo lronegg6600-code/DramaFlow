@@ -1,0 +1,293 @@
+{
+  "generatedAt": "2026-04-08T13:12:23.698Z",
+  "mode": "live_sync",
+  "items": [
+    {
+      "blocker_id": "RI-01",
+      "issue_number": 1,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/1",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-02",
+      "issue_number": 2,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/2",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-03",
+      "issue_number": 3,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/3",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-04",
+      "issue_number": 4,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/4",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-05",
+      "issue_number": 5,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/5",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-06",
+      "issue_number": 6,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/6",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "RI-07",
+      "issue_number": 7,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/7",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-01",
+      "issue_number": 8,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/8",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-02",
+      "issue_number": 9,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/9",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-03",
+      "issue_number": 10,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/10",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-04",
+      "issue_number": 11,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/11",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-05",
+      "issue_number": 12,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/12",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-06",
+      "issue_number": 13,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/13",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "AI-07",
+      "issue_number": 14,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/14",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-01",
+      "issue_number": 15,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/15",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-02",
+      "issue_number": 16,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/16",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-03",
+      "issue_number": 17,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/17",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-04",
+      "issue_number": 18,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/18",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-05",
+      "issue_number": 19,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/19",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-06",
+      "issue_number": 20,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/20",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "CA-07",
+      "issue_number": 21,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/21",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-01",
+      "issue_number": 22,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/22",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-02",
+      "issue_number": 23,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/23",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-03",
+      "issue_number": 24,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/24",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-04",
+      "issue_number": 25,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/25",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-05",
+      "issue_number": 26,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/26",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-06",
+      "issue_number": 27,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/27",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "GH-07",
+      "issue_number": 28,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/28",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-01",
+      "issue_number": 29,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/29",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-02",
+      "issue_number": 30,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/30",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-03",
+      "issue_number": 31,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/31",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-04",
+      "issue_number": 32,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/32",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-05",
+      "issue_number": 33,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/33",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-06",
+      "issue_number": 34,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/34",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-07",
+      "issue_number": 35,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/35",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-08",
+      "issue_number": 36,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/36",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-09",
+      "issue_number": 37,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/37",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-10",
+      "issue_number": 38,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/38",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-11",
+      "issue_number": 39,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/39",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "SC-12",
+      "issue_number": 40,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/40",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    },
+    {
+      "blocker_id": "DT-01",
+      "issue_number": 41,
+      "issue_url": "https://github.com/lronegg6600-code/DramaFlow/issues/41",
+      "issue_lifecycle_status": "awaiting_reply",
+      "assignee_state": "assigned"
+    }
+  ]
+}

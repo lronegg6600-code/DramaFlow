@@ -1,0 +1,19 @@
+{
+  "generatedBy": "Phase 14 blocker launch taxonomy",
+  "labels": [
+    { "name": "blocker", "color": "B60205", "description": "Release blocker work item" },
+    { "name": "blocker:repo-identity", "color": "5319E7", "description": "Repository identity blocker" },
+    { "name": "blocker:artifact-identity", "color": "1D76DB", "description": "Artifact identity blocker" },
+    { "name": "blocker:cluster-access", "color": "0052CC", "description": "Cluster access blocker" },
+    { "name": "blocker:deploy-tooling", "color": "0E8A16", "description": "Deployment tooling blocker" },
+    { "name": "blocker:github-env", "color": "006B75", "description": "GitHub environment blocker" },
+    { "name": "blocker:secrets", "color": "D93F0B", "description": "Secrets and config blocker" },
+    { "name": "blocker:staging", "color": "FBCA04", "description": "Blocks staging execution" },
+    { "name": "blocker:production", "color": "BFD4F2", "description": "Blocks production readiness" },
+    { "name": "blocker:external", "color": "C5DEF5", "description": "Needs external provider input" },
+    { "name": "blocker:waiting", "color": "F9D0C4", "description": "Waiting for external reply" },
+    { "name": "blocker:invalid-reply", "color": "D73A4A", "description": "Reply received but invalid" },
+    { "name": "blocker:verified", "color": "0E8A16", "description": "Input verified by engineering" },
+    { "name": "blocker:closed", "color": "6A737D", "description": "Blocker closed" }
+  ]
+}

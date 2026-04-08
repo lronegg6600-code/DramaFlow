@@ -1,0 +1,56 @@
+name: Release Manager Request
+description: Request release manager approvals or coordination inputs required for staging and production execution.
+title: "[Release Blocker][RELEASE-MANAGER] <blocker_id> <short title>"
+labels:
+  - release-blocker
+  - needs-release-manager
+body:
+  - type: input
+    id: blocker_id
+    attributes:
+      label: Blocker ID
+      placeholder: RI-04
+    validations:
+      required: true
+  - type: textarea
+    id: required_input
+    attributes:
+      label: Required input
+      placeholder: tag_or_version / required_reviewers / admin_bootstrap_password_ref
+    validations:
+      required: true
+  - type: textarea
+    id: expected_format
+    attributes:
+      label: Expected format
+      placeholder: YAML update in platform-intake/received or GitHub environment config screenshot/summary
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      placeholder: release manager
+    validations:
+      required: true
+  - type: input
+    id: due_date
+    attributes:
+      label: Due date bucket
+      placeholder: same_day
+    validations:
+      required: true
+  - type: input
+    id: verification_command
+    attributes:
+      label: Verification command
+      placeholder: node backend/tests/release/validate_github_env_input_package.mjs
+    validations:
+      required: true
+  - type: input
+    id: evidence_output
+    attributes:
+      label: Evidence output path
+      placeholder: release-evidence/github_environment_input_package.json
+    validations:
+      required: true

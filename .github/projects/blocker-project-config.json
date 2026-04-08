@@ -1,0 +1,11 @@
+{
+  "projectName": "DramaFlow Release Blockers",
+  "projectType": "github-project-v2",
+  "description": "Tracks external blocker execution from ticket creation to verified closeout",
+  "defaultView": "Daily Unblock",
+  "statusField": "Status",
+  "automationNotes": [
+    "Scripts update verification and ticket lifecycle evidence in release-evidence/",
+    "GitHub project values should mirror release-evidence/unblock-status-board.json"
+  ]
+}

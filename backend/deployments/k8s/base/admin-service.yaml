@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  namespace: dramaflow-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers:
+        - name: admin-service
+          image: dramaflow/admin-service:0.1.0
+          ports:
+            - containerPort: 8088
+          envFrom:
+            - configMapRef:
+                name: dramaflow-backend-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: dramaflow-secrets
+                  key: postgres-dsn
+            - name: ADMIN_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dramaflow-secrets
+                  key: admin-session-secret
+            - name: ADMIN_BOOTSTRAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dramaflow-secrets
+                  key: admin-bootstrap-password
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8088
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8088
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+  namespace: dramaflow-backend
+spec:
+  selector:
+    app: admin-service
+  ports:
+    - name: http
+      port: 8088
+      targetPort: 8088

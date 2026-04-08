@@ -1,0 +1,47 @@
+global:
+  imagePullPolicy: IfNotPresent
+  env:
+    DRAMAFLOW_ENV: production
+    DRAMAFLOW_GIN_MODE: release
+    DRAMAFLOW_JWT_ISSUER: dramaflow.example
+    DRAMAFLOW_OTEL_ENDPOINT: http://otel-collector.production:4318/v1/traces
+    DRAMAFLOW_CONTENT_SERVICE_BASE_URL: http://content-service:8082
+    DRAMAFLOW_FEED_SERVICE_BASE_URL: http://feed-service:8083
+    DRAMAFLOW_PLAYBACK_SERVICE_BASE_URL: http://playback-service:8085
+    DRAMAFLOW_ENTITLEMENT_SERVICE_BASE_URL: http://entitlement-service:8086
+    DRAMAFLOW_BILLING_SERVICE_BASE_URL: http://billing-service:8087
+    DRAMAFLOW_ADMIN_SERVICE_BASE_URL: http://admin-service:8088
+    ADMIN_ALLOWED_ORIGINS: https://admin.dramaflow.example
+  secrets:
+    postgresDsn: secret://dramaflow/production/postgres_dsn
+    jwtSecret: secret://dramaflow/production/jwt_secret
+    adminSessionSecret: secret://dramaflow/production/admin_session_secret
+    adminBootstrapPassword: secret://dramaflow/production/admin_bootstrap_password
+    googlePlayServiceAccountJson: secret://dramaflow/production/google_play_service_account_json
+    billingRtdnPushSecret: secret://dramaflow/production/billing_rtdn_push_secret
+
+services:
+  auth:
+    image: registry.example.com/dramaflow/auth-service:prod-<sha>
+    replicas: 3
+  content:
+    image: registry.example.com/dramaflow/content-service:prod-<sha>
+    replicas: 3
+  feed:
+    image: registry.example.com/dramaflow/feed-service:prod-<sha>
+    replicas: 3
+  progress:
+    image: registry.example.com/dramaflow/progress-service:prod-<sha>
+    replicas: 3
+  playback:
+    image: registry.example.com/dramaflow/playback-service:prod-<sha>
+    replicas: 3
+  entitlement:
+    image: registry.example.com/dramaflow/entitlement-service:prod-<sha>
+    replicas: 3
+  billing:
+    image: registry.example.com/dramaflow/billing-service:prod-<sha>
+    replicas: 3
+  admin:
+    image: registry.example.com/dramaflow/admin-service:prod-<sha>
+    replicas: 3

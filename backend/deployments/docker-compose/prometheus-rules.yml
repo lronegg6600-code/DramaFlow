@@ -1,0 +1,80 @@
+groups:
+  - name: dramaflow-platform
+    rules:
+      - alert: DramaFlowServiceDown
+        expr: up{job=~"admin-service|auth-service|billing-service|content-service|entitlement-service|feed-service|playback-service|progress-service"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "DramaFlow service down"
+          description: "{{ $labels.job }} is unavailable for more than 2 minutes."
+          runbook: "/docs/runbook-oncall.md"
+          first_action: "Freeze rollout, verify service health endpoint, then check the release watch board."
+      - alert: DramaFlowHigh5xxRate
+        expr: increase(dramaflow_http_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "DramaFlow 5xx spike"
+          description: "Error volume crossed the warning threshold in the last 5 minutes."
+          runbook: "/docs/runbook-oncall.md"
+          first_action: "Pause rollout and inspect service-specific 5xx contributors in Grafana."
+      - alert: DramaFlowHighLatency
+        expr: histogram_quantile(0.95, sum(rate(dramaflow_http_request_duration_seconds_bucket[5m])) by (le, service, route)) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "DramaFlow latency is elevated"
+          description: "P95 request latency is above 800ms."
+          runbook: "/docs/observability-guide.md"
+          first_action: "Check whether the latency is isolated to one service or route before advancing rollout."
+      - alert: PlaybackSessionCreateErrorsHigh
+        expr: increase(dramaflow_playback_session_create_error_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: playback
+        annotations:
+          summary: "Playback session create errors are spiking"
+          description: "playback-service session creation errors crossed the critical threshold."
+          runbook: "/docs/incident-playbook-playback.md"
+          first_action: "Stop rollout and validate entitlement lookup plus playback session create in release smoke."
+      - alert: BillingSyncErrorsHigh
+        expr: increase(billing_purchase_sync_error_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: billing
+        annotations:
+          summary: "Billing sync errors are spiking"
+          description: "billing-service purchase sync errors crossed the critical threshold."
+          runbook: "/docs/incident-playbook-billing.md"
+          first_action: "Stop rollout, inspect purchase sync traces by purchase_token, then confirm entitlement convergence."
+      - alert: EntitlementMutationErrorsHigh
+        expr: increase(dramaflow_http_errors_total{service="entitlement-service"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: entitlement
+        annotations:
+          summary: "Entitlement mutation errors are spiking"
+          description: "entitlement-service has elevated mutation failures."
+          runbook: "/docs/runbook-oncall.md"
+          first_action: "Pause dangerous admin actions, inspect recompute/revoke traces, and verify playback downgrade path."
+      - alert: AdminLoginErrorsHigh
+        expr: increase(admin_login_error_total[10m]) > 5
+        for: 10m
+        labels:
+          severity: warning
+          team: admin
+        annotations:
+          summary: "Admin login errors are elevated"
+          description: "Admin login failures crossed the warning threshold in the last 10 minutes."
+          runbook: "/docs/runbook-oncall.md"
+          first_action: "Check admin-service health, admin-web proxy path, and session cookie behavior before operators continue."

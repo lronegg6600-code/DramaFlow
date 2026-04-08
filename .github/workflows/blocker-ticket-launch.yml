@@ -1,0 +1,48 @@
+name: blocker-ticket-launch
+
+on:
+  workflow_dispatch:
+    inputs:
+      launch_mode:
+        description: "dry-run or real"
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - real
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build blocker payloads
+        run: node backend/tests/release/build_blocker_issue_payloads.mjs
+      - name: Seed labels
+        run: node backend/tests/release/seed_blocker_labels.mjs
+      - name: Seed milestones
+        run: node backend/tests/release/seed_blocker_milestones.mjs
+      - name: Seed project config
+        run: node backend/tests/release/seed_blocker_project_config.mjs
+      - name: Launch blocker tickets
+        env:
+          DRAMAFLOW_LAUNCH_MODE: ${{ inputs.launch_mode }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node backend/tests/release/launch_blocker_tickets.mjs
+      - name: Upload launch bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: blocker-launch-bundle
+          path: |
+            release-evidence/blocker-issue-launch-payloads.json
+            release-evidence/blocker-issue-launch-summary.json
+            release-evidence/blocker-launch-report.md
+            release-evidence/blocker-issue-launch-markdown

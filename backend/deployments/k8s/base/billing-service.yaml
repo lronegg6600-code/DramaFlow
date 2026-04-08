@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-service
+  namespace: dramaflow-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: billing-service
+  template:
+    metadata:
+      labels:
+        app: billing-service
+    spec:
+      containers:
+        - name: billing-service
+          image: dramaflow/billing-service:0.1.0
+          ports:
+            - containerPort: 8087
+          envFrom:
+            - configMapRef:
+                name: dramaflow-backend-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: dramaflow-secrets
+                  key: postgres-dsn
+            - name: DRAMAFLOW_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: dramaflow-secrets
+                  key: jwt-secret
+            - name: DRAMAFLOW_OTEL_ENDPOINT
+              value: http://otel-collector:4318/v1/traces
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8087
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8087
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-service
+  namespace: dramaflow-backend
+spec:
+  selector:
+    app: billing-service
+  ports:
+    - name: http
+      port: 8087
+      targetPort: 8087

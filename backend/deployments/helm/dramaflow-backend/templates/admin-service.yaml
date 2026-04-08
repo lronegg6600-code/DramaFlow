@@ -1,0 +1,51 @@
+{{- if .Values.services.admin.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-admin
+spec:
+  replicas: {{ .Values.services.admin.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-admin
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-admin
+    spec:
+      containers:
+        - name: admin-service
+          image: {{ .Values.services.admin.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.admin.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: ADMIN_SESSION_SECRET
+              value: {{ .Values.global.secrets.adminSessionSecret | quote }}
+            - name: ADMIN_BOOTSTRAP_PASSWORD
+              value: {{ .Values.global.secrets.adminBootstrapPassword | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.admin.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.admin.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-admin
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-admin
+  ports:
+    - port: {{ .Values.services.admin.port }}
+      targetPort: {{ .Values.services.admin.port }}
+{{- end }}

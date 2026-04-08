@@ -1,0 +1,49 @@
+{{- if .Values.services.auth.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-auth
+spec:
+  replicas: {{ .Values.services.auth.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-auth
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-auth
+    spec:
+      containers:
+        - name: auth-service
+          image: {{ .Values.services.auth.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.auth.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.auth.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.auth.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-auth
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-auth
+  ports:
+    - port: {{ .Values.services.auth.port }}
+      targetPort: {{ .Values.services.auth.port }}
+{{- end }}

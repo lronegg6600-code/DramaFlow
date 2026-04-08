@@ -1,0 +1,62 @@
+{
+  "category": "artifact_identity_input_package",
+  "generatedAt": "2026-04-08T04:00:58.466Z",
+  "sourceFile": null,
+  "items": [
+    {
+      "blocker_id": "AI-01",
+      "blocker_title": "docker image tag",
+      "current_status": "not_received",
+      "field": "image_tag",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-02",
+      "blocker_title": "docker image digest",
+      "current_status": "not_received",
+      "field": "image_digest",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-03",
+      "blocker_title": "admin web build artifact id",
+      "current_status": "not_received",
+      "field": "admin_build_artifact_id",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-04",
+      "blocker_title": "workflow run id",
+      "current_status": "not_received",
+      "field": "workflow_run_id",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-05",
+      "blocker_title": "workflow sha",
+      "current_status": "not_received",
+      "field": "workflow_sha",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-06",
+      "blocker_title": "registry identity",
+      "current_status": "not_received",
+      "field": "registry",
+      "notes": "未收到 artifact identity 输入包"
+    },
+    {
+      "blocker_id": "AI-07",
+      "blocker_title": "artifact provenance 链接",
+      "current_status": "not_received",
+      "field": "provenance_url",
+      "notes": "未收到 artifact identity 输入包"
+    }
+  ],
+  "summary": {
+    "not_received": 7,
+    "received_but_invalid": 0,
+    "received_and_verified": 0,
+    "overall_status": "blocked"
+  }
+}

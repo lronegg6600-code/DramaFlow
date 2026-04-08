@@ -1,0 +1,46 @@
+name: staging-rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      rehearsal_mode:
+        description: rehearsal mode
+        required: true
+        default: staging-cluster
+      real_run:
+        description: execute real deploy actions
+        required: true
+        default: "1"
+
+jobs:
+  rehearsal:
+    runs-on: ubuntu-latest
+    environment: staging
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run staging rehearsal
+        run: |
+          chmod +x deployments/scripts/*.sh
+          DRAMAFLOW_REAL_RUN="${{ inputs.real_run }}" \
+          DRAMAFLOW_TARGET_ENV=staging \
+          DRAMAFLOW_CONTROL_PLANE="${{ vars.DRAMAFLOW_CONTROL_PLANE || 'kubernetes' }}" \
+          DRAMAFLOW_KUBE_NAMESPACE="${{ vars.DRAMAFLOW_KUBE_NAMESPACE || 'dramaflow-staging' }}" \
+          DRAMAFLOW_EVIDENCE_DIR="${{ github.workspace }}/backend/release-evidence/staging" \
+          REHEARSAL_MODE="${{ inputs.rehearsal_mode }}" \
+          sh deployments/scripts/run_staging_rehearsal.sh
+      - name: Upload rehearsal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-rehearsal-evidence
+          path: backend/release-evidence/staging
+      - name: Step summary
+        run: |
+          echo "## Staging rehearsal" >> "$GITHUB_STEP_SUMMARY"
+          echo "- mode: ${{ inputs.rehearsal_mode }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- real_run: ${{ inputs.real_run }}" >> "$GITHUB_STEP_SUMMARY"

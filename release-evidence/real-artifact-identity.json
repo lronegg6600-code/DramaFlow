@@ -1,0 +1,69 @@
+{
+  "category": "artifact_identity",
+  "generatedAt": "2026-04-08T03:38:41.957Z",
+  "items": [
+    {
+      "name": "docker image tag",
+      "state": "missing",
+      "details": "DRAMAFLOW_IMAGE_TAG not set",
+      "owner": "CI / platform",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "docker image digest",
+      "state": "missing",
+      "details": "DRAMAFLOW_IMAGE_DIGEST not set",
+      "owner": "CI / platform",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "admin web artifact id",
+      "state": "missing",
+      "details": "DRAMAFLOW_ADMIN_BUILD_ARTIFACT not set",
+      "owner": "CI / admin owner",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "workflow run id",
+      "state": "missing",
+      "details": "GITHUB_RUN_ID not set",
+      "owner": "repo admin / CI",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "workflow sha",
+      "state": "missing",
+      "details": "GITHUB_SHA not set",
+      "owner": "repo admin / CI",
+      "blocksStaging": true,
+      "blocksProduction": true
+    },
+    {
+      "name": "registry identity",
+      "state": "missing",
+      "details": "DRAMAFLOW_REGISTRY not set",
+      "owner": "platform / registry admin",
+      "blocksStaging": true,
+      "blocksProduction": true
+    }
+  ],
+  "summary": {
+    "missing": 6,
+    "invalid": 0,
+    "verified": 0,
+    "blockerCount": 6,
+    "status": "blocker"
+  },
+  "values": {
+    "imageTag": null,
+    "imageDigest": null,
+    "adminArtifact": null,
+    "workflowRunId": null,
+    "workflowSha": null,
+    "registry": null
+  }
+}

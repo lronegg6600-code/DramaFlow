@@ -1,0 +1,18 @@
+{
+  "category": "cluster_access",
+  "status": "blocker",
+  "generatedAt": "2026-04-08T03:27:36.177Z",
+  "targetEnv": "staging",
+  "kubectlPath": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe",
+  "currentContext": null,
+  "contexts": [],
+  "namespace": "dramaflow-staging",
+  "kubeconfigSource": null,
+  "clusterRbacRole": null,
+  "blockers": [
+    "kubectl current-context is not set",
+    "no kubernetes contexts are configured",
+    "kubeconfig source is not declared",
+    "cluster RBAC role is not declared"
+  ]
+}

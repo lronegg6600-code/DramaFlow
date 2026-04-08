@@ -1,0 +1,53 @@
+{{- if .Values.services.playback.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-playback
+spec:
+  replicas: {{ .Values.services.playback.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "dramaflow-backend.fullname" . }}-playback
+  template:
+    metadata:
+      labels:
+        app: {{ include "dramaflow-backend.fullname" . }}-playback
+    spec:
+      containers:
+        - name: playback-service
+          image: {{ .Values.services.playback.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.playback.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "dramaflow-backend.fullname" . }}-config
+          env:
+            - name: DRAMAFLOW_POSTGRES_DSN
+              value: {{ .Values.global.secrets.postgresDsn | quote }}
+            - name: DRAMAFLOW_JWT_SECRET
+              value: {{ .Values.global.secrets.jwtSecret | quote }}
+            - name: DRAMAFLOW_PLAYBACK_SIGNER_MODE
+              value: dev_passthrough
+            - name: DRAMAFLOW_PLAYBACK_CDN_BASE_URL
+              value: https://storage.googleapis.com/exoplayer-test-media-0
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: {{ .Values.services.playback.port }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: {{ .Values.services.playback.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dramaflow-backend.fullname" . }}-playback
+spec:
+  selector:
+    app: {{ include "dramaflow-backend.fullname" . }}-playback
+  ports:
+    - port: {{ .Values.services.playback.port }}
+      targetPort: {{ .Values.services.playback.port }}
+{{- end }}

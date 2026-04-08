@@ -1,0 +1,15 @@
+{
+    "category":  "deploy_tooling",
+    "generatedAt":  "2026-04-08T03:28:56.3884416Z",
+    "kubectlPath":  "C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe",
+    "helmPath":  {
+
+                 },
+    "stagingValuesExample":  true,
+    "productionValuesExample":  true,
+    "chartValues":  true,
+    "blockers":  [
+                     "helm is missing"
+                 ],
+    "status":  "blocker"
+}

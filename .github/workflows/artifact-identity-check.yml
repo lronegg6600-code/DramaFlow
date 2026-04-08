@@ -1,0 +1,32 @@
+name: artifact-identity-check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    environment: staging
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify repo and artifact identity
+        run: |
+          chmod +x deployments/scripts/*.sh
+          export DRAMAFLOW_EVIDENCE_DIR="${{ github.workspace }}/backend/release-evidence/artifact-identity"
+          sh deployments/scripts/verify_repo_identity.sh
+          sh deployments/scripts/verify_artifact_identity.sh
+      - name: Upload artifact identity evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-identity-evidence
+          path: backend/release-evidence/artifact-identity
+      - name: Step summary
+        run: |
+          echo "## Artifact identity" >> "$GITHUB_STEP_SUMMARY"
+          echo "- repo + artifact identity checks executed" >> "$GITHUB_STEP_SUMMARY"

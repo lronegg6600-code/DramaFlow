@@ -1,0 +1,56 @@
+name: Repo Admin Blocker Request
+description: Request repository identity or GitHub environment setup needed for release execution.
+title: "[Release Blocker][REPO-ADMIN] <blocker_id> <short title>"
+labels:
+  - release-blocker
+  - needs-repo-admin
+body:
+  - type: input
+    id: blocker_id
+    attributes:
+      label: Blocker ID
+      placeholder: RI-01
+    validations:
+      required: true
+  - type: textarea
+    id: required_input
+    attributes:
+      label: Required input
+      placeholder: repo_root / commit_sha / staging_environment / required_reviewers
+    validations:
+      required: true
+  - type: textarea
+    id: expected_format
+    attributes:
+      label: Expected format
+      placeholder: YAML file in platform-intake/received/repo-identity or github-environments
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      placeholder: repo admin
+    validations:
+      required: true
+  - type: input
+    id: due_date
+    attributes:
+      label: Due date bucket
+      placeholder: same_day
+    validations:
+      required: true
+  - type: input
+    id: verification_command
+    attributes:
+      label: Verification command
+      placeholder: node backend/tests/release/validate_repo_input_package.mjs
+    validations:
+      required: true
+  - type: input
+    id: evidence_output
+    attributes:
+      label: Evidence output path
+      placeholder: release-evidence/repo_identity_input_package.json
+    validations:
+      required: true

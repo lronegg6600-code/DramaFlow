@@ -1,0 +1,83 @@
+{
+  "fields": [
+    {
+      "name": "Status",
+      "type": "single_select",
+      "options": [
+        "Not Created",
+        "Created",
+        "Assigned",
+        "Awaiting Reply",
+        "Replied Invalid",
+        "Verified",
+        "Closed",
+        "Escalated"
+      ]
+    },
+    {
+      "name": "Blocker Category",
+      "type": "single_select",
+      "options": [
+        "Repository identity",
+        "Artifact identity",
+        "Cluster access",
+        "Deployment tooling",
+        "GitHub release control",
+        "Secrets / config"
+      ]
+    },
+    {
+      "name": "Provider Role",
+      "type": "single_select",
+      "options": [
+        "repo owner",
+        "repo admin",
+        "platform",
+        "admin owner",
+        "registry admin",
+        "ops",
+        "release manager",
+        "platform security",
+        "security",
+        "cloud admin"
+      ]
+    },
+    {
+      "name": "SLA Level",
+      "type": "single_select",
+      "options": [
+        "same_day",
+        "next_business_day",
+        "two_business_days"
+      ]
+    },
+    {
+      "name": "Blocks Staging",
+      "type": "single_select",
+      "options": ["yes", "no"]
+    },
+    {
+      "name": "Blocks Production",
+      "type": "single_select",
+      "options": ["yes", "no"]
+    },
+    {
+      "name": "Due Bucket",
+      "type": "single_select",
+      "options": [
+        "same_day",
+        "next_business_day",
+        "two_business_days"
+      ]
+    },
+    {
+      "name": "Verification State",
+      "type": "single_select",
+      "options": [
+        "not_received",
+        "received_but_invalid",
+        "received_and_verified"
+      ]
+    }
+  ]
+}

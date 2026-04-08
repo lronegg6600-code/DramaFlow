@@ -1,0 +1,42 @@
+name: environment-bootstrap-check
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: staging or production
+        required: true
+        default: staging
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run environment bootstrap checks
+        run: |
+          chmod +x deployments/scripts/*.sh
+          export DRAMAFLOW_TARGET_ENV="${{ inputs.target_environment }}"
+          export DRAMAFLOW_REAL_RUN=1
+          export DRAMAFLOW_EVIDENCE_DIR="${{ github.workspace }}/backend/release-evidence/${{ inputs.target_environment }}-bootstrap"
+          if [ "${{ inputs.target_environment }}" = "production" ]; then
+            sh deployments/scripts/bootstrap_production_access_check.sh
+          else
+            sh deployments/scripts/bootstrap_staging_access_check.sh
+          fi
+      - name: Upload bootstrap evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: environment-bootstrap-${{ inputs.target_environment }}
+          path: backend/release-evidence/${{ inputs.target_environment }}-bootstrap
+      - name: Step summary
+        run: |
+          echo "## Environment bootstrap" >> "$GITHUB_STEP_SUMMARY"
+          echo "- target_environment: ${{ inputs.target_environment }}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,14 @@
+route:
+  receiver: default-null
+  group_by: ["alertname", "service", "severity"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 2h
+  routes:
+    - matchers:
+        - severity="critical"
+      receiver: default-null
+      continue: true
+
+receivers:
+  - name: default-null
