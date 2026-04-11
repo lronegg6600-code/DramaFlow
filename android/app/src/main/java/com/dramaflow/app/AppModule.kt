@@ -15,10 +15,7 @@ import com.dramaflow.core.common.auth.TokenStore
 import com.dramaflow.core.common.CatalogRepository
 import com.dramaflow.core.common.DefaultMockBehaviorProvider
 import com.dramaflow.core.common.EntitlementRepository
-import com.dramaflow.core.common.FakeCatalogRepository
 import com.dramaflow.core.common.FakeEntitlementRepository
-import com.dramaflow.core.common.FakeFeedRepository
-import com.dramaflow.core.common.FakeProfileRepository
 import com.dramaflow.core.common.FakeSubscriptionRepository
 import com.dramaflow.core.common.FeedRepository
 import com.dramaflow.core.common.HybridPlaybackRepository
@@ -27,7 +24,10 @@ import com.dramaflow.core.common.MockBehaviorProvider
 import com.dramaflow.core.common.PlaybackRepository
 import com.dramaflow.core.common.ProfileRepository
 import com.dramaflow.core.common.ProgressRepository
+import com.dramaflow.core.common.RemoteCatalogRepository
 import com.dramaflow.core.common.RemoteEntitlementRepository
+import com.dramaflow.core.common.RemoteFeedRepository
+import com.dramaflow.core.common.RemoteProfileRepository
 import com.dramaflow.core.common.RemoteSubscriptionRepository
 import com.dramaflow.core.common.SubscriptionRepository
 import com.dramaflow.core.database.DramaFlowDatabase
@@ -35,12 +35,16 @@ import com.dramaflow.core.database.DramaFlowPreferenceStore
 import com.dramaflow.core.database.createDatabase
 import com.dramaflow.core.network.source.AuthRemoteDataSource
 import com.dramaflow.core.network.source.BillingRemoteDataSource
+import com.dramaflow.core.network.source.ContentRemoteDataSource
 import com.dramaflow.core.network.source.EntitlementRemoteDataSource
+import com.dramaflow.core.network.source.FeedRemoteDataSource
 import com.dramaflow.core.network.source.PlaybackRemoteDataSource
 import com.dramaflow.core.network.source.ProgressRemoteDataSource
 import com.dramaflow.core.network.source.RetrofitAuthRemoteDataSource
 import com.dramaflow.core.network.source.RetrofitBillingRemoteDataSource
+import com.dramaflow.core.network.source.RetrofitContentRemoteDataSource
 import com.dramaflow.core.network.source.RetrofitEntitlementRemoteDataSource
+import com.dramaflow.core.network.source.RetrofitFeedRemoteDataSource
 import com.dramaflow.core.network.source.RetrofitPlaybackRemoteDataSource
 import com.dramaflow.core.network.source.RetrofitProgressRemoteDataSource
 import com.dramaflow.core.player.DefaultMedia3PlayerBridge
@@ -62,11 +66,11 @@ abstract class AppBindingsModule {
 
     @Binds
     @Singleton
-    abstract fun bindFeedRepository(impl: FakeFeedRepository): FeedRepository
+    abstract fun bindFeedRepository(impl: RemoteFeedRepository): FeedRepository
 
     @Binds
     @Singleton
-    abstract fun bindCatalogRepository(impl: FakeCatalogRepository): CatalogRepository
+    abstract fun bindCatalogRepository(impl: RemoteCatalogRepository): CatalogRepository
 
     @Binds
     @Singleton
@@ -78,7 +82,7 @@ abstract class AppBindingsModule {
 
     @Binds
     @Singleton
-    abstract fun bindProfileRepository(impl: FakeProfileRepository): ProfileRepository
+    abstract fun bindProfileRepository(impl: RemoteProfileRepository): ProfileRepository
 
     @Binds
     @Singleton
@@ -119,6 +123,14 @@ object AppProvidesModule {
     fun providePlaybackRemoteDataSource(
         tokenStore: TokenStore,
     ): PlaybackRemoteDataSource = RetrofitPlaybackRemoteDataSource(accessTokenProvider = tokenStore)
+
+    @Provides
+    @Singleton
+    fun provideFeedRemoteDataSource(): FeedRemoteDataSource = RetrofitFeedRemoteDataSource()
+
+    @Provides
+    @Singleton
+    fun provideContentRemoteDataSource(): ContentRemoteDataSource = RetrofitContentRemoteDataSource()
 
     @Provides
     @Singleton
