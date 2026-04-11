@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-08T17:08:03.146Z",
+  "status": "restored",
+  "checks": {
+    "servicesDir": true,
+    "goWork": true,
+    "goMod": false
+  }
+}

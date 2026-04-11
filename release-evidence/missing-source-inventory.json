@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-04-08T00:00:00.000Z",
+  "missing": [
+    ".git",
+    "android/settings.gradle.kts",
+    "android/build.gradle.kts",
+    "android/app/",
+    "android Kotlin sources",
+    "backend/services/",
+    "backend/go.work",
+    "backend/go.mod",
+    "backend/shared/",
+    "backend/sql/"
+  ],
+  "present": [
+    "android build outputs",
+    "mobile integration execution pack"
+  ]
+}

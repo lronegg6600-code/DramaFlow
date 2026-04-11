@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-04-08T15:56:49.675Z",
+  "candidates": [
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    },
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-04-08T17:11:45.828Z",
+  "rehydrationReady": false,
+  "repoRehydrated": true,
+  "readyForAndroidBackendIntegration": false,
+  "reason": "Repo restored, but staging inputs are still missing.",
+  "missingOwners": [
+    {
+      "id": "SR-004",
+      "providerRole": "platform",
+      "status": "not_received"
+    }
+  ]
+}

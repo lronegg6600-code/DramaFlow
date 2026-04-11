@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-04-08T00:00:00.000Z",
+  "decision": "no_go",
+  "workspaceRecovered": false,
+  "androidSourceStatus": "missing",
+  "backendSourceStatus": "missing",
+  "rationale": "Workspace is not git-backed and source-of-truth trees are missing."
+}

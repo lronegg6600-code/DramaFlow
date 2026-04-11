@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-04-08T17:11:45.927Z",
+  "reminderCount": 1,
+  "dispatched": 0,
+  "readyToSend": 1,
+  "ghAvailable": false,
+  "items": [
+    {
+      "id": "SR-004",
+      "title": "staging base URL missing",
+      "primaryOwner": "platform",
+      "dueBucket": "P1-48h",
+      "status": "not_received",
+      "acceptanceCriteria": [
+        "all staging base URLs supplied"
+      ],
+      "blocksStaging": true,
+      "blocksProduction": true,
+      "resolutionMode": "external_input"
+    }
+  ],
+  "reason": "Reminder queue prepared, but no live GitHub dispatch was performed in current environment."
+}

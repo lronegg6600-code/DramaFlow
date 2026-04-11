@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-04-08T15:56:49.675Z",
+  "root": "Z:\\Projects\\DramaFlow",
+  "parent": "Z:\\Projects",
+  "siblings": [
+    "Z:\\Projects\\DramaFlow",
+    "Z:\\Projects\\hybrid_yunxiang"
+  ],
+  "gitDirExists": false,
+  "gitCandidates": [],
+  "androidDirExists": true,
+  "androidHasGradleSettings": false,
+  "androidHasBuildGradle": false,
+  "androidHasVersionCatalog": false,
+  "androidSourceCount": 0,
+  "backendDirExists": true,
+  "backendServicesDirExists": false,
+  "backendHasGoWork": false,
+  "backendHasGoMod": false,
+  "backendSourceCount": 6,
+  "docsDirExists": true,
+  "releaseEvidenceDirExists": true,
+  "platformIntakeDirExists": false,
+  "androidSourceCandidates": [
+    {
+      "path": "Z:\\Projects\\DramaFlow\\android",
+      "sourceCount": 0,
+      "hasSettingsGradle": false,
+      "hasBuildGradle": false,
+      "classification": "invalid"
+    },
+    {
+      "path": "Z:\\Projects\\DramaFlow\\android",
+      "sourceCount": 0,
+      "hasSettingsGradle": false,
+      "hasBuildGradle": false,
+      "classification": "invalid"
+    }
+  ],
+  "backendSourceCandidates": [
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    },
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    }
+  ],
+  "androidStatus": "missing",
+  "backendStatus": "partial",
+  "workspaceStatus": "source_missing"
+}

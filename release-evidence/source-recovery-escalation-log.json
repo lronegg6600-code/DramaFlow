@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-04-08T16:37:26.992Z",
+  "escalationCount": 0,
+  "dispatched": 0,
+  "ghAvailable": false,
+  "items": [],
+  "reason": "No escalation candidates met the current transition rules."
+}

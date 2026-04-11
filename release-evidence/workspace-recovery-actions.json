@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-04-08T15:57:32.953Z",
+  "action": "no_relink_performed",
+  "reason": "No complete Android/backend source-of-truth candidate was found in current scan scope.",
+  "androidCandidates": [
+    {
+      "path": "Z:\\Projects\\DramaFlow\\android",
+      "sourceCount": 0,
+      "hasSettingsGradle": false,
+      "hasBuildGradle": false,
+      "classification": "invalid"
+    },
+    {
+      "path": "Z:\\Projects\\DramaFlow\\android",
+      "sourceCount": 0,
+      "hasSettingsGradle": false,
+      "hasBuildGradle": false,
+      "classification": "invalid"
+    }
+  ],
+  "backendCandidates": [
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    },
+    {
+      "path": "Z:\\Projects\\DramaFlow\\backend",
+      "sourceCount": 6,
+      "hasGoWork": false,
+      "hasGoMod": false,
+      "hasServicesDir": false,
+      "classification": "candidate"
+    }
+  ]
+}

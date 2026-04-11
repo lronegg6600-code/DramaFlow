@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-04-08T16:28:46.431Z",
+  "summary": {
+    "not_received": 4,
+    "received_but_invalid": 0,
+    "received_partial": 0,
+    "received_and_verified": 0
+  },
+  "items": [
+    {
+      "id": "SR-001",
+      "title": "repo identity missing",
+      "providerRole": "repo admin",
+      "status": "not_received",
+      "files": [],
+      "missingRequired": [
+        "repo-root.manifest.json"
+      ],
+      "acceptanceCriteria": [
+        ".git exists",
+        "git-backed checkout restored"
+      ],
+      "verificationCommand": "node Z:\\Projects\\DramaFlow\\tools\\verify_rehydrated_repo_identity.mjs"
+    },
+    {
+      "id": "SR-002",
+      "title": "android source missing",
+      "providerRole": "android owner",
+      "status": "not_received",
+      "files": [],
+      "missingRequired": [
+        "android-source.manifest.json"
+      ],
+      "acceptanceCriteria": [
+        "android/settings.gradle.kts exists",
+        "android source tree restored"
+      ],
+      "verificationCommand": "node Z:\\Projects\\DramaFlow\\tools\\verify_rehydrated_android_tree.mjs"
+    },
+    {
+      "id": "SR-003",
+      "title": "backend source partial/missing",
+      "providerRole": "backend owner",
+      "status": "not_received",
+      "files": [],
+      "missingRequired": [
+        "backend-source.manifest.json"
+      ],
+      "acceptanceCriteria": [
+        "backend/services exists",
+        "go.work or go.mod exists"
+      ],
+      "verificationCommand": "node Z:\\Projects\\DramaFlow\\tools\\verify_rehydrated_backend_tree.mjs"
+    },
+    {
+      "id": "SR-004",
+      "title": "staging base URL missing",
+      "providerRole": "platform",
+      "status": "not_received",
+      "files": [],
+      "missingRequired": [
+        "source-recovery.manifest.json"
+      ],
+      "acceptanceCriteria": [
+        "all staging base URLs supplied"
+      ],
+      "verificationCommand": "node Z:\\Projects\\DramaFlow\\tools\\rerun_mobile_integration_gate.mjs"
+    }
+  ]
+}

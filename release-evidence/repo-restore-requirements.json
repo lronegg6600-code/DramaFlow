@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-08T00:00:00.000Z",
+  "minimumRequirements": [
+    "git-backed checkout with .git",
+    "android source tree with Gradle settings and source modules",
+    "backend source tree with services/ and module files",
+    "staging base URL inputs for auth, content, feed, progress, playback, entitlement, billing"
+  ],
+  "status": "blocked"
+}

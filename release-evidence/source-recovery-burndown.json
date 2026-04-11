@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-04-08T17:11:45.828Z",
+  "total": 4,
+  "repliesProcessed": 0,
+  "externalInputsReceived": 0,
+  "selfServiceRecovered": 3,
+  "statuses": {
+    "not_received": 1,
+    "received_but_invalid": 0,
+    "received_partial": 0,
+    "received_and_verified": 0,
+    "verified": 3,
+    "closed": 0
+  },
+  "repoRootStatus": "verified",
+  "androidSourceStatus": "verified",
+  "backendSourceStatus": "verified",
+  "stagingInputsStatus": "not_received",
+  "rehydrationReady": false,
+  "repoRehydrated": true,
+  "gitStatus": "restored",
+  "androidTreeStatus": "restored",
+  "backendTreeStatus": "restored",
+  "currentState": "partially_restored",
+  "items": [
+    {
+      "id": "SR-001",
+      "title": "repo identity missing",
+      "primaryOwner": "repo admin",
+      "dueBucket": "P0-24h",
+      "status": "verified",
+      "acceptanceCriteria": [
+        ".git exists",
+        "git-backed checkout restored"
+      ],
+      "blocksStaging": true,
+      "blocksProduction": true,
+      "resolutionMode": "self_service_clone_overlay"
+    },
+    {
+      "id": "SR-002",
+      "title": "android source missing",
+      "primaryOwner": "android owner",
+      "dueBucket": "P0-24h",
+      "status": "verified",
+      "acceptanceCriteria": [
+        "android/settings.gradle.kts exists",
+        "android source tree restored"
+      ],
+      "blocksStaging": true,
+      "blocksProduction": true,
+      "resolutionMode": "self_service_clone_overlay"
+    },
+    {
+      "id": "SR-003",
+      "title": "backend source partial/missing",
+      "primaryOwner": "backend owner",
+      "dueBucket": "P0-24h",
+      "status": "verified",
+      "acceptanceCriteria": [
+        "backend/services exists",
+        "go.work or go.mod exists"
+      ],
+      "blocksStaging": true,
+      "blocksProduction": true,
+      "resolutionMode": "self_service_clone_overlay"
+    },
+    {
+      "id": "SR-004",
+      "title": "staging base URL missing",
+      "primaryOwner": "platform",
+      "dueBucket": "P1-48h",
+      "status": "not_received",
+      "acceptanceCriteria": [
+        "all staging base URLs supplied"
+      ],
+      "blocksStaging": true,
+      "blocksProduction": true,
+      "resolutionMode": "external_input"
+    }
+  ]
+}

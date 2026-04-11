@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-08T15:56:49.910Z",
+  "rerunExecuted": false,
+  "workspaceStatus": "source_missing",
+  "result": {
+    "code": 1,
+    "stdout": "",
+    "stderr": "Workspace not recovered; mobile readiness re-run skipped."
+  }
+}

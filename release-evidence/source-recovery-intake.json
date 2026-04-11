@@ -1,0 +1,60 @@
+{
+  "generatedAt": "2026-04-08T16:28:46.435Z",
+  "sourceRecoveryDir": "Z:\\Projects\\DramaFlow\\platform-intake\\received\\source-recovery",
+  "summary": {
+    "not_received": 4,
+    "received_but_invalid": 0,
+    "received_partial": 0,
+    "received_and_verified": 0
+  },
+  "items": [
+    {
+      "id": "SR-001",
+      "key": "repo_root",
+      "title": "repo identity missing",
+      "providerRole": "repo admin",
+      "intakePath": "Z:\\Projects\\DramaFlow\\platform-intake\\received\\source-recovery\\repo-root",
+      "requiredFiles": [
+        "repo-root.manifest.json"
+      ],
+      "receivedFiles": [],
+      "status": "not_received"
+    },
+    {
+      "id": "SR-002",
+      "key": "android_source",
+      "title": "android source missing",
+      "providerRole": "android owner",
+      "intakePath": "Z:\\Projects\\DramaFlow\\platform-intake\\received\\source-recovery\\android-source",
+      "requiredFiles": [
+        "android-source.manifest.json"
+      ],
+      "receivedFiles": [],
+      "status": "not_received"
+    },
+    {
+      "id": "SR-003",
+      "key": "backend_source",
+      "title": "backend source partial/missing",
+      "providerRole": "backend owner",
+      "intakePath": "Z:\\Projects\\DramaFlow\\platform-intake\\received\\source-recovery\\backend-source",
+      "requiredFiles": [
+        "backend-source.manifest.json"
+      ],
+      "receivedFiles": [],
+      "status": "not_received"
+    },
+    {
+      "id": "SR-004",
+      "key": "staging_inputs",
+      "title": "staging base URL missing",
+      "providerRole": "platform",
+      "intakePath": "Z:\\Projects\\DramaFlow\\platform-intake\\received\\source-recovery\\manifests",
+      "requiredFiles": [
+        "source-recovery.manifest.json"
+      ],
+      "receivedFiles": [],
+      "status": "not_received"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-08T17:08:03.140Z",
+  "status": "restored",
+  "checks": {
+    "settingsGradle": true,
+    "buildGradle": true,
+    "appDir": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-04-08T00:00:00.000Z",
+  "status": "external_restore_required",
+  "requestedFrom": [
+    "repo admin",
+    "android owner",
+    "backend owner",
+    "platform"
+  ],
+  "acceptanceChecks": [
+    "audit_workspace_layout.mjs",
+    "verify_android_source_tree.mjs",
+    "verify_backend_source_tree.mjs",
+    "rerun_mobile_readiness_if_recovered.mjs"
+  ]
+}
