@@ -1,11 +1,10 @@
 {
-  "generatedAt": "2026-04-09T03:10:47.221Z",
-  "dockerReady": false,
-  "composeReachable": false,
-  "allPortsReachable": true,
-  "allHealthChecksPassing": true,
-  "localDebugEnvExported": true,
-  "rerunExecuted": true,
-  "currentState": "local_integration_rerun_executed",
-  "runtimeRootCause": "Docker Desktop backend appears present, but Docker daemon handshake is not responding on the named pipe."
+  "generatedAt": "2026-04-11T13:10:31.897Z",
+  "currentState": "still_blocked_by_unresolved_external_staging_urls",
+  "candidateInvalidCloseoutCompleted": true,
+  "verifiedExternalUrls": 0,
+  "invalidRealExternalUrls": 0,
+  "missingRealExternalUrls": 7,
+  "rerunExecuted": false,
+  "reason": "Candidate invalid closeout is complete, but no verified real external staging URLs have been provided."
 }

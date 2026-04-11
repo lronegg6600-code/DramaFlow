@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-04-11T12:15:41.561Z",
+  "generatedAt": "2026-04-11T13:10:31.625Z",
   "issueNumber": 42,
   "repo": "lronegg6600-code/DramaFlow",
-  "fetchSucceeded": false,
-  "reason": "spawn gh ENOENT",
-  "totalComments": 0,
+  "fetchSucceeded": true,
+  "reason": null,
+  "totalComments": 7,
   "platformReplyCount": 0,
   "replies": []
 }

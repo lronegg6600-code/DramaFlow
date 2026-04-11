@@ -1,22 +1,22 @@
 {
-  "generatedAt": "2026-04-11T13:00:06.405Z",
-  "overallStatus": "blocked_by_missing_gh",
-  "ready": false,
+  "generatedAt": "2026-04-11T13:10:28.415Z",
+  "overallStatus": "ready",
+  "ready": true,
   "checks": {
     "gh": {
-      "available": false,
-      "command": null,
-      "version": null,
+      "available": true,
+      "command": "Z:\\gh\\bin\\gh.exe",
+      "version": "gh version 2.89.0 (2026-03-26)",
       "error": null
     },
     "token": {
-      "available": false,
-      "source": null
+      "available": true,
+      "source": "GH_TOKEN"
     },
     "ghAuth": {
-      "authenticated": false,
-      "statusCode": null,
-      "stderr": null
+      "authenticated": true,
+      "statusCode": 0,
+      "stderr": ""
     },
     "repoRemote": {
       "available": true,
@@ -30,7 +30,5 @@
       "error": null
     }
   },
-  "blockers": [
-    "blocked_by_missing_gh"
-  ]
+  "blockers": []
 }

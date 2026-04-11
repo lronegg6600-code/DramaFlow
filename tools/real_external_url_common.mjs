@@ -29,6 +29,10 @@ export const PLATFORM_REPO = "lronegg6600-code/DramaFlow";
 export const PLATFORM_OWNER_LOGIN = "lronegg6600-code";
 
 async function resolveGhExecutable() {
+  const fromEnv = process.env.GH_BIN;
+  if (fromEnv && (await pathExists(fromEnv))) {
+    return fromEnv;
+  }
   if (await pathExists(GH_PORTABLE)) {
     return GH_PORTABLE;
   }

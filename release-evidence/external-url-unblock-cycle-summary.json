@@ -1,17 +1,51 @@
 {
-  "generatedAt": "2026-04-11T13:00:06.361Z",
-  "mode": "preflight_blocked",
-  "cycleStatus": "blocked_by_missing_gh",
+  "generatedAt": "2026-04-11T13:10:28.414Z",
+  "mode": "executed",
+  "cycleStatus": "blocked_by_missing_external_urls",
   "envCheck": {
-    "status": "blocked_by_missing_gh",
+    "status": "ready",
     "json": "release-evidence/external-url-ops-env-check.json"
   },
-  "steps": [],
+  "steps": [
+    {
+      "script": "node tools/fetch_real_external_url_replies.mjs",
+      "ok": true,
+      "status": 0,
+      "stdout": "{\n  \"generatedAt\": \"2026-04-11T13:10:31.625Z\",\n  \"issueNumber\": 42,\n  \"repo\": \"lronegg6600-code/DramaFlow\",\n  \"fetchSucceeded\": true,\n  \"reason\": null,\n  \"totalComments\": 7,\n  \"platformReplyCount\": 0,\n  \"replies\": []\n}",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "script": "node tools/validate_real_external_urls.mjs",
+      "ok": false,
+      "status": 1,
+      "stdout": "{\n  \"generatedAt\": \"2026-04-11T13:10:31.760Z\",\n  \"expectedCount\": 7,\n  \"statuses\": {\n    \"candidate_received_but_invalid\": 0,\n    \"real_url_not_received\": 7,\n    \"real_url_received_but_invalid\": 0,\n    \"verified\": 0,\n    \"closed\": 0,\n    \"escalated\": 0\n  },\n  \"allVerified\": false,\n  \"items\": [\n    {\n      \"id\": \"RE-001\",\n      \"key\": \"authBaseUrl\",\n      \"title\": \"auth external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_AUTH_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-002\",\n      \"key\": \"contentBaseUrl\",\n      \"title\": \"content external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_CONTENT_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-003\",\n      \"key\": \"feedBaseUrl\",\n      \"title\": \"feed external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_FEED_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-004\",\n      \"key\": \"progressBaseUrl\",\n      \"title\": \"progress external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_PROGRESS_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-005\",\n      \"key\": \"playbackBaseUrl\",\n      \"title\": \"playback external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_PLAYBACK_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-006\",\n      \"key\": \"entitlementBaseUrl\",\n      \"title\": \"entitlement external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_ENTITLEMENT_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-007\",\n      \"key\": \"billingBaseUrl\",\n      \"title\": \"billing external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_BILLING_BASE_URL\"\n    }\n  ]\n}",
+      "stderr": "",
+      "error": null
+    },
+    {
+      "script": "node tools/summarize_real_external_url_burndown.mjs",
+      "ok": false,
+      "status": 1,
+      "stdout": "{\n  \"generatedAt\": \"2026-04-11T13:10:31.896Z\",\n  \"candidateInvalidCloseoutCompleted\": true,\n  \"candidateInvalidCount\": 7,\n  \"realExternalUrlReceivedCount\": 0,\n  \"statuses\": {\n    \"candidate_received_but_invalid\": 0,\n    \"real_url_not_received\": 7,\n    \"real_url_received_but_invalid\": 0,\n    \"verified\": 0,\n    \"closed\": 0,\n    \"escalated\": 0\n  },\n  \"verifiedEnvExported\": false,\n  \"rerunExecuted\": false,\n  \"currentState\": \"still_blocked_by_unresolved_external_staging_urls\",\n  \"items\": [\n    {\n      \"id\": \"RE-001\",\n      \"key\": \"authBaseUrl\",\n      \"title\": \"auth external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_AUTH_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-002\",\n      \"key\": \"contentBaseUrl\",\n      \"title\": \"content external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_CONTENT_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-003\",\n      \"key\": \"feedBaseUrl\",\n      \"title\": \"feed external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_FEED_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-004\",\n      \"key\": \"progressBaseUrl\",\n      \"title\": \"progress external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_PROGRESS_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-005\",\n      \"key\": \"playbackBaseUrl\",\n      \"title\": \"playback external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_PLAYBACK_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-006\",\n      \"key\": \"entitlementBaseUrl\",\n      \"title\": \"entitlement external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_ENTITLEMENT_BASE_URL\"\n    },\n    {\n      \"id\": \"RE-007\",\n      \"key\": \"billingBaseUrl\",\n      \"title\": \"billing external base URL\",\n      \"status\": \"real_url_not_received\",\n      \"providedValue\": null,\n      \"rejectionReason\": null,\n      \"owner\": \"platform\",\n      \"envVar\": \"DRAMAFLOW_BILLING_BASE_URL\"\n    }\n  ],\n  \"reason\": \"Candidate invalid closeout is complete, but no verified real external staging URLs have been provided.\"\n}",
+      "stderr": "",
+      "error": null
+    }
+  ],
+  "keyMetrics": {
+    "replyFetchSucceeded": true,
+    "platformReplyCount": 0,
+    "urlsReceived": 0,
+    "urlsVerified": 0,
+    "urlsMissing": 7,
+    "urlsInvalid": 0,
+    "rerunExecuted": false
+  },
   "summary": {
-    "message": "Environment is blocked. External URL cycle was not executed.",
+    "message": "Cycle executed, but external URL gate is not fully satisfied yet.",
     "nextActions": [
-      "Install GitHub CLI and ensure `gh` is available in PATH or set GH_BIN.",
-      "Re-run: node tools/check_external_url_ops_env.mjs"
+      "Platform must submit all 7 real external staging URLs.",
+      "Run the cycle again after intake file is updated."
     ]
   }
 }
