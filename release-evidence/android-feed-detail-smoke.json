@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T03:33:16.759Z",
+  "flowId": "APP-AFD-LOCAL-001",
+  "flowName": "Local App Feed / Detail smoke",
+  "status": "blocked",
+  "blockers": [
+    "android_emulator_or_device_not_ready"
+  ],
+  "reason": "App-level local smoke could not start because emulator/device readiness is not satisfied."
+}

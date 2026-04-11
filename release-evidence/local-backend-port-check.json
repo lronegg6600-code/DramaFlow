@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-04-09T03:08:14.121Z",
+  "allReachable": true,
+  "items": [
+    {
+      "service": "auth-service",
+      "port": 8081,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "content-service",
+      "port": 8082,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "feed-service",
+      "port": 8083,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "progress-service",
+      "port": 8084,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "playback-service",
+      "port": 8085,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "entitlement-service",
+      "port": 8086,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    },
+    {
+      "service": "billing-service",
+      "port": 8087,
+      "reachable": true,
+      "reason": "tcp_connect_ok"
+    }
+  ]
+}

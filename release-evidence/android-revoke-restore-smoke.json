@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T03:33:16.957Z",
+  "flowId": "APP-RESTORE-LOCAL-001",
+  "flowName": "Local App revoke / restore smoke",
+  "status": "blocked",
+  "blockers": [
+    "android_emulator_or_device_not_ready"
+  ],
+  "reason": "Revoke/restore App smoke could not start because emulator/device readiness is not satisfied."
+}

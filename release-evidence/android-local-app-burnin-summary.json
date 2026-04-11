@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-04-09T03:33:17.935Z",
+  "dockerReady": false,
+  "backendHealthy": true,
+  "emulatorReady": false,
+  "debugTargetReady": true,
+  "appSmokeExecuted": false,
+  "feedDetailStatus": "blocked",
+  "playbackStatus": "blocked",
+  "billingEntitlementStatus": "blocked",
+  "revokeRestoreStatus": "blocked",
+  "currentState": "local_app_smoke_blocked_by_emulator_assets",
+  "blockerSummary": "No booted Android emulator/device is available. Existing AVDs reference missing Android 35 system images, and the current sdkmanager runtime cannot auto-repair them.",
+  "dockerRuntimeImpact": {
+    "blocksAppSmoke": false,
+    "blocksComposeObservability": true,
+    "rootCause": "Docker Desktop backend appears present, but Docker daemon handshake is not responding on the named pipe."
+  }
+}

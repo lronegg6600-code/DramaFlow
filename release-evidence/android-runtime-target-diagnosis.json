@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-04-09T04:17:10.929Z",
+  "adbPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe",
+  "emulatorPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+  "apkPath": "Z:\\Projects\\DramaFlow\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+  "adb": {
+    "code": 0,
+    "stdout": "List of devices attached\r\n1A071FDEE00538         device product:raven model:Pixel_6_Pro device:raven transport_id:1",
+    "stderr": "",
+    "devices": [
+      {
+        "serial": "1A071FDEE00538",
+        "state": "device",
+        "details": "product:raven model:Pixel_6_Pro device:raven transport_id:1"
+      }
+    ]
+  },
+  "bootedTargetAvailable": true,
+  "bootedTarget": {
+    "serial": "1A071FDEE00538",
+    "details": "product:raven model:Pixel_6_Pro device:raven transport_id:1",
+    "bootCompleted": true
+  },
+  "blockers": [],
+  "sdkAssets": {
+    "generatedAt": "2026-04-09T04:17:10.883Z",
+    "sdkRoot": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk",
+    "adbExists": true,
+    "emulatorExists": true,
+    "sdkmanagerPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\cmdline-tools\\latest\\bin\\sdkmanager.bat",
+    "sdkmanagerExists": false,
+    "avdmanagerPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\cmdline-tools\\latest\\bin\\avdmanager.bat",
+    "avdmanagerExists": false,
+    "systemImages": [
+      {
+        "path": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-33\\google_apis\\x86_64",
+        "exists": true
+      },
+      {
+        "path": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64",
+        "exists": false
+      }
+    ]
+  },
+  "avdSummary": {
+    "count": 3,
+    "brokenImageBindings": [
+      "Medium_Phone_API_35",
+      "Pixel_2_API_35",
+      "Pixel_Fold_API_35"
+    ],
+    "brokenSkinBindings": [
+      "Pixel_2_API_35",
+      "Pixel_Fold_API_35"
+    ]
+  }
+}

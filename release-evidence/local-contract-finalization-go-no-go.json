@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.395Z",
+  "decision": "go_for_local_contract_finalization",
+  "state": "source_runtime_android_fully_converged",
+  "sourceLanded": true,
+  "androidVerified": true,
+  "runtimeRestarted": true,
+  "runtimeReplaced": true,
+  "contractProbePassed": true,
+  "localAppSmokePass": true,
+  "reason": "The live entitlement-service instance has been replaced, the localhost contract now returns entitlements as an empty array, and post-cutover device retests stayed stable."
+}

@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.395Z",
+  "localContractFullyConverged": true,
+  "localAppSmokePass": true,
+  "localLineClosed": true,
+  "stagingReady": false,
+  "primaryNextPath": "staging_external_url_acceptance",
+  "blockerTransferredToStaging": "platform has still not provided 7 real resolvable Android-accessible external staging URLs"
+}

@@ -1,0 +1,6 @@
+{
+  "generatedAt": "2026-04-08T18:14:15.717Z",
+  "script": "mobile_billing_entitlement_flow.mjs",
+  "status": "blocked",
+  "reason": "Skipped due to incomplete external staging URLs."
+}

@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-04-09T03:33:17.173Z",
+  "captured": false,
+  "status": "blocked",
+  "reason": "No ready Android emulator/device was available for logcat capture.",
+  "output": null
+}

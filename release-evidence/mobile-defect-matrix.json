@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "count": 0,
+  "defects": [],
+  "resolvedDefects": [
+    {
+      "id": "APP-LOCAL-001",
+      "title": "Restore purchase crashes when entitlement-service returns entitlements=null",
+      "area": "Contract mismatch",
+      "severity": "P1",
+      "reproduce_steps": [
+        "Install the debug APK on a physical Android device",
+        "Open Feed -> Detail -> Unlock premium",
+        "Scroll to Restore purchase and tap it"
+      ],
+      "expected": "App remains in subscription flow and gracefully handles empty entitlement state.",
+      "actual": "Before the fix, the app crashed with JsonDecodingException while deserializing entitlements=null into List<EntitlementDto>.",
+      "suspected_owner": "android + backend contract owners",
+      "blocker_for_local_integration": false,
+      "blocker_for_staging": false,
+      "blocker_for_production": false,
+      "fix_strategy": "Backend source now normalizes nil entitlements to [], and Android now tolerates null entitlements by mapping them to emptyList().",
+      "resolution": "Device retest passed without crash after reinstalling the rebuilt debug APK."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.371Z",
+  "screenshotCount": 14,
+  "recordingCount": 0,
+  "logcatCount": 1,
+  "networkArtifactCount": 1,
+  "screenshots": [
+    "detail-or-player.png",
+    "feed-home.png",
+    "phase27-detail.png",
+    "phase27-feed-home.png",
+    "phase27-player.png",
+    "phase27-post-restore-state.png",
+    "phase27-restore-after-fix.png",
+    "phase27-restore-result.png",
+    "phase27-subscription-lower-after-fix.png",
+    "phase27-subscription-lower.png",
+    "phase27-subscription-top.png",
+    "restore-result.png",
+    "subscription-lower.png",
+    "subscription-screen.png"
+  ],
+  "recordings": [],
+  "logcats": [
+    "phase27-restore-crash.log"
+  ],
+  "network": [
+    "phase27-restore-network.log"
+  ],
+  "defects": [
+    {
+      "id": "APP-LOCAL-001",
+      "title": "Restore purchase crashes when entitlement-service returns entitlements=null",
+      "area": "Contract mismatch",
+      "severity": "P1",
+      "reproduce_steps": [
+        "Install debug APK on a physical Android device",
+        "Open Feed -> Detail -> Unlock premium",
+        "Scroll to Restore purchase and tap it"
+      ],
+      "expected": "App handles empty/no-entitlement state without crashing and keeps the user in subscription flow.",
+      "actual": "App throws JsonDecodingException because EntitlementSummaryDto expects a list while backend returns null.",
+      "suspected_owner": "android + backend contract owners",
+      "blocker_for_local_integration": true,
+      "blocker_for_staging": true,
+      "blocker_for_production": true,
+      "fix_strategy": "Either make entitlement-service always return [] for entitlements or make Android DTO nullable/lenient for null."
+    }
+  ],
+  "notes": [
+    "Phase 27 ran on a physical Pixel 6 Pro via adb, not on an emulator.",
+    "10.0.2.2 cleartext restriction was fixed in debug-only config before the final rerun.",
+    "Final blocking defect is entitlement contract mismatch, not device availability."
+  ]
+}

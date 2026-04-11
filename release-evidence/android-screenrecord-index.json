@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-04-09T03:33:17.642Z",
+  "captured": false,
+  "status": "blocked",
+  "outputDir": "android\\integration\\evidence\\recordings",
+  "reason": "No ready Android emulator/device was available for screen recording."
+}

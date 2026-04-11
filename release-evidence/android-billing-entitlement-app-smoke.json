@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "status": "pass",
+  "targetType": "physical_device",
+  "evidence": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-subscription-top.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-subscription-lower-after-fix.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-restore-after-fix.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\uidump-phase28-after-restore.xml"
+  ],
+  "summary": "Subscription UI rendered on the physical device, Restore purchase completed without crashing, and the screen settled on 'Restore synced 0 purchase(s).' while preserving the free-tier state.",
+  "blocker": null
+}

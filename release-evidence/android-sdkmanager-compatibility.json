@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.146Z",
+  "sdkmanager": {
+    "code": 127,
+    "stdout": "",
+    "stderr": "sdkmanager.bat not found",
+    "timedOut": false
+  },
+  "avdmanager": {
+    "code": 127,
+    "stdout": "",
+    "stderr": "avdmanager.bat not found",
+    "timedOut": false
+  },
+  "legacySdkmanager": {
+    "command": "C:\\Windows\\System32\\cmd.exe",
+    "args": [
+      "/c",
+      "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\tools\\bin\\sdkmanager.bat",
+      "--list"
+    ],
+    "code": 1,
+    "stdout": "",
+    "stderr": "Exception in thread \"main\" java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema\r\n\tat com.android.repository.api.SchemaModule$SchemaModuleVersion.<init>(SchemaModule.java:156)\r\n\tat com.android.repository.api.SchemaModule.<init>(SchemaModule.java:75)\r\n\tat com.android.sdklib.repository.AndroidSdkHandler.<clinit>(AndroidSdkHandler.java:81)\r\n\tat com.android.sdklib.tool.sdkmanager.SdkManagerCli.main(SdkManagerCli.java:73)\r\n\tat com.android.sdklib.tool.sdkmanager.SdkManagerCli.main(SdkManagerCli.java:48)\r\nCaused by: java.lang.ClassNotFoundException: javax.xml.bind.annotation.XmlSchema\r\n\tat java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)\r\n\tat java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)\r\n\tat java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)\r\n\t... 5 more",
+    "timedOut": false
+  },
+  "legacyAvdmanager": {
+    "command": "C:\\Windows\\System32\\cmd.exe",
+    "args": [
+      "/c",
+      "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\tools\\bin\\avdmanager.bat",
+      "list",
+      "avd"
+    ],
+    "code": 1,
+    "stdout": "",
+    "stderr": "Exception in thread \"main\" java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema\r\n\tat com.android.repository.api.SchemaModule$SchemaModuleVersion.<init>(SchemaModule.java:156)\r\n\tat com.android.repository.api.SchemaModule.<init>(SchemaModule.java:75)\r\n\tat com.android.sdklib.repository.AndroidSdkHandler.<clinit>(AndroidSdkHandler.java:81)\r\n\tat com.android.sdklib.tool.AvdManagerCli.run(AvdManagerCli.java:213)\r\n\tat com.android.sdklib.tool.AvdManagerCli.main(AvdManagerCli.java:200)\r\nCaused by: java.lang.ClassNotFoundException: javax.xml.bind.annotation.XmlSchema\r\n\tat java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)\r\n\tat java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)\r\n\tat java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)\r\n\t... 5 more",
+    "timedOut": false
+  },
+  "compatible": false
+}

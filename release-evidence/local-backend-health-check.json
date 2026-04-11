@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-04-09T03:08:14.280Z",
+  "allHealthy": true,
+  "items": [
+    {
+      "service": "auth-service",
+      "port": 8081,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "content-service",
+      "port": 8082,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "feed-service",
+      "port": 8083,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "progress-service",
+      "port": 8084,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "playback-service",
+      "port": 8085,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "entitlement-service",
+      "port": 8086,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    },
+    {
+      "service": "billing-service",
+      "port": 8087,
+      "healthy": true,
+      "status": 200,
+      "reason": "HTTP 200"
+    }
+  ]
+}

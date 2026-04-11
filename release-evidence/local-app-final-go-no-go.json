@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.395Z",
+  "decision": "go_for_local_app_signoff",
+  "localAppSmokePass": true,
+  "localLineClosed": true,
+  "stagingReady": false,
+  "reason": "Feed/Detail, Playback, Billing/Entitlement, and Restore/Revoke are all stable on the physical device, and the live localhost entitlement-service runtime now matches the fixed contract.",
+  "residualRisks": [
+    "staging external URL validation remains pending",
+    "local billing environment still cannot complete a real Play purchase, which is expected in this local debug setup"
+  ],
+  "contractFinalizationState": "source_runtime_android_fully_converged"
+}

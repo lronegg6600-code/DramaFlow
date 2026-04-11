@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.375Z",
+  "status": "pass",
+  "targetType": "physical_device",
+  "evidence": [
+    "android/integration/evidence/screenshots/phase27-player.png"
+  ],
+  "summary": "Player screen rendered, playback fallback activated, and playback events were visible in UI."
+}

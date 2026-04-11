@@ -1,0 +1,59 @@
+{
+  "flowId": "MB-AFD-001",
+  "flowName": "Guest session, feed, detail, episodes, progress flow",
+  "status": "passed",
+  "requirements": [
+    "authBaseUrl",
+    "feedBaseUrl",
+    "contentBaseUrl",
+    "progressBaseUrl"
+  ],
+  "snapshot": {
+    "generatedAt": "2026-04-09T03:10:30.773Z",
+    "root": "Z:\\Projects\\DramaFlow",
+    "androidDir": "Z:\\Projects\\DramaFlow\\android",
+    "backendDir": "Z:\\Projects\\DramaFlow\\backend",
+    "backendServicesDir": "Z:\\Projects\\DramaFlow\\backend\\services",
+    "docsDir": "Z:\\Projects\\DramaFlow\\docs",
+    "gitDir": "Z:\\Projects\\DramaFlow\\.git",
+    "androidSourceCount": 81,
+    "backendSourceCount": 201,
+    "androidSourceSample": [
+      "android\\app\\build.gradle.kts",
+      "android\\app\\src\\main\\AndroidManifest.xml",
+      "android\\app\\src\\main\\java\\com\\dramaflow\\app\\AppModule.kt",
+      "android\\app\\src\\main\\java\\com\\dramaflow\\app\\DramaFlowApplication.kt",
+      "android\\app\\src\\main\\java\\com\\dramaflow\\app\\MainActivity.kt",
+      "android\\app\\src\\main\\java\\com\\dramaflow\\app\\Navigation.kt",
+      "android\\benchmark\\build.gradle.kts",
+      "android\\benchmark\\src\\main\\AndroidManifest.xml",
+      "android\\benchmark\\src\\main\\java\\com\\dramaflow\\benchmark\\BenchmarkPlaceholders.kt",
+      "android\\build.gradle.kts"
+    ],
+    "backendSourceSample": [
+      "backend\\api\\openapi\\index.yaml",
+      "backend\\deployments\\docker-compose\\alertmanager.yml",
+      "backend\\deployments\\docker-compose\\docker-compose.yml",
+      "backend\\deployments\\docker-compose\\otel-collector-config.yaml",
+      "backend\\deployments\\docker-compose\\prometheus-rules.yml",
+      "backend\\deployments\\docker-compose\\prometheus.yml",
+      "backend\\deployments\\helm\\dramaflow-backend\\Chart.yaml",
+      "backend\\deployments\\helm\\dramaflow-backend\\templates\\admin-service.yaml",
+      "backend\\deployments\\helm\\dramaflow-backend\\templates\\auth-service.yaml",
+      "backend\\deployments\\helm\\dramaflow-backend\\templates\\billing-service.yaml"
+    ],
+    "env": {
+      "authBaseUrl": "http://127.0.0.1:8081/",
+      "contentBaseUrl": "http://127.0.0.1:8082/",
+      "feedBaseUrl": "http://127.0.0.1:8083/",
+      "progressBaseUrl": "http://127.0.0.1:8084/",
+      "playbackBaseUrl": "http://127.0.0.1:8085/",
+      "entitlementBaseUrl": "http://127.0.0.1:8086/",
+      "billingBaseUrl": "http://127.0.0.1:8087/"
+    },
+    "blockers": []
+  },
+  "blockers": [],
+  "invalidEnv": [],
+  "nextAction": "Flow prerequisites are satisfied. Execute the corresponding Android/manual smoke steps and capture runtime logs."
+}

@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "status": "pass",
+  "targetType": "physical_device",
+  "evidence": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-restore-after-fix.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-post-revoke-home.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase28-post-revoke.log"
+  ],
+  "summary": "Restore no longer crashes, a same-user dev revoke can be issued, and the app relaunches cleanly back into the free-tier state without decode errors.",
+  "blocker": null
+}

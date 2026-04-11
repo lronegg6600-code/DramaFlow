@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-04-08T18:50:00.204Z",
+  "exported": false,
+  "envFile": null,
+  "probeEnvExported": true,
+  "probeEnvFile": ".env.staging.mobile.candidate",
+  "verifiedCount": 0,
+  "missingKeys": [],
+  "invalidKeys": [
+    "authBaseUrl",
+    "contentBaseUrl",
+    "feedBaseUrl",
+    "progressBaseUrl",
+    "playbackBaseUrl",
+    "entitlementBaseUrl",
+    "billingBaseUrl"
+  ],
+  "reason": "Official export skipped because no external URL is verified. A candidate probe env file was generated for exploratory rerun only."
+}

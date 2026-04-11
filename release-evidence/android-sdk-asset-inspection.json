@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-09T04:17:10.883Z",
+  "sdkRoot": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk",
+  "adbExists": true,
+  "emulatorExists": true,
+  "sdkmanagerPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\cmdline-tools\\latest\\bin\\sdkmanager.bat",
+  "sdkmanagerExists": false,
+  "avdmanagerPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\cmdline-tools\\latest\\bin\\avdmanager.bat",
+  "avdmanagerExists": false,
+  "systemImages": [
+    {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-33\\google_apis\\x86_64",
+      "exists": true
+    },
+    {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64",
+      "exists": false
+    }
+  ]
+}

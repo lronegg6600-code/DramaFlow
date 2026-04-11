@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-04-08T22:32:22.456Z",
+  "exported": false,
+  "envFile": null,
+  "verifiedCount": 0,
+  "missingKeys": [
+    "authBaseUrl",
+    "contentBaseUrl",
+    "feedBaseUrl",
+    "progressBaseUrl",
+    "playbackBaseUrl",
+    "entitlementBaseUrl",
+    "billingBaseUrl"
+  ],
+  "invalidKeys": [],
+  "reason": "Skipped due to unresolved external staging URLs."
+}

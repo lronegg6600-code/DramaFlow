@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.209Z",
+  "device": {
+    "model": "Pixel 6 Pro",
+    "serial": "1A071FDEE00538"
+  },
+  "status": "pass",
+  "scope": "post-cutover minimal restore / revoke no-crash regression on the same local free-tier scenario",
+  "steps": [
+    "re-open Subscription on the physical device after live runtime cutover",
+    "confirm the restore entry remains reachable",
+    "tap restore in the same free-tier local scenario",
+    "confirm there is no crash or JSON decode error after the live runtime now returns entitlements=[]"
+  ],
+  "results": {
+    "restoreNoCrash": true,
+    "revokeNoCrash": true,
+    "postRetestEntitlementStateStillFree": true,
+    "decodeErrorObserved": false,
+    "connectionErrorObserved": false
+  },
+  "notes": "This final regression run proves the cutover did not reintroduce the restore-path crash. Phase 28 already covered the broader restore/revoke path, and Phase 33 adds post-cutover live-runtime consistency.",
+  "evidence": {
+    "screenshots": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.png",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.png"
+    ],
+    "uiDumps": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.xml",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.xml"
+    ],
+    "logcat": "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase33-post-cutover-restore-final.log"
+  }
+}

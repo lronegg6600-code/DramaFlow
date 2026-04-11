@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.391Z",
+  "bootedTargetAvailable": true,
+  "targetType": "physical_device",
+  "targetSerial": "1A071FDEE00538",
+  "apkInstalled": true,
+  "appLaunched": true,
+  "feedDetailStatus": "pass",
+  "playbackStatus": "pass",
+  "billingStatus": "fail",
+  "revokeRestoreStatus": "fail",
+  "localScriptPassOnly": false,
+  "localAppSmokePass": false,
+  "currentState": "local_app_smoke_executed_with_contract_bug",
+  "strongerStagingConfidence": true,
+  "avdRepairStatus": "not_applied",
+  "imageBindingStatus": "not_applied",
+  "knownDefectCount": 1,
+  "blockers": [
+    "contract_mismatch_entitlements_null",
+    "sdkmanager_toolchain_incompatible"
+  ],
+  "evidenceIndex": {
+    "generatedAt": "2026-04-09T04:17:11.371Z",
+    "screenshotCount": 14,
+    "recordingCount": 0,
+    "logcatCount": 1,
+    "networkArtifactCount": 1,
+    "screenshots": [
+      "detail-or-player.png",
+      "feed-home.png",
+      "phase27-detail.png",
+      "phase27-feed-home.png",
+      "phase27-player.png",
+      "phase27-post-restore-state.png",
+      "phase27-restore-after-fix.png",
+      "phase27-restore-result.png",
+      "phase27-subscription-lower-after-fix.png",
+      "phase27-subscription-lower.png",
+      "phase27-subscription-top.png",
+      "restore-result.png",
+      "subscription-lower.png",
+      "subscription-screen.png"
+    ],
+    "recordings": [],
+    "logcats": [
+      "phase27-restore-crash.log"
+    ],
+    "network": [
+      "phase27-restore-network.log"
+    ]
+  }
+}

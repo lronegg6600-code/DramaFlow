@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.232Z",
+  "booted": true,
+  "targetType": "physical_device",
+  "serial": "1A071FDEE00538",
+  "details": "product:raven model:Pixel_6_Pro device:raven transport_id:1",
+  "bootCompleted": true,
+  "blockers": []
+}

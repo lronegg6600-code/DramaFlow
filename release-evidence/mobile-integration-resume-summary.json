@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-04-09T03:10:47.221Z",
+  "dockerReady": false,
+  "composeReachable": false,
+  "allPortsReachable": true,
+  "allHealthChecksPassing": true,
+  "localDebugEnvExported": true,
+  "rerunExecuted": true,
+  "currentState": "local_integration_rerun_executed",
+  "runtimeRootCause": "Docker Desktop backend appears present, but Docker daemon handshake is not responding on the named pipe."
+}

@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-04-09T10:28:30.160Z",
+  "listeners": [
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8087,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8087,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8086,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8086,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8085,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8085,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8084,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8084,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8083,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8083,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8082,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8082,
+      "OwningProcess": 222908,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::1",
+      "LocalPort": 8081,
+      "OwningProcess": 209036,
+      "State": 2
+    },
+    {
+      "LocalAddress": "::",
+      "LocalPort": 8081,
+      "OwningProcess": 222908,
+      "State": 2
+    }
+  ],
+  "health": [
+    {
+      "Port": 8081,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8082,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8083,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8084,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8085,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8086,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    },
+    {
+      "Port": 8087,
+      "Status": 200,
+      "Body": "{\"data\":{\"status\":\"ok\"}}"
+    }
+  ],
+  "listenersRestored": true,
+  "interpretation": "All localhost listeners 8081-8087 respond with health 200."
+}

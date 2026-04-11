@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "module": ":core:network",
+  "command": ".\\gradlew --no-daemon --no-configuration-cache :core:network:testDebugUnitTest",
+  "status": "pass",
+  "scenariosCovered": [
+    "entitlements = null",
+    "entitlements = []",
+    "entitlements = non-empty"
+  ],
+  "evidence": "EntitlementDtoDecodeTest passed with temporary Gradle temp dir relocated to Z:\\Temp\\gradle-tmp due low C: free space."
+}

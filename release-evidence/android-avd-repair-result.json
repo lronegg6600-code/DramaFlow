@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.316Z",
+  "status": "not_applied",
+  "reason": "Physical device path was selected; AVD skin repair left as follow-up because no emulator path was required for this run.",
+  "brokenSkinBindings": [
+    {
+      "avdName": "Pixel_2_API_35",
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_2"
+    },
+    {
+      "avdName": "Pixel_Fold_API_35",
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_fold"
+    }
+  ]
+}

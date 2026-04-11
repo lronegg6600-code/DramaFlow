@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-04-09T04:12:50.337Z",
+  "serial": "1A071FDEE00538",
+  "status": "launched",
+  "stdout": "Starting: Intent { cmp=com.dramaflow.app.debug/com.dramaflow.app.MainActivity }\r\nStatus: ok\r\nLaunchState: WARM\r\nActivity: com.dramaflow.app.debug/com.dramaflow.app.MainActivity\r\nTotalTime: 284\r\nWaitTime: 286\r\nComplete",
+  "stderr": ""
+}

@@ -1,0 +1,6 @@
+{
+  "generatedAt": "2026-04-08T18:14:15.688Z",
+  "script": "mobile_backend_contract_smoke.mjs",
+  "status": "blocked",
+  "reason": "Skipped due to incomplete external staging URLs."
+}

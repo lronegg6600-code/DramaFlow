@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.364Z",
+  "status": "not_applied",
+  "reason": "Physical device path was selected; AVD system image rebinding left blocked on missing SDK assets.",
+  "brokenSystemImageBindings": [
+    {
+      "avdName": "Medium_Phone_API_35",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "target": "android-35"
+    },
+    {
+      "avdName": "Pixel_2_API_35",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "target": "android-35"
+    },
+    {
+      "avdName": "Pixel_Fold_API_35",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "target": "android-35"
+    }
+  ]
+}

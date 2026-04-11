@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T03:33:16.976Z",
+  "flowId": "APP-BILL-LOCAL-001",
+  "flowName": "Local App billing / entitlement smoke",
+  "status": "blocked",
+  "blockers": [
+    "android_emulator_or_device_not_ready"
+  ],
+  "reason": "Billing/entitlement App smoke could not start because emulator/device readiness is not satisfied."
+}

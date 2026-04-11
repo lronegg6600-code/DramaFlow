@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-08T22:33:50.950Z",
+  "rerunExecuted": false,
+  "scripts": [
+    "mobile_backend_contract_smoke.mjs",
+    "mobile_auth_feed_detail_flow.mjs",
+    "mobile_playback_session_flow.mjs",
+    "mobile_billing_entitlement_flow.mjs",
+    "mobile_revoke_restore_flow.mjs"
+  ],
+  "results": [],
+  "reason": "Skipped due to unresolved external staging URLs."
+}

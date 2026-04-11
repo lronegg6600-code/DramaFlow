@@ -1,0 +1,71 @@
+{
+  "generatedAt": "2026-04-09T03:33:16.730Z",
+  "adbPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe",
+  "emulatorPath": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+  "sdkRoot": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk",
+  "adbAvailable": true,
+  "emulatorAvailable": true,
+  "apkExists": true,
+  "apkPath": "android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+  "avdListing": {
+    "available": true,
+    "avds": [
+      "Medium_Phone_API_35",
+      "Pixel_2_API_35",
+      "Pixel_Fold_API_35"
+    ],
+    "output": "Medium_Phone_API_35\r\nPixel_2_API_35\r\nPixel_Fold_API_35"
+  },
+  "avdConfigs": [
+    {
+      "avdName": "Medium_Phone_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Medium_Phone_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": null,
+      "skinPathExists": true,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    },
+    {
+      "avdName": "Pixel_2_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Pixel_2_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_2",
+      "skinPathExists": false,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    },
+    {
+      "avdName": "Pixel_Fold_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Pixel_Fold_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_fold",
+      "skinPathExists": false,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    }
+  ],
+  "adb": {
+    "result": {
+      "command": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe",
+      "args": [
+        "devices",
+        "-l"
+      ],
+      "code": 0,
+      "stdout": "List of devices attached",
+      "stderr": "",
+      "timedOut": false
+    },
+    "devices": []
+  },
+  "readyDevice": null,
+  "ready": false,
+  "blockerSummary": "No booted Android emulator/device is available. Existing AVDs reference missing Android 35 system images, and the current sdkmanager runtime cannot auto-repair them."
+}

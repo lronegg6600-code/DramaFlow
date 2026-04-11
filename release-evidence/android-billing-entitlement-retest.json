@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.210Z",
+  "device": {
+    "model": "Pixel 6 Pro",
+    "serial": "1A071FDEE00538"
+  },
+  "apkReinstalled": true,
+  "appRelaunched": true,
+  "status": "pass",
+  "scope": "post-cutover minimal device regression on the live localhost runtime",
+  "before": "Restore purchase previously crashed with JsonDecodingException when entitlement-service returned entitlements=null.",
+  "after": {
+    "crashObserved": false,
+    "decodeErrorObserved": false,
+    "screenMessage": "Billing product is unavailable.",
+    "uiState": "subscription screen remained interactive and the local free-tier state stayed stable"
+  },
+  "evidence": {
+    "screenshots": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-subscription.png",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.png"
+    ],
+    "uiDumps": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-subscription.xml",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.xml"
+    ],
+    "logcat": "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase33-post-cutover-billing.log"
+  }
+}

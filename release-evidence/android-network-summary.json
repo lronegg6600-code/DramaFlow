@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-04-09T03:33:17.952Z",
+  "collected": false,
+  "status": "blocked",
+  "outputDir": "android\\integration\\evidence\\network",
+  "reason": "No ready Android emulator/device was available for network summary collection."
+}

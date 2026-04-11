@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.209Z",
+  "phase": "phase33",
+  "device": {
+    "model": "Pixel 6 Pro",
+    "serial": "1A071FDEE00538"
+  },
+  "status": "pass",
+  "scope": "post-cutover minimal restore / revoke no-crash regression on the same local free-tier scenario",
+  "liveBackendContractShape": "entitlements=[]",
+  "results": {
+    "restoreEntryReachable": true,
+    "restoreTapExecuted": true,
+    "crashObserved": false,
+    "decodeErrorObserved": false,
+    "connectionErrorObserved": false,
+    "entitlementStateStayedStable": true
+  },
+  "notes": [
+    "The earlier post-cutover ECONNREFUSED was traced to missing adb reverse mappings and disappeared after reverse restoration.",
+    "This final regression run confirms no restore-path crash or JSON decode failure after the live runtime cutover.",
+    "Phase 28 already proved the end-to-end restore/revoke path on the same device; Phase 33 re-verifies that the cutover did not regress it."
+  ],
+  "evidence": {
+    "screenshots": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.png",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.png"
+    ],
+    "uiDumps": [
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.xml",
+      "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.xml"
+    ],
+    "logcat": "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase33-post-cutover-restore-final.log"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.358Z",
+  "avdHome": "C:\\Users\\admin\\.android\\avd",
+  "listResultAvailable": true,
+  "avds": [
+    {
+      "avdName": "Medium_Phone_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Medium_Phone_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": null,
+      "skinPathExists": true,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    },
+    {
+      "avdName": "Pixel_2_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Pixel_2_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_2",
+      "skinPathExists": false,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    },
+    {
+      "avdName": "Pixel_Fold_API_35",
+      "configPath": "C:\\Users\\admin\\.android\\avd\\Pixel_Fold_API_35.avd\\config.ini",
+      "imageSysdir": "C:\\Users\\admin\\AppData\\Local\\Android\\Sdk\\system-images\\android-35\\google_apis_playstore\\x86_64\\",
+      "imageSysdirExists": false,
+      "skinPath": "Z:\\Android\\SDK\\skins\\pixel_fold",
+      "skinPathExists": false,
+      "target": "android-35",
+      "abiType": "x86_64",
+      "playStoreEnabled": "true"
+    }
+  ],
+  "rawOutput": "Medium_Phone_API_35\r\nPixel_2_API_35\r\nPixel_Fold_API_35"
+}

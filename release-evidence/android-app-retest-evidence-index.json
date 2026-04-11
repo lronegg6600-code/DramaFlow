@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.388Z",
+  "phase": "phase33",
+  "device": {
+    "model": "Pixel 6 Pro",
+    "serial": "1A071FDEE00538"
+  },
+  "screenshots": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-subscription.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.png"
+  ],
+  "uiDumps": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-subscription.xml",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-ready.xml",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase33-post-cutover-restore-after.xml"
+  ],
+  "logcat": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase33-post-cutover-billing.log",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\logcat\\phase33-post-cutover-restore-final.log"
+  ],
+  "priorSupportingEvidence": [
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-subscription-top.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-restore-after-fix.png",
+    "Z:\\Projects\\DramaFlow\\android\\integration\\evidence\\screenshots\\phase28-post-revoke-home.png"
+  ]
+}

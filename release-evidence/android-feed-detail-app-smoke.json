@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T04:17:11.375Z",
+  "status": "pass",
+  "targetType": "physical_device",
+  "evidence": [
+    "android/integration/evidence/screenshots/phase27-feed-home.png",
+    "android/integration/evidence/screenshots/phase27-detail.png"
+  ],
+  "summary": "App launched on a physical Pixel 6 Pro, Feed rendered, Detail rendered, and back navigation worked earlier in the run."
+}
