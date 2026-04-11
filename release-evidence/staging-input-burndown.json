@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-04-08T17:32:17.090Z",
+  "replyCount": 0,
+  "receivedCount": 0,
+  "statuses": {
+    "not_received": 7,
+    "received_but_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  },
+  "allVerified": false,
+  "envExported": false,
+  "integrationRerunExecuted": false,
+  "currentState": "still_blocked_by_missing_staging_inputs",
+  "items": [
+    {
+      "id": "SI-001",
+      "key": "authBaseUrl",
+      "title": "auth base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-002",
+      "key": "contentBaseUrl",
+      "title": "content base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-003",
+      "key": "feedBaseUrl",
+      "title": "feed base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-004",
+      "key": "progressBaseUrl",
+      "title": "progress base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-005",
+      "key": "playbackBaseUrl",
+      "title": "playback base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-006",
+      "key": "entitlementBaseUrl",
+      "title": "entitlement base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    },
+    {
+      "id": "SI-007",
+      "key": "billingBaseUrl",
+      "title": "billing base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-04-08T22:44:36.769Z",
+  "platformReplyCount": 0,
+  "realExternalUrlReceivedCount": 0,
+  "statuses": {
+    "candidate_received_but_invalid": 0,
+    "real_url_not_received": 7,
+    "real_url_received_but_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  },
+  "currentState": "real_url_not_received"
+}

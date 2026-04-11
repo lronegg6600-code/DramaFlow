@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-04-08T18:45:43.480Z",
+  "receivedFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+  "manifestFiles": [
+    "staging-external-urls.candidate.yaml"
+  ],
+  "urlFiles": [],
+  "receivedCount": 7,
+  "expectedCount": 7,
+  "items": [
+    {
+      "id": "SE-001",
+      "key": "authBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/auth",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL"
+    },
+    {
+      "id": "SE-002",
+      "key": "contentBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/content",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL"
+    },
+    {
+      "id": "SE-003",
+      "key": "feedBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/feed",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL"
+    },
+    {
+      "id": "SE-004",
+      "key": "progressBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/progress",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL"
+    },
+    {
+      "id": "SE-005",
+      "key": "playbackBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/playback",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL"
+    },
+    {
+      "id": "SE-006",
+      "key": "entitlementBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/entitlement",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL"
+    },
+    {
+      "id": "SE-007",
+      "key": "billingBaseUrl",
+      "status": "received_but_invalid",
+      "sourceFile": "platform-intake\\received\\staging-external-urls\\manifests\\staging-external-urls.candidate.yaml",
+      "providedValue": "https://api.staging.dramaflow.example/billing",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL"
+    }
+  ]
+}

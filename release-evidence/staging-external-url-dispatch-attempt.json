@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-04-09T00:00:00.000Z",
+  "dispatchRequested": true,
+  "dispatchPrepared": true,
+  "dispatchExecuted": true,
+  "target": "platform",
+  "bundle": "docs/staging-external-url-request-bundle.md",
+  "message": "docs/staging-external-url-dispatch-message.md",
+  "sample": "platform-intake/examples/staging-base-urls-external.sample.yaml",
+  "deliveryChannel": "github_issue",
+  "issueNumber": 42,
+  "issueUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42",
+  "commentUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42#issuecomment-4208581629",
+  "reason": "Portable GitHub CLI was installed locally and the external staging URL request bundle was dispatched through a repo-native blocker issue.",
+  "nextAction": "Wait for platform to provide the 7 Android-accessible external staging URLs in platform-intake/received/staging-external-urls/manifests/staging-external-urls.yaml."
+}

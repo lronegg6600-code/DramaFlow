@@ -1,0 +1,11 @@
+{
+  "generatedAt": "2026-04-08T22:23:26.388Z",
+  "dispatched": 0,
+  "readyToSend": 0,
+  "ghAvailable": true,
+  "issueNumber": 42,
+  "issueUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42",
+  "commentUrl": null,
+  "items": [],
+  "reason": "Escalation not dispatched in this run; second-round request was already sent and no new SLA breach was introduced."
+}

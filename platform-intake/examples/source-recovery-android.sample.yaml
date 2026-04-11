@@ -1,0 +1,8 @@
+﻿provider_role: android owner
+android_root: Z:\Projects\DramaFlow\android
+required_files:
+  - settings.gradle.kts
+  - build.gradle.kts
+  - app/
+  - core/
+  - feature/

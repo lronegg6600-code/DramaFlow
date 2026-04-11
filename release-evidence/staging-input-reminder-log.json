@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-04-08T17:32:16.715Z",
+  "reminderCount": 7,
+  "dispatched": 0,
+  "readyToSend": 7,
+  "ghAvailable": false,
+  "items": [
+    {
+      "id": "SI-001",
+      "key": "authBaseUrl",
+      "title": "auth base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL"
+    },
+    {
+      "id": "SI-002",
+      "key": "contentBaseUrl",
+      "title": "content base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL"
+    },
+    {
+      "id": "SI-003",
+      "key": "feedBaseUrl",
+      "title": "feed base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL"
+    },
+    {
+      "id": "SI-004",
+      "key": "progressBaseUrl",
+      "title": "progress base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL"
+    },
+    {
+      "id": "SI-005",
+      "key": "playbackBaseUrl",
+      "title": "playback base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL"
+    },
+    {
+      "id": "SI-006",
+      "key": "entitlementBaseUrl",
+      "title": "entitlement base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL"
+    },
+    {
+      "id": "SI-007",
+      "key": "billingBaseUrl",
+      "title": "billing base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL"
+    }
+  ],
+  "reason": "Reminder queue prepared, but no live GitHub dispatch was performed in current environment."
+}

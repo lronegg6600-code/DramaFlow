@@ -1,47 +1,68 @@
 # Platform Intake
 
-这个目录是 DramaFlow 外部输入的唯一落点。平台、运维、仓库管理员、发布经理后续提供的真实输入，不再通过聊天记录或零散附件传递，而是统一按类别投递到这里。
+This directory is the single drop point for external DramaFlow inputs.
 
-## 谁放
+## Providers
+- `repo admin / release manager` -> `received/repo-identity/`
+- `platform / CI / registry admin` -> `received/artifact-identity/`, `received/deploy-tooling/`
+- `ops / platform` -> `received/cluster-access/`
+- `repo admin / release manager` -> `received/github-environments/`
+- `platform / security / registry admin` -> `received/secrets/`
+- `repo admin / android owner / backend owner / platform` -> `received/source-recovery/`
+- `platform` -> `received/staging-inputs/`
+- `platform` -> `received/staging-external-urls/`
 
-- `repo admin / release manager`：`received/repo-identity/`
-- `platform / CI / registry admin`：`received/artifact-identity/`、`received/deploy-tooling/`
-- `ops / platform`：`received/cluster-access/`
-- `repo admin / release manager`：`received/github-environments/`
-- `platform / security / registry admin`：`received/secrets/`
+## Staging Input Package
+The current Android x backend rerun is blocked by 7 staging URLs:
+- `authBaseUrl`
+- `contentBaseUrl`
+- `feedBaseUrl`
+- `progressBaseUrl`
+- `playbackBaseUrl`
+- `entitlementBaseUrl`
+- `billingBaseUrl`
 
-## 放什么
+Drop the package at:
+- `platform-intake/received/staging-inputs/manifests/staging-base-urls.yaml`
 
-- 每类目录只放一个主输入文件，优先命名为 `<category>.yaml`
-- 可接受 `.yaml`、`.yml`、`.json`
-- 不要把明文 secret 提交到仓库，secrets 类只能提供 secret ref、vault path、secret name 或截图说明
+Use:
+- `platform-intake/examples/staging-base-urls.sample.yaml`
+- `platform-intake/examples/staging-base-urls-manifest.sample.yaml`
 
-## 怎么命名
+## Validation
+Run:
+1. `node tools/ingest_staging_inputs.mjs`
+2. `node tools/validate_staging_inputs.mjs`
+3. `node tools/export_staging_env_file.mjs`
+4. `node tools/rerun_mobile_with_staging_inputs.mjs`
 
-- `repo-identity/repo-identity.yaml`
-- `artifact-identity/artifact-identity.yaml`
-- `cluster-access/cluster-access.yaml`
-- `github-environments/github-environment.yaml`
-- `secrets/secret-inventory.yaml`
-- `deploy-tooling/deploy-tooling.yaml`
+Evidence:
+- `release-evidence/staging-input-validation.json`
+- `release-evidence/staging-env-export.json`
+- `release-evidence/mobile-rerun-with-staging-inputs.json`
 
-## 工程如何验收
+## External Android-Accessible Staging URL Package
+The repo also contains an internal-only service map, but Android rerun requires external gateway/domain mapping.
 
-1. 先执行 `backend/deployments/scripts/register_received_inputs.sh`
-2. 再执行 `backend/deployments/scripts/validate_received_inputs.sh`
-3. 最后看：
-   - `release-evidence/platform-blocker-owner-matrix.json`
-   - `release-evidence/unblock-status-board.json`
-   - `docs/unblock-status-board.md`
+Drop the external package at:
+- `platform-intake/received/staging-external-urls/manifests/staging-external-urls.yaml`
 
-## 验收状态
+Use:
+- `platform-intake/examples/staging-base-urls-external.sample.yaml`
+- `platform-intake/examples/staging-gateway-mapping.sample.yaml`
 
-- `not_received`：根本没收到
-- `received_but_invalid`：收到了，但字段缺失、占位、无效
-- `received_and_verified`：字段完整，可进入下一步 gate
+Validation:
+1. `node tools/ingest_external_staging_urls.mjs`
+2. `node tools/validate_external_staging_urls.mjs`
+3. `node tools/export_android_staging_env.mjs`
+4. `node tools/rerun_mobile_after_external_urls.mjs`
 
-## 失败怎么退回
+Important:
+- internal URLs such as `http://auth-service:8081` are not accepted as Android external URLs
 
-- 优先引用 `platform-intake/examples/*.sample.yaml`
-- 用 `docs/remaining-environment-blockers.md` 指出具体 blocker_id
-- 用 `platform-intake/escalation/blocker-escalation-template.md` 留痕升级
+## Statuses
+- `not_received`
+- `received_but_invalid`
+- `verified`
+- `closed`
+- `escalated`

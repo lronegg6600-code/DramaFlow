@@ -1,0 +1,6 @@
+﻿provider_role: backend owner
+backend_root: Z:\Projects\DramaFlow\backend
+required_files:
+  - services/
+  - go.work
+  - go.mod

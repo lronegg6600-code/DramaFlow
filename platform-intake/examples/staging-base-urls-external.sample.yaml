@@ -1,0 +1,7 @@
+authBaseUrl: https://api.staging.example.com/auth
+contentBaseUrl: https://api.staging.example.com/content
+feedBaseUrl: https://api.staging.example.com/feed
+progressBaseUrl: https://api.staging.example.com/progress
+playbackBaseUrl: https://api.staging.example.com/playback
+entitlementBaseUrl: https://api.staging.example.com/entitlement
+billingBaseUrl: https://api.staging.example.com/billing

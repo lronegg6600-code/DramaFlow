@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-04-08T18:48:47.160Z",
+  "rejectedCount": 7,
+  "items": [
+    {
+      "id": "SE-001",
+      "key": "authBaseUrl",
+      "title": "auth external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/auth",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/auth",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-002",
+      "key": "contentBaseUrl",
+      "title": "content external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/content",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/content",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-003",
+      "key": "feedBaseUrl",
+      "title": "feed external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/feed",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/feed",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-004",
+      "key": "progressBaseUrl",
+      "title": "progress external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/progress",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/progress",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-005",
+      "key": "playbackBaseUrl",
+      "title": "playback external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/playback",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/playback",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-006",
+      "key": "entitlementBaseUrl",
+      "title": "entitlement external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/entitlement",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/entitlement",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-007",
+      "key": "billingBaseUrl",
+      "title": "billing external base URL",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/billing",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/billing",
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    }
+  ],
+  "commentDispatchCount": 0,
+  "reason": "Invalid external staging URLs rejected locally; live issue commenting not executed in current environment."
+}

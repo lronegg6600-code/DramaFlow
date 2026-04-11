@@ -1,0 +1,5 @@
+﻿provider_role: repo admin
+repo_checkout_path: Z:\Projects\DramaFlow
+git_dir_expected: .git
+commit_sha: "<fill>"
+branch: "<fill>"

@@ -1,0 +1,7 @@
+authBaseUrl: https://api.staging.dramaflow.example/auth
+contentBaseUrl: https://api.staging.dramaflow.example/content
+feedBaseUrl: https://api.staging.dramaflow.example/feed
+progressBaseUrl: https://api.staging.dramaflow.example/progress
+playbackBaseUrl: https://api.staging.dramaflow.example/playback
+entitlementBaseUrl: https://api.staging.dramaflow.example/entitlement
+billingBaseUrl: https://api.staging.dramaflow.example/billing

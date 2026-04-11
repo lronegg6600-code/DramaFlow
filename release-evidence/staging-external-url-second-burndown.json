@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-04-08T22:21:22.238Z",
+  "candidateInvalidCloseoutCompleted": true,
+  "candidateInvalidCount": 7,
+  "realExternalUrlReceivedCount": 0,
+  "statuses": {
+    "candidate_received_but_invalid": 0,
+    "real_url_not_received": 7,
+    "real_url_received_but_invalid": 0,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  },
+  "verifiedEnvExported": false,
+  "rerunExecuted": false,
+  "currentState": "still_blocked_by_unresolved_external_staging_urls",
+  "items": [
+    {
+      "id": "RE-001",
+      "key": "authBaseUrl",
+      "title": "auth external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL"
+    },
+    {
+      "id": "RE-002",
+      "key": "contentBaseUrl",
+      "title": "content external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL"
+    },
+    {
+      "id": "RE-003",
+      "key": "feedBaseUrl",
+      "title": "feed external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL"
+    },
+    {
+      "id": "RE-004",
+      "key": "progressBaseUrl",
+      "title": "progress external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL"
+    },
+    {
+      "id": "RE-005",
+      "key": "playbackBaseUrl",
+      "title": "playback external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL"
+    },
+    {
+      "id": "RE-006",
+      "key": "entitlementBaseUrl",
+      "title": "entitlement external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL"
+    },
+    {
+      "id": "RE-007",
+      "key": "billingBaseUrl",
+      "title": "billing external base URL",
+      "status": "real_url_not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL"
+    }
+  ],
+  "reason": "Candidate invalid closeout is complete, but no verified real external staging URLs have been provided."
+}

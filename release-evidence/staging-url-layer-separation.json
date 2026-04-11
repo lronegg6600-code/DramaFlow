@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-04-08T18:03:53.131Z",
+  "internalServiceMapConfirmed": true,
+  "externalAndroidAccessibleUrlsReceived": false,
+  "blocker": "missing_external_staging_gateway_or_domain_mapping",
+  "internal_only_keys": [
+    "authBaseUrl",
+    "contentBaseUrl",
+    "feedBaseUrl",
+    "progressBaseUrl",
+    "playbackBaseUrl",
+    "entitlementBaseUrl",
+    "billingBaseUrl"
+  ],
+  "note": "Internal cluster URLs are confirmed from repo files, but Android external access is not verified."
+}

@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-08T18:14:15.685Z",
+  "escalationCount": 0,
+  "dispatched": 0,
+  "readyToSend": 0,
+  "ghAvailable": false,
+  "items": [],
+  "reason": "No platform staging URL escalation required."
+}

@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-04-08T18:14:15.471Z",
+  "reminderCount": 7,
+  "dispatched": 1,
+  "readyToSend": 0,
+  "ghAvailable": true,
+  "deliveryChannel": "github_issue_comment",
+  "issueNumber": 42,
+  "issueUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42",
+  "commentUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42#issuecomment-4208631598",
+  "items": [
+    {
+      "id": "SE-001",
+      "key": "authBaseUrl",
+      "title": "auth external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-002",
+      "key": "contentBaseUrl",
+      "title": "content external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-003",
+      "key": "feedBaseUrl",
+      "title": "feed external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-004",
+      "key": "progressBaseUrl",
+      "title": "progress external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-005",
+      "key": "playbackBaseUrl",
+      "title": "playback external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-006",
+      "key": "entitlementBaseUrl",
+      "title": "entitlement external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    },
+    {
+      "id": "SE-007",
+      "key": "billingBaseUrl",
+      "title": "billing external base URL",
+      "status": "not_received",
+      "providedValue": null,
+      "rejectionReason": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL",
+      "external_required": true,
+      "internal_only_acceptable": false
+    }
+  ],
+  "reason": "A consolidated follow-up reminder covering all 7 external staging URLs was dispatched on issue #42 after repo-side self-service checks were exhausted."
+}

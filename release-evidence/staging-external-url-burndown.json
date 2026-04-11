@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-04-08T18:50:00.204Z",
+  "internalServiceMapConfirmed": true,
+  "externalUrlReplyCount": 0,
+  "externalUrlReceivedCount": 7,
+  "statuses": {
+    "not_received": 0,
+    "received_but_invalid": 7,
+    "verified": 0,
+    "closed": 0,
+    "escalated": 0
+  },
+  "allVerified": false,
+  "androidEnvExported": false,
+  "integrationRerunExecuted": false,
+  "currentState": "candidate_external_urls_received_but_invalid",
+  "items": [
+    {
+      "id": "SE-001",
+      "key": "authBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/auth",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/auth"
+    },
+    {
+      "id": "SE-002",
+      "key": "contentBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/content",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/content"
+    },
+    {
+      "id": "SE-003",
+      "key": "feedBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/feed",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/feed"
+    },
+    {
+      "id": "SE-004",
+      "key": "progressBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/progress",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/progress"
+    },
+    {
+      "id": "SE-005",
+      "key": "playbackBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/playback",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/playback"
+    },
+    {
+      "id": "SE-006",
+      "key": "entitlementBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/entitlement",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/entitlement"
+    },
+    {
+      "id": "SE-007",
+      "key": "billingBaseUrl",
+      "status": "received_but_invalid",
+      "providedValue": "https://api.staging.dramaflow.example/billing",
+      "rejectionReason": "Hostname did not resolve for https://api.staging.dramaflow.example/billing"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+manifestName: staging-base-urls
+targetEnvironment: staging
+providerRole: platform
+providedAt: 2026-04-09T10:00:00Z
+authBaseUrl: https://auth.staging.example.com
+contentBaseUrl: https://content.staging.example.com
+feedBaseUrl: https://feed.staging.example.com
+progressBaseUrl: https://progress.staging.example.com
+playbackBaseUrl: https://playback.staging.example.com
+entitlementBaseUrl: https://entitlement.staging.example.com
+billingBaseUrl: https://billing.staging.example.com

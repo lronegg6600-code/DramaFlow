@@ -1,0 +1,7 @@
+authBaseUrl: http://auth-service:8081
+contentBaseUrl: http://content-service:8082
+feedBaseUrl: http://feed-service:8083
+progressBaseUrl: http://progress-service:8084
+playbackBaseUrl: http://playback-service:8085
+entitlementBaseUrl: http://entitlement-service:8086
+billingBaseUrl: http://billing-service:8087

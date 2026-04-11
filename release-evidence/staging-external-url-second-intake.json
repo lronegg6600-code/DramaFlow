@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-04-08T22:32:08.827Z",
+  "receivedFile": null,
+  "responseFiles": [],
+  "manifestFiles": [],
+  "urlFiles": [],
+  "receivedCount": 0,
+  "expectedCount": 7,
+  "items": [
+    {
+      "id": "RE-001",
+      "key": "authBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_AUTH_BASE_URL"
+    },
+    {
+      "id": "RE-002",
+      "key": "contentBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_CONTENT_BASE_URL"
+    },
+    {
+      "id": "RE-003",
+      "key": "feedBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_FEED_BASE_URL"
+    },
+    {
+      "id": "RE-004",
+      "key": "progressBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PROGRESS_BASE_URL"
+    },
+    {
+      "id": "RE-005",
+      "key": "playbackBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_PLAYBACK_BASE_URL"
+    },
+    {
+      "id": "RE-006",
+      "key": "entitlementBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_ENTITLEMENT_BASE_URL"
+    },
+    {
+      "id": "RE-007",
+      "key": "billingBaseUrl",
+      "status": "real_url_not_received",
+      "sourceFile": null,
+      "providedValue": null,
+      "owner": "platform",
+      "envVar": "DRAMAFLOW_BILLING_BASE_URL"
+    }
+  ]
+}

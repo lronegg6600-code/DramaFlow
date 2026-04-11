@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.398Z",
+  "localLine": {
+    "closed": true,
+    "completed": [
+      "local backend 7 services healthy",
+      "Android physical-device local smoke passed",
+      "entitlements=null dual-sided fix landed",
+      "live entitlement-service runtime replaced",
+      "live contract probe now returns entitlements=[]",
+      "post-cutover minimal device regression passed without crash or decode error"
+    ]
+  },
+  "stagingLine": {
+    "readyToResume": true,
+    "completed": [],
+    "remaining": [
+      "obtain 7 real resolvable Android-accessible external staging URLs",
+      "validate DNS / format / reachability / path on all 7 URLs",
+      "export verified Android staging env",
+      "rerun Android x backend staging integration gate"
+    ],
+    "currentCoreBlocker": "platform has not provided the 7 real external staging URLs",
+    "issueNumber": 42,
+    "platformReplyCount": 0,
+    "currentState": "real_url_not_received",
+    "urlStatusSummary": {
+      "candidate_received_but_invalid": 0,
+      "real_url_not_received": 7,
+      "real_url_received_but_invalid": 0,
+      "verified": 0,
+      "closed": 0,
+      "escalated": 0
+    }
+  },
+  "nextShortestPath": "resume issue #42 external staging URL acceptance and verification workflow"
+}

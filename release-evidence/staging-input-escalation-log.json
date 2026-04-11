@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-04-08T17:32:16.552Z",
+  "escalationCount": 0,
+  "dispatched": 0,
+  "readyToSend": 0,
+  "ghAvailable": false,
+  "items": [],
+  "reason": "No staging input escalation required."
+}
