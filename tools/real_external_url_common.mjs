@@ -28,6 +28,13 @@ export const PLATFORM_ISSUE_NUMBER = 42;
 export const PLATFORM_REPO = "lronegg6600-code/DramaFlow";
 export const PLATFORM_OWNER_LOGIN = "lronegg6600-code";
 
+async function resolveGhExecutable() {
+  if (await pathExists(GH_PORTABLE)) {
+    return GH_PORTABLE;
+  }
+  return "gh";
+}
+
 export const REAL_EXTERNAL_URL_ITEMS = [
   { id: "RE-001", key: "authBaseUrl", envVar: "DRAMAFLOW_AUTH_BASE_URL", title: "auth external base URL", owner: "platform" },
   { id: "RE-002", key: "contentBaseUrl", envVar: "DRAMAFLOW_CONTENT_BASE_URL", title: "content external base URL", owner: "platform" },
@@ -196,11 +203,9 @@ export async function rerunWithVerifiedExternalUrls(items) {
 }
 
 export async function commentPlatformIssue(bodyFile) {
-  if (!(await pathExists(GH_PORTABLE))) {
-    return { ok: false, reason: "Portable GitHub CLI not found." };
-  }
+  const ghExec = await resolveGhExecutable();
   return new Promise((resolve) => {
-    const child = spawn(GH_PORTABLE, ["issue", "comment", String(PLATFORM_ISSUE_NUMBER), "--repo", PLATFORM_REPO, "--body-file", bodyFile], {
+    const child = spawn(ghExec, ["issue", "comment", String(PLATFORM_ISSUE_NUMBER), "--repo", PLATFORM_REPO, "--body-file", bodyFile], {
       cwd: ROOT,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -208,17 +213,24 @@ export async function commentPlatformIssue(bodyFile) {
     let stderr = "";
     child.stdout.on("data", (chunk) => (stdout += chunk.toString()));
     child.stderr.on("data", (chunk) => (stderr += chunk.toString()));
+    child.on("error", (error) =>
+      resolve({
+        ok: false,
+        reason: error?.message || "Failed to execute gh issue comment.",
+        code: -1,
+        stdout: stdout.trim(),
+        stderr: stderr.trim(),
+      }),
+    );
     child.on("close", (code) => resolve({ ok: code === 0, code, stdout: stdout.trim(), stderr: stderr.trim() }));
   });
 }
 
 export async function fetchPlatformIssueComments() {
-  if (!(await pathExists(GH_PORTABLE))) {
-    return { ok: false, reason: "Portable GitHub CLI not found.", comments: [] };
-  }
+  const ghExec = await resolveGhExecutable();
   return new Promise((resolve) => {
     const child = spawn(
-      GH_PORTABLE,
+      ghExec,
       ["issue", "view", String(PLATFORM_ISSUE_NUMBER), "--repo", PLATFORM_REPO, "--json", "comments"],
       { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] },
     );
@@ -226,6 +238,9 @@ export async function fetchPlatformIssueComments() {
     let stderr = "";
     child.stdout.on("data", (chunk) => (stdout += chunk.toString()));
     child.stderr.on("data", (chunk) => (stderr += chunk.toString()));
+    child.on("error", (error) => {
+      resolve({ ok: false, reason: error?.message || "Failed to execute gh issue view.", comments: [] });
+    });
     child.on("close", (code) => {
       if (code !== 0) {
         resolve({ ok: false, reason: stderr.trim() || "Failed to fetch issue comments.", comments: [] });
