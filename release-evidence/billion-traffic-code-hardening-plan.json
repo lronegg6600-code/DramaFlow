@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-04-12T00:00:00Z",
+  "scope": "local-code-only",
+  "currentGrade": "not_billion_traffic_ready",
+  "implementedThisRound": [
+    "request_body_size_limit_middleware",
+    "inflight_concurrency_gate_middleware",
+    "handler_timeout_context_middleware",
+    "router_integration_all_core_services"
+  ],
+  "newEnvControls": {
+    "DRAMAFLOW_HTTP_HANDLER_TIMEOUT": "8s",
+    "DRAMAFLOW_HTTP_MAX_BODY_BYTES": 1048576,
+    "DRAMAFLOW_HTTP_MAX_INFLIGHT": 1000
+  },
+  "priorityRoadmap": {
+    "P0": [
+      "global_request_guards",
+      "hot_path_cache_anti_breakdown",
+      "billing_entitlement_idempotency",
+      "service_timeout_budget_split",
+      "backpressure_queue_isolation"
+    ],
+    "P1": [
+      "db_timeout_and_index_hardening",
+      "read_write_split_readiness",
+      "downstream_circuit_breaking",
+      "contract_drift_protection",
+      "load_feedback_to_code_loop"
+    ]
+  },
+  "nextRecommendedExecution": [
+    "idempotency_on_purchase_sync_and_entitlement_mutations",
+    "singleflight_and_jittered_cache_for_feed_playback",
+    "bounded_queue_for_compensation_jobs"
+  ]
+}

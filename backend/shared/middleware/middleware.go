@@ -1,11 +1,13 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
 	"time"
 
 	"dramaflow/backend/shared/auth"
+	"dramaflow/backend/shared/config"
 	"dramaflow/backend/shared/errors"
 	"dramaflow/backend/shared/logger"
 	"dramaflow/backend/shared/response"
@@ -51,6 +53,61 @@ func RequestContext() gin.HandlerFunc {
 		c.Set(ContextTraceIDKey, traceID)
 		c.Writer.Header().Set("X-Request-Id", requestID)
 		c.Next()
+	}
+}
+
+func BodySizeLimit(maxBodyBytes int64) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		limit := maxBodyBytes
+		if limit <= 0 {
+			limit = 1048576
+		}
+		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, limit)
+		c.Next()
+	}
+}
+
+func InflightLimit(maxInflight int) gin.HandlerFunc {
+	limit := maxInflight
+	if limit <= 0 {
+		limit = 1000
+	}
+	semaphore := make(chan struct{}, limit)
+	return func(c *gin.Context) {
+		select {
+		case semaphore <- struct{}{}:
+			defer func() { <-semaphore }()
+			c.Next()
+		default:
+			c.Header("Retry-After", "1")
+			response.Fail(c, errors.New(http.StatusTooManyRequests, "server.too_many_requests", "Server is busy, please retry shortly."))
+			c.Abort()
+		}
+	}
+}
+
+func HandlerTimeout(timeout time.Duration) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t := timeout
+		if t <= 0 {
+			t = 8 * time.Second
+		}
+		ctx, cancel := context.WithTimeout(c.Request.Context(), t)
+		defer cancel()
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+		if ctx.Err() == context.DeadlineExceeded && !c.Writer.Written() {
+			response.Fail(c, errors.New(http.StatusGatewayTimeout, "server.request_timeout", "Request processing exceeded timeout."))
+			c.Abort()
+		}
+	}
+}
+
+func ServiceGuards(cfg config.Config) []gin.HandlerFunc {
+	return []gin.HandlerFunc{
+		BodySizeLimit(cfg.HTTP.MaxBodyBytes),
+		InflightLimit(cfg.HTTP.MaxInflight),
+		HandlerTimeout(cfg.HTTP.HandlerTimeout),
 	}
 }
 

@@ -10,6 +10,9 @@ type HTTPConfig struct {
 	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+	HandlerTimeout time.Duration
+	MaxBodyBytes int64
+	MaxInflight int
 }
 
 type JWTConfig struct {
@@ -87,6 +90,18 @@ func Load(serviceName string, defaultPort string) (Config, error) {
 	if err != nil {
 		return Config{}, fmt.Errorf("parse write timeout: %w", err)
 	}
+	handlerTimeout, err := time.ParseDuration(getEnv("DRAMAFLOW_HTTP_HANDLER_TIMEOUT", "8s"))
+	if err != nil {
+		return Config{}, fmt.Errorf("parse handler timeout: %w", err)
+	}
+	maxBodyBytes, err := parseInt64Env("DRAMAFLOW_HTTP_MAX_BODY_BYTES", 1048576)
+	if err != nil {
+		return Config{}, fmt.Errorf("parse max body bytes: %w", err)
+	}
+	maxInflight, err := parseIntEnv("DRAMAFLOW_HTTP_MAX_INFLIGHT", 1000)
+	if err != nil {
+		return Config{}, fmt.Errorf("parse max inflight: %w", err)
+	}
 
 	accessTTL, err := time.ParseDuration(getEnv("DRAMAFLOW_ACCESS_TOKEN_TTL", "15m"))
 	if err != nil {
@@ -129,6 +144,9 @@ func Load(serviceName string, defaultPort string) (Config, error) {
 			Port:         getEnv(fmt.Sprintf("DRAMAFLOW_%s_PORT", serviceEnvKey(serviceName)), defaultPort),
 			ReadTimeout:  readTimeout,
 			WriteTimeout: writeTimeout,
+			HandlerTimeout: handlerTimeout,
+			MaxBodyBytes: maxBodyBytes,
+			MaxInflight: maxInflight,
 		},
 		JWT: JWTConfig{
 			Secret:          getEnv("DRAMAFLOW_JWT_SECRET", "replace-with-local-secret"),
@@ -209,6 +227,15 @@ func serviceEnvKey(serviceName string) string {
 func parseIntEnv(key string, fallback int) (int, error) {
 	value := getEnv(key, fmt.Sprintf("%d", fallback))
 	var parsed int
+	if _, err := fmt.Sscanf(value, "%d", &parsed); err != nil {
+		return 0, err
+	}
+	return parsed, nil
+}
+
+func parseInt64Env(key string, fallback int64) (int64, error) {
+	value := getEnv(key, fmt.Sprintf("%d", fallback))
+	var parsed int64
 	if _, err := fmt.Sscanf(value, "%d", &parsed); err != nil {
 		return 0, err
 	}

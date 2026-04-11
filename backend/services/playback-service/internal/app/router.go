@@ -25,6 +25,7 @@ func NewRouter(cfg config.Config, baseLogger zerolog.Logger, metrics telemetry.M
 		middleware.OptionalAuth(tokens),
 		middleware.Logging(baseLogger, metrics, cfg.ServiceName),
 	)
+	router.Use(middleware.ServiceGuards(cfg)...)
 	router.GET("/health/live", func(c *gin.Context) { response.Success(c, http.StatusOK, gin.H{"status": "ok"}) })
 	router.GET("/health/ready", func(c *gin.Context) { response.Success(c, http.StatusOK, gin.H{"status": "ready"}) })
 	router.GET("/metrics", telemetry.MetricsHandler())

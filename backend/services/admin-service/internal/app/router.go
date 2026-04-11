@@ -30,6 +30,7 @@ func NewRouter(cfg config.Config, baseLogger zerolog.Logger, metrics sharedtelem
 		sharedtelemetry.TraceMiddleware(cfg.ServiceName),
 		sharedmiddleware.Logging(baseLogger, metrics, cfg.ServiceName),
 	)
+	router.Use(sharedmiddleware.ServiceGuards(cfg)...)
 	router.GET("/health/live", func(c *gin.Context) { response.Success(c, http.StatusOK, gin.H{"status": "ok"}) })
 	router.GET("/health/ready", func(c *gin.Context) { response.Success(c, http.StatusOK, gin.H{"status": "ready"}) })
 	router.GET("/metrics", sharedtelemetry.MetricsHandler())
