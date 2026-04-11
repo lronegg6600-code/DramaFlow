@@ -1,51 +1,46 @@
 # Unblock Status Board
 
-## 当前结论
+## Current Conclusion
+- Repo rehydrated: `yes`
+- Android source restored: `yes`
+- backend source restored: `yes`
+- internal service map confirmed: `yes`
+- Ready for Android x backend integration execution: `no`
+- Current gate posture: `still blocked by unresolved external staging URLs`
 
-- Ready for external execution at scale: yes
-- Tickets launched: yes
-- Ready for real staging execution: no
-- Current gate posture: waiting on external replies
+## External Staging URL Status
+- replies processed: `0`
+- external packages received: `0`
+- verified external URLs: `0 / 7`
+- invalid external URLs: `0 / 7`
+- env file exported: `no`
+- mobile rerun executed: `no`
+- latest reminder dispatched: `yes`
+- latest escalation dispatched: `no`
 
-## 当前真实回复与输入
+## Candidate Closeout
+- candidate invalid closeout completed: `yes`
+- candidate URLs rejected: `7 / 7`
+- candidate rejection reason: `hostname did not resolve`
 
-- real replies processed: 0
-- new inputs detected: 0
-- validator passed: 0
-- validator rejected: 0
+## External URL Lifecycle
+- `authBaseUrl`: `real_url_not_received`
+- `contentBaseUrl`: `real_url_not_received`
+- `feedBaseUrl`: `real_url_not_received`
+- `progressBaseUrl`: `real_url_not_received`
+- `playbackBaseUrl`: `real_url_not_received`
+- `entitlementBaseUrl`: `real_url_not_received`
+- `billingBaseUrl`: `real_url_not_received`
 
-## 当前 lifecycle 状态
+## Gate Decision
+- full mobile rerun allowed: `no`
+- reason: all 7 external staging URLs must be verified first
+- next owner: `platform`
 
-- not_created: 0
-- created_unassigned: 0
-- assigned: 0
-- awaiting_reply: 41
-- replied_invalid: 0
-- verified: 0
-- closed: 0
-- escalated: 0
-
-## Staging blocker 视角
-
-- blocks_staging=yes total: 36
-- awaiting_reply: 36
-- replied_invalid: 0
-- verified: 0
-- closed: 0
-- remaining before real staging gate recheck: 36
-
-## 当前执行判断
-
-- blocker burn-down started: no
-- reason: no external reply and no input package has been received
-- second reminder due now: no
-- escalation due now: no
-- ready for real staging gate recheck: no
-
-## 关键 evidence
-
-- [issue-reply-ingest-log.json](/Z:/Projects/DramaFlow/release-evidence/issue-reply-ingest-log.json)
-- [new-input-detection-log.json](/Z:/Projects/DramaFlow/release-evidence/new-input-detection-log.json)
-- [validator-run-log.json](/Z:/Projects/DramaFlow/release-evidence/validator-run-log.json)
-- [blocker-burndown-summary.json](/Z:/Projects/DramaFlow/release-evidence/blocker-burndown-summary.json)
-- [staging-gate-recheck.json](/Z:/Projects/DramaFlow/release-evidence/staging-gate-recheck.json)
+## Key Evidence
+- [staging-internal-service-map.json](/Z:/Projects/DramaFlow/release-evidence/staging-internal-service-map.json)
+- [staging-base-urls-internal-draft.json](/Z:/Projects/DramaFlow/release-evidence/staging-base-urls-internal-draft.json)
+- [staging-candidate-invalid-closeout.json](/Z:/Projects/DramaFlow/release-evidence/staging-candidate-invalid-closeout.json)
+- [staging-external-url-second-validation.json](/Z:/Projects/DramaFlow/release-evidence/staging-external-url-second-validation.json)
+- [staging-external-url-second-burndown.json](/Z:/Projects/DramaFlow/release-evidence/staging-external-url-second-burndown.json)
+- [mobile-rerun-with-verified-external-urls.json](/Z:/Projects/DramaFlow/release-evidence/mobile-rerun-with-verified-external-urls.json)
