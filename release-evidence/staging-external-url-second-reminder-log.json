@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-04-08T22:21:25.293Z",
+  "generatedAt": "2026-04-11T13:13:43.141Z",
   "reminderType": "second_round_request",
   "dispatched": 1,
   "readyToSend": 0,
   "ghAvailable": true,
   "issueNumber": 42,
   "issueUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42",
-  "commentUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42#issuecomment-4210073490",
+  "commentUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42#issuecomment-4229482270",
   "items": [],
   "reason": "Second-round real external URL request dispatched to platform issue."
 }

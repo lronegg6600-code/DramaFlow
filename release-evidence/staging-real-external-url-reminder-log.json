@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-04-11T12:15:41.561Z",
-  "dispatched": 0,
-  "readyToSend": 1,
+  "generatedAt": "2026-04-11T13:13:43.375Z",
+  "dispatched": 1,
+  "readyToSend": 0,
   "ghAvailable": true,
   "issueNumber": 42,
   "issueUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42",
-  "commentUrl": null,
+  "commentUrl": "https://github.com/lronegg6600-code/DramaFlow/issues/42#issuecomment-4229482267",
   "items": [],
-  "reason": "spawn gh ENOENT"
+  "reason": "Second-round reminder for real external URLs dispatched."
 }
