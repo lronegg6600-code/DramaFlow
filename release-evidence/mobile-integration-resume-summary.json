@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-04-11T13:20:04.647Z",
+  "generatedAt": "2026-04-11T13:39:18.937Z",
   "currentState": "still_blocked_by_unresolved_external_staging_urls",
   "candidateInvalidCloseoutCompleted": true,
   "verifiedExternalUrls": 0,
-  "invalidRealExternalUrls": 0,
-  "missingRealExternalUrls": 7,
+  "invalidRealExternalUrls": 7,
+  "missingRealExternalUrls": 0,
   "rerunExecuted": false,
   "reason": "Candidate invalid closeout is complete, but no verified real external staging URLs have been provided."
 }
