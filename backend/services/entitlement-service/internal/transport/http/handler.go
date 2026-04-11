@@ -3,12 +3,12 @@ package http
 import (
 	"net/http"
 
+	"dramaflow/backend/services/entitlement-service/internal/domain"
+	"dramaflow/backend/services/entitlement-service/internal/service"
 	apperrors "dramaflow/backend/shared/errors"
 	sharedmiddleware "dramaflow/backend/shared/middleware"
 	"dramaflow/backend/shared/response"
 	sharedtelemetry "dramaflow/backend/shared/telemetry"
-	"dramaflow/backend/services/entitlement-service/internal/domain"
-	"dramaflow/backend/services/entitlement-service/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -82,7 +82,7 @@ func (h Handler) grant(c *gin.Context) {
 		response.Fail(c, validationError(err))
 		return
 	}
-	data, err := h.service.Grant(c.Request.Context(), request)
+	data, err := h.service.Grant(c.Request.Context(), request, c.GetHeader("Idempotency-Key"))
 	if err != nil {
 		response.Fail(c, err)
 		return
@@ -97,7 +97,7 @@ func (h Handler) revoke(c *gin.Context) {
 		response.Fail(c, validationError(err))
 		return
 	}
-	data, err := h.service.Revoke(c.Request.Context(), request)
+	data, err := h.service.Revoke(c.Request.Context(), request, c.GetHeader("Idempotency-Key"))
 	if err != nil {
 		response.Fail(c, err)
 		return

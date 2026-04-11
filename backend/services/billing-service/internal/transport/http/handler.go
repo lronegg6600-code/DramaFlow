@@ -4,23 +4,23 @@ import (
 	"io"
 	"net/http"
 
+	"dramaflow/backend/services/billing-service/internal/domain"
+	"dramaflow/backend/services/billing-service/internal/rtdn"
+	"dramaflow/backend/services/billing-service/internal/service"
 	apperrors "dramaflow/backend/shared/errors"
 	sharedmiddleware "dramaflow/backend/shared/middleware"
 	"dramaflow/backend/shared/response"
 	sharedtelemetry "dramaflow/backend/shared/telemetry"
-	"dramaflow/backend/services/billing-service/internal/domain"
-	"dramaflow/backend/services/billing-service/internal/rtdn"
-	"dramaflow/backend/services/billing-service/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	service        service.Service
-	parser         rtdn.Parser
-	metrics        sharedtelemetry.Metrics
-	pushSecret     string
-	rtdnEnabled    bool
-	ginMode        string
+	service     service.Service
+	parser      rtdn.Parser
+	metrics     sharedtelemetry.Metrics
+	pushSecret  string
+	rtdnEnabled bool
+	ginMode     string
 }
 
 func New(service service.Service, parser rtdn.Parser, metrics sharedtelemetry.Metrics, pushSecret string, rtdnEnabled bool, ginMode string) Handler {
@@ -56,7 +56,7 @@ func (h Handler) syncPurchase(c *gin.Context) {
 	}
 	h.metrics.BillingPurchaseSyncTotal.Inc()
 	h.metrics.BillingPurchaseVerifyTotal.Inc()
-	data, err := h.service.SyncPurchase(c.Request.Context(), sharedmiddleware.UserID(c), request, traceID(c))
+	data, err := h.service.SyncPurchase(c.Request.Context(), sharedmiddleware.UserID(c), request, traceID(c), c.GetHeader("Idempotency-Key"))
 	if err != nil {
 		response.Fail(c, err)
 		h.metrics.BillingPurchaseSyncErrorTotal.Inc()

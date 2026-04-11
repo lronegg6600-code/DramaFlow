@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"dramaflow/backend/services/entitlement-service/internal/domain"
 	"dramaflow/backend/shared/config"
 	apperrors "dramaflow/backend/shared/errors"
-	"dramaflow/backend/services/entitlement-service/internal/domain"
 )
 
 type Service struct {
@@ -20,6 +20,9 @@ type entitlementRepository interface {
 	UpsertGrant(ctx context.Context, request domain.GrantRequest) (domain.Entitlement, *string, error)
 	InsertAuditLog(ctx context.Context, entitlementID *string, userID string, action string, purchaseToken string, stateBefore *string, stateAfter string, reason string, payload map[string]any) error
 	RevokeByPurchaseToken(ctx context.Context, request domain.RevokeRequest) ([]domain.Entitlement, error)
+	AcquireIdempotency(ctx context.Context, scope string, idempotencyKey string, requestHash string, ttl time.Duration) (domain.IdempotencyAcquireResult, error)
+	MarkIdempotencySucceeded(ctx context.Context, scope string, idempotencyKey string, response any) error
+	MarkIdempotencyFailed(ctx context.Context, scope string, idempotencyKey string, appErr apperrors.AppError) error
 }
 
 type entitlementProjector interface {
@@ -85,27 +88,70 @@ func (s Service) PlaybackAccess(ctx context.Context, userID string, _ domain.Pla
 	}, nil
 }
 
-func (s Service) Grant(ctx context.Context, request domain.GrantRequest) (domain.Entitlement, error) {
-	item, stateBefore, err := s.repo.UpsertGrant(ctx, s.NormalizeGrant(request))
+func (s Service) Grant(ctx context.Context, request domain.GrantRequest, providedIdempotencyKey string) (domain.Entitlement, error) {
+	normalized := s.NormalizeGrant(request)
+	idempotencyKey := buildGrantIdempotencyKey(normalized, providedIdempotencyKey)
+	requestHash := buildGrantRequestHash(normalized)
+	// Grant and revoke are externally retried by billing/replay workers.
+	// This gate keeps the write path deterministic under retries and duplicate deliveries.
+	acquire, err := s.repo.AcquireIdempotency(ctx, entitlementGrantScope, idempotencyKey, requestHash, entitlementIdempotencyTTL())
 	if err != nil {
 		return domain.Entitlement{}, err
 	}
+	switch acquire.State {
+	case "replay":
+		return decodeCachedGrantResponse(acquire.CachedResponse)
+	case "in_progress":
+		return domain.Entitlement{}, apperrors.New(409, "entitlement.idempotency_in_progress", "A request with the same idempotency key is still processing.")
+	case "conflict":
+		return domain.Entitlement{}, apperrors.New(409, "entitlement.idempotency_key_conflict", "Idempotency key was reused with a different request payload.")
+	}
+
+	item, stateBefore, err := s.repo.UpsertGrant(ctx, normalized)
+	if err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, entitlementGrantScope, idempotencyKey, apperrors.New(500, "entitlement.upsert_grant_failed", err.Error()))
+		return domain.Entitlement{}, err
+	}
 	if err := s.repo.InsertAuditLog(ctx, &item.EntitlementID, request.UserID, "grant", request.SourcePurchaseToken, stateBefore, item.State, request.Reason, request.PayloadSnapshot); err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, entitlementGrantScope, idempotencyKey, apperrors.New(500, "entitlement.audit_log_failed", err.Error()))
+		return domain.Entitlement{}, err
+	}
+	if err := s.repo.MarkIdempotencySucceeded(ctx, entitlementGrantScope, idempotencyKey, item); err != nil {
 		return domain.Entitlement{}, err
 	}
 	return item, nil
 }
 
-func (s Service) Revoke(ctx context.Context, request domain.RevokeRequest) ([]domain.Entitlement, error) {
+func (s Service) Revoke(ctx context.Context, request domain.RevokeRequest, providedIdempotencyKey string) ([]domain.Entitlement, error) {
+	idempotencyKey := buildRevokeIdempotencyKey(request, providedIdempotencyKey)
+	requestHash := buildRevokeRequestHash(request)
+	acquire, err := s.repo.AcquireIdempotency(ctx, entitlementRevokeScope, idempotencyKey, requestHash, entitlementIdempotencyTTL())
+	if err != nil {
+		return nil, err
+	}
+	switch acquire.State {
+	case "replay":
+		return decodeCachedRevokeResponse(acquire.CachedResponse)
+	case "in_progress":
+		return nil, apperrors.New(409, "entitlement.idempotency_in_progress", "A request with the same idempotency key is still processing.")
+	case "conflict":
+		return nil, apperrors.New(409, "entitlement.idempotency_key_conflict", "Idempotency key was reused with a different request payload.")
+	}
+
 	items, err := s.repo.RevokeByPurchaseToken(ctx, request)
 	if err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, entitlementRevokeScope, idempotencyKey, apperrors.New(500, "entitlement.revoke_failed", err.Error()))
 		return nil, err
 	}
 	for _, item := range items {
 		stateBefore := item.State
 		if err := s.repo.InsertAuditLog(ctx, &item.EntitlementID, request.UserID, "revoke", request.SourcePurchaseToken, &stateBefore, request.State, request.Reason, request.PayloadSnapshot); err != nil {
+			_ = s.repo.MarkIdempotencyFailed(ctx, entitlementRevokeScope, idempotencyKey, apperrors.New(500, "entitlement.audit_log_failed", err.Error()))
 			return nil, err
 		}
+	}
+	if err := s.repo.MarkIdempotencySucceeded(ctx, entitlementRevokeScope, idempotencyKey, items); err != nil {
+		return nil, err
 	}
 	return items, nil
 }

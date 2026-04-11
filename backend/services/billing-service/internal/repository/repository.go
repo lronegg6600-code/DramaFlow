@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"dramaflow/backend/services/billing-service/internal/domain"
+	apperrors "dramaflow/backend/shared/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -261,4 +262,93 @@ func formatTimePtr(value *time.Time) *string {
 	}
 	formatted := value.UTC().Format(time.RFC3339)
 	return &formatted
+}
+
+func (r Repository) AcquireIdempotency(ctx context.Context, scope string, idempotencyKey string, requestHash string, ttl time.Duration) (domain.IdempotencyAcquireResult, error) {
+	// Insert-first keeps the hot path lock-free for first requests.
+	// Conflict readers are handled by loading the existing row once.
+	const insertQuery = `
+		INSERT INTO operation_idempotency_keys (operation_scope, idempotency_key, request_hash, status, expires_at, created_at, updated_at)
+		VALUES ($1, $2, $3, 'processing', NOW() + $4::interval, NOW(), NOW())
+		ON CONFLICT (operation_scope, idempotency_key) DO NOTHING
+	`
+	ttlValue := fmt.Sprintf("%f seconds", ttl.Seconds())
+	tag, err := r.pool.Exec(ctx, insertQuery, scope, idempotencyKey, requestHash, ttlValue)
+	if err != nil {
+		return domain.IdempotencyAcquireResult{}, fmt.Errorf("acquire idempotency: %w", err)
+	}
+	if tag.RowsAffected() == 1 {
+		return domain.IdempotencyAcquireResult{State: "acquired"}, nil
+	}
+
+	const selectQuery = `
+		SELECT request_hash, status, response_payload
+		FROM operation_idempotency_keys
+		WHERE operation_scope = $1 AND idempotency_key = $2
+	`
+	var existingHash string
+	var status string
+	var responsePayload []byte
+	if err := r.pool.QueryRow(ctx, selectQuery, scope, idempotencyKey).Scan(&existingHash, &status, &responsePayload); err != nil {
+		return domain.IdempotencyAcquireResult{}, fmt.Errorf("load idempotency record: %w", err)
+	}
+	if existingHash != requestHash {
+		return domain.IdempotencyAcquireResult{State: "conflict"}, nil
+	}
+	switch status {
+	case "succeeded":
+		return domain.IdempotencyAcquireResult{State: "replay", CachedResponse: responsePayload}, nil
+	case "failed":
+		const retryQuery = `
+			UPDATE operation_idempotency_keys
+			SET status = 'processing', error_payload = NULL, updated_at = NOW(), expires_at = NOW() + $4::interval
+			WHERE operation_scope = $1 AND idempotency_key = $2 AND request_hash = $3 AND status = 'failed'
+		`
+		retryTag, err := r.pool.Exec(ctx, retryQuery, scope, idempotencyKey, requestHash, ttlValue)
+		if err != nil {
+			return domain.IdempotencyAcquireResult{}, fmt.Errorf("retry failed idempotency: %w", err)
+		}
+		if retryTag.RowsAffected() == 1 {
+			return domain.IdempotencyAcquireResult{State: "acquired"}, nil
+		}
+	}
+	return domain.IdempotencyAcquireResult{State: "in_progress"}, nil
+}
+
+func (r Repository) MarkIdempotencySucceeded(ctx context.Context, scope string, idempotencyKey string, response any) error {
+	payload, err := json.Marshal(response)
+	if err != nil {
+		return fmt.Errorf("marshal idempotency response: %w", err)
+	}
+	const query = `
+		UPDATE operation_idempotency_keys
+		SET status = 'succeeded', response_payload = $3, error_payload = NULL, updated_at = NOW()
+		WHERE operation_scope = $1 AND idempotency_key = $2
+	`
+	_, err = r.pool.Exec(ctx, query, scope, idempotencyKey, payload)
+	if err != nil {
+		return fmt.Errorf("mark idempotency succeeded: %w", err)
+	}
+	return nil
+}
+
+func (r Repository) MarkIdempotencyFailed(ctx context.Context, scope string, idempotencyKey string, appErr apperrors.AppError) error {
+	payload, err := json.Marshal(map[string]any{
+		"code":    appErr.Code,
+		"message": appErr.Message,
+		"details": appErr.Details,
+	})
+	if err != nil {
+		return fmt.Errorf("marshal idempotency error payload: %w", err)
+	}
+	const query = `
+		UPDATE operation_idempotency_keys
+		SET status = 'failed', error_payload = $3, updated_at = NOW()
+		WHERE operation_scope = $1 AND idempotency_key = $2
+	`
+	_, err = r.pool.Exec(ctx, query, scope, idempotencyKey, payload)
+	if err != nil {
+		return fmt.Errorf("mark idempotency failed: %w", err)
+	}
+	return nil
 }

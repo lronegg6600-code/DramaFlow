@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"dramaflow/backend/shared/config"
-	apperrors "dramaflow/backend/shared/errors"
 	"dramaflow/backend/services/billing-service/internal/domain"
 	"dramaflow/backend/services/billing-service/internal/verifier"
+	"dramaflow/backend/shared/config"
+	apperrors "dramaflow/backend/shared/errors"
 )
 
 type Service struct {
@@ -27,6 +27,9 @@ type billingRepository interface {
 	MarkRTDNError(ctx context.Context, messageID string, errorMessage string) error
 	MarkRTDNProcessed(ctx context.Context, messageID string) error
 	GetCatalogProducts(ctx context.Context) ([]map[string]any, error)
+	AcquireIdempotency(ctx context.Context, scope string, idempotencyKey string, requestHash string, ttl time.Duration) (domain.IdempotencyAcquireResult, error)
+	MarkIdempotencySucceeded(ctx context.Context, scope string, idempotencyKey string, response any) error
+	MarkIdempotencyFailed(ctx context.Context, scope string, idempotencyKey string, appErr apperrors.AppError) error
 }
 
 type billingEntitlementClient interface {
@@ -44,12 +47,32 @@ func New(repo billingRepository, entitlementClient billingEntitlementClient, pub
 	}
 }
 
-func (s Service) SyncPurchase(ctx context.Context, userID string, request domain.SyncPurchaseRequest, traceID string) (domain.SyncPurchaseResponse, error) {
+func (s Service) SyncPurchase(ctx context.Context, userID string, request domain.SyncPurchaseRequest, traceID string, providedIdempotencyKey string) (domain.SyncPurchaseResponse, error) {
 	if err := ValidateSync(request); err != nil {
 		return domain.SyncPurchaseResponse{}, err
 	}
+	idempotencyKey := buildSyncIdempotencyKey(userID, request, providedIdempotencyKey)
+	requestHash := buildSyncRequestHash(userID, request)
+	// Acquire is atomic at DB level:
+	// - first caller enters processing
+	// - same key+same hash can replay or wait
+	// - same key+different hash is rejected as conflict
+	acquire, err := s.repo.AcquireIdempotency(ctx, billingSyncScope, idempotencyKey, requestHash, idempotencyTTL())
+	if err != nil {
+		return domain.SyncPurchaseResponse{}, err
+	}
+	switch acquire.State {
+	case "replay":
+		return decodeCachedSyncResponse(acquire.CachedResponse)
+	case "in_progress":
+		return domain.SyncPurchaseResponse{}, apperrors.New(409, "billing.idempotency_in_progress", "A request with the same idempotency key is still processing.")
+	case "conflict":
+		return domain.SyncPurchaseResponse{}, apperrors.New(409, "billing.idempotency_key_conflict", "Idempotency key was reused with a different request payload.")
+	}
+
 	verified, err := s.publisherGateway.GetSubscriptionPurchaseV2(ctx, request.PurchaseToken)
 	if err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, billingSyncScope, idempotencyKey, apperrors.New(502, "billing.purchase_verify_failed", err.Error()))
 		return domain.SyncPurchaseResponse{}, err
 	}
 	if verified.ProductID == "" {
@@ -63,13 +86,16 @@ func (s Service) SyncPurchase(ctx context.Context, userID string, request domain
 	}
 	record, err := s.repo.UpsertPurchaseRecord(ctx, verified, request.Source)
 	if err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, billingSyncScope, idempotencyKey, apperrors.New(500, "billing.upsert_purchase_failed", err.Error()))
 		return domain.SyncPurchaseResponse{}, err
 	}
 	if err := s.repo.UpsertOrder(ctx, verified, record.PurchaseState); err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, billingSyncScope, idempotencyKey, apperrors.New(500, "billing.upsert_order_failed", err.Error()))
 		return domain.SyncPurchaseResponse{}, err
 	}
 	entitlementState, effectiveAt, nextAction, err := s.applyEntitlement(ctx, record)
 	if err != nil {
+		_ = s.repo.MarkIdempotencyFailed(ctx, billingSyncScope, idempotencyKey, apperrors.New(502, "billing.entitlement_sync_failed", err.Error()))
 		return domain.SyncPurchaseResponse{}, err
 	}
 	if record.AcknowledgementState != "acknowledged" && s.cfg.Billing.SyncAckMode == "auto_ack" {
@@ -77,7 +103,7 @@ func (s Service) SyncPurchase(ctx context.Context, userID string, request domain
 			record.AcknowledgementState = "acknowledged"
 		}
 	}
-	return domain.SyncPurchaseResponse{
+	response := domain.SyncPurchaseResponse{
 		SyncAccepted:           true,
 		PurchaseState:          record.PurchaseState,
 		AcknowledgementState:   record.AcknowledgementState,
@@ -85,7 +111,11 @@ func (s Service) SyncPurchase(ctx context.Context, userID string, request domain
 		EntitlementEffectiveAt: effectiveAt,
 		NextAction:             nextAction,
 		TraceID:                traceID,
-	}, nil
+	}
+	if err := s.repo.MarkIdempotencySucceeded(ctx, billingSyncScope, idempotencyKey, response); err != nil {
+		return domain.SyncPurchaseResponse{}, err
+	}
+	return response, nil
 }
 
 func (s Service) ResyncPurchase(ctx context.Context, userID string, purchaseToken string, traceID string) (domain.SyncPurchaseResponse, error) {
@@ -95,14 +125,14 @@ func (s Service) ResyncPurchase(ctx context.Context, userID string, purchaseToke
 			ProductID:     record.ProductID,
 			PackageName:   record.PackageName,
 			Source:        "manual_sync",
-		}, traceID)
+		}, traceID, "")
 	}
 	return s.SyncPurchase(ctx, userID, domain.SyncPurchaseRequest{
 		PurchaseToken: purchaseToken,
 		ProductID:     "premium_access",
 		PackageName:   s.cfg.Billing.GooglePlayPackageName,
 		Source:        "manual_sync",
-	}, traceID)
+	}, traceID, "")
 }
 
 func (s Service) SubscriptionStatus(ctx context.Context, userID string, authorizationHeader string) (domain.SubscriptionStatusResponse, error) {
@@ -155,7 +185,7 @@ func (s Service) HandleRTDNEvent(ctx context.Context, event domain.RtdnDomainEve
 		ProductID:     "premium_access",
 		PackageName:   event.PackageName,
 		Source:        "rtdn",
-	}, traceID)
+	}, traceID, "rtdn:"+event.MessageID)
 	if err != nil {
 		_ = s.repo.MarkRTDNError(ctx, event.MessageID, err.Error())
 		return domain.SyncPurchaseResponse{}, false, err

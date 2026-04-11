@@ -100,3 +100,8 @@ type RtdnDomainEvent struct {
 	EventTime                      string
 	PayloadSnapshot                map[string]any
 }
+
+type IdempotencyAcquireResult struct {
+	State          string
+	CachedResponse []byte
+}

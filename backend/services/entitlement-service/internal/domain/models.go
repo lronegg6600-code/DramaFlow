@@ -62,3 +62,8 @@ type RecomputeResponse struct {
 	ProcessedRecords int    `json:"processedRecords"`
 	UpdatedRecords   int    `json:"updatedRecords"`
 }
+
+type IdempotencyAcquireResult struct {
+	State          string
+	CachedResponse []byte
+}
