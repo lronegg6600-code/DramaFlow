@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-04-09T15:24:52.198Z",
+  "guestSessionStatus": 201,
+  "entitlementStatus": 200,
+  "entitlementsShape": "array",
+  "passed": true,
+  "response": {
+    "data": {
+      "userId": "49d6a73c-67ee-4938-925b-2eda22357edd",
+      "entitlements": [],
+      "isPremium": false,
+      "source": "entitlement-service"
+    }
+  },
+  "interpretation": "runtime reprobe passed"
+}

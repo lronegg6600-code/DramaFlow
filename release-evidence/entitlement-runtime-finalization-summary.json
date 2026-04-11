@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.401Z",
+  "dockerWslControlFixed": true,
+  "providerConfirmed": true,
+  "runtimeReplaced": true,
+  "contractProbePassed": true,
+  "state": "source_runtime_android_fully_converged",
+  "composePathStatus": "succeeded",
+  "alternativePathStatus": "not_needed",
+  "reprobeStatus": "pass",
+  "currentPort8086Available": true,
+  "currentPort8081Available": true,
+  "nextAction": "Close the local line and return to the staging external URL workflow.",
+  "diagnosisSummary": "Docker Desktop control plane and localhost listeners were restored first, then the entitlement-service instance was replaced and the live runtime contract converged to entitlements=[]."
+}

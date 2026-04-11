@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.395Z",
+  "sourceLanded": true,
+  "androidVerified": true,
+  "runtimeRestarted": true,
+  "runtimeReplaced": true,
+  "contractProbePassed": true,
+  "runtimeEntitlementsShape": "array",
+  "state": "source_runtime_android_fully_converged",
+  "localAppSmokePass": true,
+  "localIntegrationClosedLoop": true,
+  "nextAction": "Return to the staging external URL line and continue the unresolved real external URL acceptance workflow."
+}

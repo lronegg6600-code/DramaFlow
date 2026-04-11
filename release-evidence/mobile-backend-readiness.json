@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "status": "local_app_smoke_pass",
+  "stagingBlockerCount": 1,
+  "blockers": [
+    {
+      "id": "STAGING-URL-001",
+      "type": "environment",
+      "summary": "Real Android-accessible external staging URLs are still pending for staging validation."
+    }
+  ],
+  "invalidEnv": [],
+  "summary": "Local backend is healthy, scripts pass, the physical device launched the app, and all local app smoke flows now pass after the entitlement null-tolerance fix. Staging validation is still pending external URLs and a backend runtime redeploy verification."
+}

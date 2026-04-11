@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.205Z",
+  "oldInstance": {
+    "id": "a9728f7d5f0c198bc96100fbfa41595e031324289bd8d201b7b74e358e47d6c1",
+    "imageDigest": "sha256:2338a2c74e2836d0823c7d0fdce1027a1a114e1d00a4fa3b926fc07e91e18620",
+    "probe": {
+      "entitlementsShape": "null",
+      "passed": false,
+      "responseExcerpt": {
+        "data": {
+          "entitlements": null
+        }
+      }
+    }
+  },
+  "newInstance": {
+    "id": "39599677b00dbab42fd6850f84faf691c650a2c46ef6a6dc5a77ad62cef5bf00",
+    "imageDigest": "sha256:251d26df2dc7c0866d152f418aa21300e5180d06ec06d62ebe69fc6185eb9349",
+    "probe": {
+      "entitlementsShape": "array",
+      "passed": true,
+      "responseExcerpt": {
+        "data": {
+          "userId": "49d6a73c-67ee-4938-925b-2eda22357edd",
+          "entitlements": [],
+          "isPremium": false,
+          "source": "entitlement-service"
+        }
+      }
+    }
+  },
+  "runtimeReplaced": true,
+  "contractProbePassed": true
+}

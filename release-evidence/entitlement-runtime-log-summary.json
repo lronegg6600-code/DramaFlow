@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-04-09T09:04:19.679Z",
+  "composeLogs": {
+    "status": "timed_out",
+    "stdout": "",
+    "stderr": ""
+  },
+  "wslShell": {
+    "status": "failed",
+    "stdout": "",
+    "stderr": "<3>WSL (44113 - Relay) ERROR: CreateProcessParseCommon:1005: getpwuid(0) failed 5\n<3>WSL (44113 - Relay) ERROR: operator():579: getpwuid(0) failed 5\n<3>WSL (44113) ERROR: I/O error @util.cpp:1358 (UtilInitGroups)\n<3>WSL (44113 - Relay) ERROR: CreateProcessCommon:807: Create process failed\n"
+  },
+  "interpretation": "Docker/WSL management path remains degraded if logs cannot be collected or WSL shell creation fails."
+}

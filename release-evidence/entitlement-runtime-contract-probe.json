@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T09:03:49.042Z",
+  "guestSessionStatus": 201,
+  "entitlementStatus": 200,
+  "userId": "75fa28d2-02cb-4d0b-9cca-a08045cc23db",
+  "entitlementsShape": "null",
+  "entitlementsValue": null,
+  "passed": false,
+  "interpretation": "live runtime still returns entitlements=null and has not converged"
+}

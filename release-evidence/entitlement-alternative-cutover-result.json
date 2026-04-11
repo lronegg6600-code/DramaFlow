@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2026-04-09T09:56:06.488Z",
+  "attempted": true,
+  "strategy": "docker-desktop / com.docker.backend process restart and service restart",
+  "status": "failed",
+  "reason": "Docker Desktop process restart and com.docker.service restart did not restore docker CLI/compose control or recover port 8086 service availability.",
+  "interpretation": "No safe alternative cutover path could replace only entitlement-service without a functioning Docker/WSL control path."
+}

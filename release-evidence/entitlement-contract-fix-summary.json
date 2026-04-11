@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.400Z",
+  "issueId": "APP-LOCAL-001",
+  "title": "Restore purchase crashes when entitlement-service returns entitlements=null",
+  "fixed": true,
+  "fixLanding": "both",
+  "backendSourceFix": {
+    "status": "landed_and_runtime_verified",
+    "summary": "entitlement-service normalizes nil entitlements to an empty slice before serializing /v1/entitlements/me. The live localhost runtime was later replaced and now returns entitlements as an empty array."
+  },
+  "androidFix": {
+    "status": "landed_and_verified",
+    "summary": "EntitlementSummaryDto tolerates entitlements=null and maps it to emptyList() in domain conversion, eliminating the JsonDecodingException on device restore."
+  },
+  "runtimeVerification": {
+    "liveEntitlementServiceStillReturnsNull": false,
+    "runtimeRestarted": true,
+    "runtimeReplaced": true,
+    "contractProbePassed": true,
+    "runtimeProviderAvailable": true,
+    "reason": "The entitlement-service live instance was replaced, the image digest changed, and the live probe now returns entitlements=[]."
+  },
+  "deviceRetest": {
+    "device": "Pixel 6 Pro",
+    "serial": "1A071FDEE00538",
+    "restoreCrashObservedAfterFix": false,
+    "decodeErrorObservedAfterFix": false,
+    "postCutoverMinimalRetestPassed": true
+  }
+}

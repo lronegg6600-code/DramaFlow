@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "before": {
+    "backendRuntimeResponse": {
+      "userId": "bb956ad3-0820-47c9-8d10-fcbcbae3ef14",
+      "entitlements": null,
+      "isPremium": false,
+      "source": "entitlement-service"
+    },
+    "androidExpectation": "List<EntitlementDto>",
+    "result": "JsonDecodingException and restore crash on physical device"
+  },
+  "after": {
+    "backendSourceContract": {
+      "entitlements": [],
+      "status": "fixed_in_repo_source"
+    },
+    "androidContractTolerance": {
+      "entitlements": "nullable in DTO, normalized to emptyList() in domain",
+      "status": "verified"
+    },
+    "deviceObservedResult": "Restore no longer crashes and the subscription screen shows 'Restore synced 0 purchase(s).' while the app remains responsive."
+  }
+}

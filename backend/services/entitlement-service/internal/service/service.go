@@ -35,6 +35,7 @@ func (s Service) Me(ctx context.Context, userID string) (domain.MeResponse, erro
 	if err != nil {
 		return domain.MeResponse{}, err
 	}
+	items = normalizeEntitlements(items)
 	var activeProduct *string
 	isPremium := false
 	for _, item := range items {
@@ -51,6 +52,13 @@ func (s Service) Me(ctx context.Context, userID string) (domain.MeResponse, erro
 		ActiveProduct: activeProduct,
 		Source:        "entitlement-service",
 	}, nil
+}
+
+func normalizeEntitlements(items []domain.Entitlement) []domain.Entitlement {
+	if items == nil {
+		return make([]domain.Entitlement, 0)
+	}
+	return items
 }
 
 func (s Service) PlaybackAccess(ctx context.Context, userID string, _ domain.PlaybackAccessQuery) (domain.PlaybackAccessResponse, error) {

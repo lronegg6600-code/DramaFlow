@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-04-09T09:18:56.119Z",
+  "startedAt": "2026-04-09T09:03:56.045Z",
+  "command": "docker compose -f \"Z:\\Projects\\DramaFlow\\backend\\deployments\\docker-compose\\docker-compose.yml\" up --build -d entitlement-service",
+  "status": "timed_out",
+  "exitCode": null,
+  "signal": "SIGTERM",
+  "timedOut": true,
+  "stdout": "",
+  "stderr": "",
+  "interpretation": "docker compose control path did not complete within the timeout; runtime replacement is not proven"
+}

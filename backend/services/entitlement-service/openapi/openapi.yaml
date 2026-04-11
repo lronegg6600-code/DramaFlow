@@ -15,6 +15,10 @@ paths:
       responses:
         '200':
           description: Current user entitlements.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeEnvelope'
   /v1/entitlements/me/playback-access:
     get:
       security:
@@ -56,3 +60,69 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+  schemas:
+    MeEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MeResponse'
+        error:
+          type: object
+          nullable: true
+      required:
+        - data
+    MeResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        entitlements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entitlement'
+        isPremium:
+          type: boolean
+        activeProductId:
+          type: string
+          nullable: true
+        source:
+          type: string
+      required:
+        - userId
+        - entitlements
+        - isPremium
+        - source
+    Entitlement:
+      type: object
+      properties:
+        entitlementId:
+          type: string
+        userId:
+          type: string
+        entitlementType:
+          type: string
+        scopeType:
+          type: string
+        scopeId:
+          type: string
+          nullable: true
+        productId:
+          type: string
+        sourcePurchaseToken:
+          type: string
+        state:
+          type: string
+        startsAt:
+          type: string
+        endsAt:
+          type: string
+          nullable: true
+      required:
+        - entitlementId
+        - userId
+        - entitlementType
+        - scopeType
+        - productId
+        - sourcePurchaseToken
+        - state
+        - startsAt

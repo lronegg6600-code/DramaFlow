@@ -1,0 +1,29 @@
+﻿{
+  "generatedAt": "2026-04-09T09:55:31.107Z",
+  "beforeRestartAttempt": {
+    "listenerPresent": true,
+    "providers": [
+      {
+        "processId": 21628,
+        "processName": "com.docker.backend.exe",
+        "path": "C:\\Program Files\\Docker\\Docker\\resources\\com.docker.backend.exe",
+        "binding": "0.0.0.0:8086 and [::]:8086"
+      },
+      {
+        "processId": 28780,
+        "processName": "wslrelay.exe",
+        "path": "C:\\Program Files\\WSL\\wslrelay.exe",
+        "binding": "[::1]:8086"
+      }
+    ],
+    "interpretation": "Before the cutover attempt, port 8086 was provided by Docker Desktop and WSL relay forwarding rather than a standalone host entitlement-service binary."
+  },
+  "afterRestartAttempt": {
+    "listenerPresent": false,
+    "listeners8086": null,
+    "knownProviderProcesses": null,
+    "interpretation": "After the Docker Desktop restart attempt, port 8086 no longer had a live provider."
+  },
+  "providerConfirmed": true,
+  "interpretation": "The 8086 provider was identified before cutover, but it disappeared after the failed Docker Desktop recovery attempt."
+}

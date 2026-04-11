@@ -1,0 +1,33 @@
+﻿{
+  "generatedAt": "2026-04-09T09:55:31.093Z",
+  "beforeRestartAttempt": {
+    "providerAvailable": true,
+    "providerKind": "docker_desktop_wsl_forwarding",
+    "providerProcesses": [
+      {
+        "processId": 21628,
+        "processName": "com.docker.backend.exe"
+      },
+      {
+        "processId": 28780,
+        "processName": "wslrelay.exe"
+      }
+    ]
+  },
+  "afterRestartAttempt": {
+    "netstat": {
+      "status": "ok",
+      "stdout": "",
+      "stderr": ""
+    },
+    "tcp": {
+      "status": "failed",
+      "stdout": "",
+      "stderr": ""
+    },
+    "providerAvailable": false
+  },
+  "providerChanged": true,
+  "currentProviderAvailable": false,
+  "interpretation": "Port 8086 was previously fronted by Docker Desktop/WSL forwarding, but after the failed cutover attempt there is no current 8086 listener to verify."
+}

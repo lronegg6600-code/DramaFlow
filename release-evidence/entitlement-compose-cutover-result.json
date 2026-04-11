@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-04-09T09:56:08.376Z",
+  "command": "docker compose -f 'Z:\\Projects\\DramaFlow\\backend\\deployments\\docker-compose\\docker-compose.yml' up --build -d entitlement-service",
+  "status": "failed",
+  "exitCode": 1,
+  "signal": null,
+  "stdout": "",
+  "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.project%3Ddocker-compose%22%3Atrue%7D%7D\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n",
+  "interpretation": "Compose cutover failed immediately."
+}

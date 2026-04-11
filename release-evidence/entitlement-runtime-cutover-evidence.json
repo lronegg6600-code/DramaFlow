@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-04-09T09:56:19.262Z",
+  "diagnosis": {
+    "generatedAt": "2026-04-09T09:55:27.817Z",
+    "dockerInfo": {
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": "Client:\n Version:    26.1.4\n Context:    desktop-linux\n Debug Mode: false\n Plugins:\n  buildx: Docker Buildx (Docker Inc.)\n    Version:  v0.14.1-desktop.1\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-buildx.exe\n  compose: Docker Compose (Docker Inc.)\n    Version:  v2.27.1-desktop.1\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-compose.exe\n  debug: Get a shell into any image or container (Docker Inc.)\n    Version:  0.0.32\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-debug.exe\n  dev: Docker Dev Environments (Docker Inc.)\n    Version:  v0.1.2\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-dev.exe\n  extension: Manages Docker extensions (Docker Inc.)\n    Version:  v0.2.24\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-extension.exe\n  feedback: Provide feedback, right in your terminal! (Docker Inc.)\n    Version:  v1.0.5\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-feedback.exe\n  init: Creates Docker-related starter files for your project (Docker Inc.)\n    Version:  v1.2.0\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-init.exe\n  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)\n    Version:  0.6.0\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-sbom.exe\n  scout: Docker Scout (Docker Inc.)\n    Version:  v1.9.3\n    Path:     C:\\Program Files\\Docker\\cli-plugins\\docker-scout.exe\n\nServer:\n",
+      "stderr": "ERROR: error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/info\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\nerrors pretty printing info\n"
+    },
+    "dockerPs": {
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": "",
+      "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/containers/json\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n"
+    },
+    "composePs": {
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": "",
+      "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/containers/json?filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Ddocker-compose%22%3Atrue%7D%7D\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n"
+    },
+    "composeLogs": {
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": "",
+      "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Ddocker-compose%22%3Atrue%2C%22com.docker.compose.service%3Dentitlement-service%22%3Atrue%7D%7D\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n"
+    },
+    "wslStatus": {
+      "status": "ok",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "؞��\u0006R�S:\u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000d\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000\r\u0000\n\u0000؞��Hr,g:\u0000 \u00002\u0000\r\u0000\n\u0000",
+      "stderr": ""
+    },
+    "wslDesktopExec": {
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": "",
+      "stderr": "w\u0000s\u0000l\u0000:\u0000 \u0000*g��(W\u001c C\u0000:\u0000\\\u0000U\u0000s\u0000e\u0000r\u0000s\u0000\\\u0000a\u0000d\u0000m\u0000i\u0000n\u0000\\\u0000A\u0000p\u0000p\u0000D\u0000a\u0000t\u0000a\u0000\\\u0000L\u0000o\u0000c\u0000a\u0000l\u0000\\\u0000t\u0000e\u0000m\u0000p\u0000\\\u0000E\u00000\u00002\u00000\u0000F\u00003\u0000F\u00000\u0000-\u00007\u0000C\u0000A\u00003\u0000-\u00004\u0000C\u0000F\u00002\u0000-\u0000B\u00000\u00000\u0000D\u0000-\u00001\u0000E\u0000C\u00005\u00009\u00009\u00008\u00000\u00005\u00005\u0000A\u00002\u0000\\\u0000s\u0000w\u0000a\u0000p\u0000.\u0000v\u0000h\u0000d\u0000x\u0000\u001d -N\u001bR�^�Nbc�x�v:\u0000 \u0000�x�vzz��\rN��\u00020 \u0000\r\u0000\n\u0000w\u0000s\u0000l\u0000:\u0000 \u0000U\u0000n\u0000k\u0000n\u0000o\u0000w\u0000n\u0000 \u0000k\u0000e\u0000y\u0000 \u0000'\u0000a\u0000u\u0000t\u0000o\u0000m\u0000o\u0000u\u0000n\u0000t\u0000.\u0000c\u0000r\u0000o\u0000s\u0000s\u0000D\u0000i\u0000s\u0000t\u0000r\u0000o\u0000'\u0000 \u0000i\u0000n\u0000 \u0000/\u0000e\u0000t\u0000c\u0000/\u0000w\u0000s\u0000l\u0000.\u0000c\u0000o\u0000n\u0000f\u0000:\u00003\u0000\r\u0000\n\u0000<3>WSL (13 - Relay) ERROR: CreateProcessParseCommon:1005: getpwuid(0) failed 5\n<3>WSL (13 - Relay) ERROR: operator():579: getpwuid(0) failed 5\n<3>WSL (13) ERROR: I/O error @util.cpp:1358 (UtilInitGroups)\n<3>WSL (13 - Relay) ERROR: CreateProcessCommon:807: Create process failed\n"
+    },
+    "lxssManager": {
+      "status": "ok",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "\r\nSERVICE_NAME: LxssManager \r\n        TYPE               : 30  WIN32  \r\n        STATE              : 4  RUNNING \r\n                                (STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)\r\n        WIN32_EXIT_CODE    : 0  (0x0)\r\n        SERVICE_EXIT_CODE  : 0  (0x0)\r\n        CHECKPOINT         : 0x0\r\n        WAIT_HINT          : 0x0\r\n",
+      "stderr": ""
+    },
+    "dockerService": {
+      "status": "ok",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": "\r\nSERVICE_NAME: com.docker.service \r\n        TYPE               : 10  WIN32_OWN_PROCESS  \r\n        STATE              : 4  RUNNING \r\n                                (STOPPABLE, NOT_PAUSABLE, ACCEPTS_SHUTDOWN)\r\n        WIN32_EXIT_CODE    : 0  (0x0)\r\n        SERVICE_EXIT_CODE  : 0  (0x0)\r\n        CHECKPOINT         : 0x0\r\n        WAIT_HINT          : 0x0\r\n",
+      "stderr": ""
+    },
+    "interpretation": "Docker Desktop service can be running while docker CLI, compose control plane, and docker-desktop WSL exec remain unavailable. This is a control-path failure, not evidence of successful runtime cutover."
+  },
+  "instance": {
+    "generatedAt": "2026-04-09T09:55:31.107Z",
+    "listeners8086": null,
+    "knownProviderProcesses": null,
+    "interpretation": "8086 currently has no live provider after the Docker Desktop restart attempt."
+  },
+  "provider": {
+    "generatedAt": "2026-04-09T09:55:31.093Z",
+    "netstat": {
+      "status": "ok",
+      "stdout": "",
+      "stderr": ""
+    },
+    "tcp": {
+      "status": "failed",
+      "stdout": "",
+      "stderr": ""
+    },
+    "providerAvailable": false,
+    "interpretation": "No 8086 listener is currently available; runtime cutover cannot be verified."
+  },
+  "composeCutover": {
+    "generatedAt": "2026-04-09T09:56:08.376Z",
+    "command": "docker compose -f 'Z:\\Projects\\DramaFlow\\backend\\deployments\\docker-compose\\docker-compose.yml' up --build -d entitlement-service",
+    "status": "failed",
+    "exitCode": 1,
+    "signal": null,
+    "stdout": "",
+    "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.45/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.project%3Ddocker-compose%22%3Atrue%7D%7D\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.\n",
+    "interpretation": "Compose cutover failed immediately."
+  },
+  "alternativeCutover": {
+    "generatedAt": "2026-04-09T09:56:06.488Z",
+    "attempted": true,
+    "strategy": "docker-desktop / com.docker.backend process restart and service restart",
+    "status": "failed",
+    "reason": "Docker Desktop process restart and com.docker.service restart did not restore docker CLI/compose control or recover port 8086 service availability.",
+    "interpretation": "No safe alternative cutover path could replace only entitlement-service without a functioning Docker/WSL control path."
+  },
+  "probe": {
+    "generatedAt": "2026-04-09T09:56:06.656Z",
+    "status": "failed",
+    "error": "fetch failed",
+    "interpretation": "Live reprobe could not connect to the local backend stack after Docker Desktop restart attempt."
+  }
+}

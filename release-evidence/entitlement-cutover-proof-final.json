@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-04-09T15:29:08.205Z",
+  "runtimeReplaced": true,
+  "contractProbePassed": true,
+  "sourceLanded": true,
+  "androidVerified": true,
+  "fullyConverged": true,
+  "decision": "source_runtime_android_fully_converged",
+  "evidence": {
+    "beforeAfterFile": "Z:\\Projects\\DramaFlow\\release-evidence\\entitlement-cutover-before-after-final.json",
+    "currentContainerId": "39599677b00dbab42fd6850f84faf691c650a2c46ef6a6dc5a77ad62cef5bf00",
+    "currentImageDigest": "sha256:251d26df2dc7c0866d152f418aa21300e5180d06ec06d62ebe69fc6185eb9349",
+    "probeFile": "Z:\\Projects\\DramaFlow\\release-evidence\\entitlement-live-contract-reprobe.json"
+  },
+  "interpretation": "The live entitlement-service instance was replaced and the localhost contract now returns entitlements as an empty array."
+}

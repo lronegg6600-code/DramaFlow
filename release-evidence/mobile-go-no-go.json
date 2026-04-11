@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-04-09T06:55:00Z",
+  "decision": "go_for_local_app_signoff",
+  "rationale": "The entitlements=null contract mismatch was fixed on both sides, the debug APK was reinstalled on the same physical device, and Billing/Restore no longer crash. Local app smoke now passes, while staging remains blocked by external URL readiness.",
+  "stagingBlockers": [
+    "STAGING-URL-001"
+  ],
+  "localState": {
+    "localScriptPassOnly": false,
+    "localAppSmokeExecuted": true,
+    "localAppSmokePass": true
+  }
+}

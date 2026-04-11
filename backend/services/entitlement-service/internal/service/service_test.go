@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"dramaflow/backend/shared/config"
@@ -55,5 +56,46 @@ func TestRecomputeRequiresUserID(t *testing.T) {
 	_, err := svc.Recompute(context.Background(), "")
 	if err == nil || err.(apperrors.AppError).Code != apperrors.ErrValidation.Code {
 		t.Fatalf("expected validation error, got %v", err)
+	}
+}
+
+func TestMeNormalizesNilEntitlementsToEmptyList(t *testing.T) {
+	svc := New(entitlementRepoMock{items: nil}, entitlementProjectorMock{}, config.Config{})
+
+	resp, err := svc.Me(context.Background(), "user-1")
+	if err != nil {
+		t.Fatalf("Me() error = %v", err)
+	}
+	if resp.Entitlements == nil {
+		t.Fatal("expected entitlements to be normalized to empty slice")
+	}
+	if len(resp.Entitlements) != 0 {
+		t.Fatalf("expected empty entitlements, got %d", len(resp.Entitlements))
+	}
+}
+
+func TestMeResponseSerializesEntitlementsAsArray(t *testing.T) {
+	svc := New(entitlementRepoMock{items: nil}, entitlementProjectorMock{}, config.Config{})
+
+	resp, err := svc.Me(context.Background(), "user-1")
+	if err != nil {
+		t.Fatalf("Me() error = %v", err)
+	}
+
+	payload, err := json.Marshal(resp)
+	if err != nil {
+		t.Fatalf("json.Marshal() error = %v", err)
+	}
+
+	var decoded map[string]any
+	if err := json.Unmarshal(payload, &decoded); err != nil {
+		t.Fatalf("json.Unmarshal() error = %v", err)
+	}
+	entitlements, ok := decoded["entitlements"].([]any)
+	if !ok {
+		t.Fatalf("expected entitlements to serialize as JSON array, got %#v", decoded["entitlements"])
+	}
+	if len(entitlements) != 0 {
+		t.Fatalf("expected empty entitlements array, got %d elements", len(entitlements))
 	}
 }

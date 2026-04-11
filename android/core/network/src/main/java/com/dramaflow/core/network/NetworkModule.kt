@@ -1,5 +1,6 @@
 package com.dramaflow.core.network
 
+import android.os.Build
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -78,10 +79,34 @@ object DramaFlowNetworkModule {
         accessTokenProvider: AccessTokenProvider? = null,
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(resolvedBaseUrl(baseUrl))
             .client(baseClient(accessTokenProvider))
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
+
+    private fun isEmulator(): Boolean =
+        Build.FINGERPRINT.startsWith("generic") ||
+            Build.FINGERPRINT.startsWith("unknown") ||
+            Build.MODEL.contains("google_sdk") ||
+            Build.MODEL.contains("Emulator") ||
+            Build.MODEL.contains("Android SDK built for x86") ||
+            Build.MANUFACTURER.contains("Genymotion") ||
+            (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+            "google_sdk" == Build.PRODUCT
+
+    private fun debugRuntimeUrl(url: String): String =
+        if (isEmulator()) {
+            url
+        } else {
+            url.replace("10.0.2.2", "127.0.0.1")
+        }
+
+    private fun resolvedBaseUrl(url: String): String =
+        if (BuildConfig.NETWORK_ENV == "release") {
+            url
+        } else {
+            debugRuntimeUrl(url)
+        }
 
     fun currentEnvironment(): NetworkEnvironment =
         when (BuildConfig.NETWORK_ENV) {
