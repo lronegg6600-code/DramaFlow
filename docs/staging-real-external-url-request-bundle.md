@@ -41,3 +41,23 @@ Provide a second-round manifest containing only real, resolvable, Android-access
 - verified Android staging env cannot be exported
 - mobile defect burn-down cannot move from environment blocking to runtime defect triage
 - next real staging rehearsal evaluation cannot start from the mobile side
+
+## Ready-To-Send Message (Work Chat Short Version)
+平台同学帮忙今天补齐 staging external URLs。当前唯一卡点有两个：  
+1) 执行环境需要可用 `gh` + token（脚本已支持，工程侧可马上跑）；  
+2) 你们还没提交 7 条真实 external staging URL（auth/content/feed/progress/playback/entitlement/billing）。  
+脚本链路已经 ready：URL 一旦给齐，我们同轮可完成 reply 抓取、URL 校验、burndown 更新，并切入 Android × backend staging integration。  
+投递路径：`platform-intake/received/staging-external-urls/responses/staging-external-urls.yaml`。
+
+## Ready-To-Send Message (Issue / Comment Formal Version)
+External URL unblock update for issue `#42`:
+
+- Current blocker is now narrowed to two execution prerequisites:
+  1. Runtime environment must have usable `gh` and token (`GH_TOKEN` or `GITHUB_TOKEN`) for automated fetch/comment dispatch.
+  2. Platform has not submitted the 7 real external staging URLs yet.
+- Tooling and validation scripts are already ready on engineering side.
+- Once all 7 URLs are submitted in the required manifest path, we will execute in the same cycle:
+  1. `node tools/fetch_real_external_url_replies.mjs`
+  2. `node tools/validate_real_external_urls.mjs`
+  3. `node tools/summarize_real_external_url_burndown.mjs`
+- If all URLs pass validation (7/7 verified), we immediately move into Android × backend staging integration.

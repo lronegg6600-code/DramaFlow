@@ -29,3 +29,25 @@ Define the minimum conditions required before Phase 9 real staging rehearsal can
 ## Blocking Rule
 
 If any item above is missing, real staging rehearsal remains blocked.
+
+## External URL Unblock Gate (Must Pass Before Android x Backend Staging Integration)
+
+- [ ] `gh` is executable in current shell (or `GH_BIN` is configured to a valid `gh` path)
+- [ ] `GH_TOKEN` or `GITHUB_TOKEN` is available in current shell
+- [ ] `gh auth status --hostname github.com` returns success
+- [ ] 7/7 real external staging URLs are received in platform intake
+- [ ] 7/7 URLs are verified by `node tools/validate_real_external_urls.mjs`
+- [ ] evidence files are updated in `release-evidence/`:
+  - `external-url-ops-env-check.json`
+  - `external-url-unblock-cycle-summary.json`
+  - `staging-real-external-url-reply-log.json`
+  - `staging-external-url-second-validation.json`
+  - `staging-external-url-second-burndown.json`
+- [ ] Android x backend staging integration trigger conditions are satisfied:
+  - verified env export available
+  - unresolved external URL blocker count is zero
+  - integration cycle status is `ready_for_staging_integration`
+
+## One-Command Controller
+
+- `node tools/run_external_url_unblock_cycle.mjs`

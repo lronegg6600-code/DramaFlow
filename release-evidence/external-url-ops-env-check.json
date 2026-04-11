@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-04-11T13:00:06.405Z",
+  "overallStatus": "blocked_by_missing_gh",
+  "ready": false,
+  "checks": {
+    "gh": {
+      "available": false,
+      "command": null,
+      "version": null,
+      "error": null
+    },
+    "token": {
+      "available": false,
+      "source": null
+    },
+    "ghAuth": {
+      "authenticated": false,
+      "statusCode": null,
+      "stderr": null
+    },
+    "repoRemote": {
+      "available": true,
+      "remote": "https://github.com/lronegg6600-code/DramaFlow.git",
+      "valid": true,
+      "stderr": ""
+    },
+    "evidenceDir": {
+      "path": "Z:\\Projects\\DramaFlow\\release-evidence",
+      "writable": true,
+      "error": null
+    }
+  },
+  "blockers": [
+    "blocked_by_missing_gh"
+  ]
+}

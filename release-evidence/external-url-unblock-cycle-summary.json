@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-04-11T13:00:06.361Z",
+  "mode": "preflight_blocked",
+  "cycleStatus": "blocked_by_missing_gh",
+  "envCheck": {
+    "status": "blocked_by_missing_gh",
+    "json": "release-evidence/external-url-ops-env-check.json"
+  },
+  "steps": [],
+  "summary": {
+    "message": "Environment is blocked. External URL cycle was not executed.",
+    "nextActions": [
+      "Install GitHub CLI and ensure `gh` is available in PATH or set GH_BIN.",
+      "Re-run: node tools/check_external_url_ops_env.mjs"
+    ]
+  }
+}
