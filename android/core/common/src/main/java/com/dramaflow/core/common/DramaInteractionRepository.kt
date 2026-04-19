@@ -24,6 +24,7 @@ data class DramaInteractionFlags(
 
 interface DramaInteractionRepository {
     fun observeInteractionState(): Flow<DramaInteractionState>
+    fun observeInteraction(dramaId: String): Flow<DramaInteractionFlags>
     suspend fun isLiked(dramaId: String): Boolean
     suspend fun isFavorited(dramaId: String): Boolean
     suspend fun toggleLike(dramaId: String): DramaInteractionState
@@ -72,6 +73,15 @@ class DefaultDramaInteractionRepository @Inject constructor(
     private val localDataSource: DramaInteractionLocalDataSource,
 ) : DramaInteractionRepository {
     override fun observeInteractionState(): Flow<DramaInteractionState> = localDataSource.observeState()
+
+    override fun observeInteraction(dramaId: String): Flow<DramaInteractionFlags> {
+        return observeInteractionState().map { state ->
+            DramaInteractionFlags(
+                isLiked = dramaId in state.likedDramaIds,
+                isFavorited = dramaId in state.favoriteDramaIds,
+            )
+        }
+    }
 
     override suspend fun isLiked(dramaId: String): Boolean {
         return observeInteractionState()

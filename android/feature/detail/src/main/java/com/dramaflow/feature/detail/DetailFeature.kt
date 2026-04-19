@@ -1,5 +1,6 @@
 package com.dramaflow.feature.detail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
@@ -32,6 +37,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.dramaflow.core.common.CatalogRepository
 import com.dramaflow.core.common.DataResult
+import com.dramaflow.core.common.DramaInteractionFlags
+import com.dramaflow.core.common.DramaInteractionRepository
 import com.dramaflow.core.common.DramaFlowMockData
 import com.dramaflow.core.designsystem.component.DfCategoryChip
 import com.dramaflow.core.designsystem.component.DfDramaCard
@@ -51,46 +58,175 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+
+private const val DetailInteractionLogTag = "DetailInteraction"
 
 data class DetailUiState(
     val loadState: DfLoadState = DfLoadState.LOADING,
     val payload: DetailPayload? = null,
     val errorMessage: String = "Unable to load the drama details.",
+    val isLiked: Boolean = false,
+    val isFavorited: Boolean = false,
+    val isLikeUpdating: Boolean = false,
+    val isFavoriteUpdating: Boolean = false,
 )
 
 sealed interface DetailAction {
     data object Retry : DetailAction
+    data object ToggleLike : DetailAction
+    data object ToggleFavorite : DetailAction
 }
+
+data class DetailPendingInteractionOverride(
+    val liked: Boolean? = null,
+    val favorited: Boolean? = null,
+    val likeInFlight: Boolean = false,
+    val favoriteInFlight: Boolean = false,
+)
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val repository: CatalogRepository,
+    private val interactionRepository: DramaInteractionRepository,
     savedStateHandle: SavedStateHandle,
 ) : androidx.lifecycle.ViewModel() {
     private val dramaId: String = savedStateHandle["dramaId"] ?: "df-neon-vows"
     private val _uiState = MutableStateFlow(DetailUiState())
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
     private var observeJob: Job? = null
+    private val pendingInteractionOverride = MutableStateFlow(DetailPendingInteractionOverride())
 
     init {
         observe()
     }
 
     fun onAction(action: DetailAction) {
-        if (action == DetailAction.Retry) observe()
+        when (action) {
+            DetailAction.Retry -> observe()
+            DetailAction.ToggleLike -> handleToggleLike()
+            DetailAction.ToggleFavorite -> handleToggleFavorite()
+        }
     }
 
     private fun observe() {
         observeJob?.cancel()
         observeJob = viewModelScope.launch {
-            repository.observeDramaDetail(dramaId).collect { result ->
-                _uiState.value = when (result) {
-                    DataResult.Loading -> DetailUiState(loadState = DfLoadState.LOADING)
-                    DataResult.Empty -> DetailUiState(loadState = DfLoadState.EMPTY)
-                    is DataResult.Error -> DetailUiState(loadState = DfLoadState.ERROR, errorMessage = result.message)
-                    is DataResult.Success -> DetailUiState(loadState = DfLoadState.SUCCESS, payload = result.value)
+            combine(
+                repository.observeDramaDetail(dramaId),
+                interactionRepository.observeInteraction(dramaId),
+                pendingInteractionOverride,
+            ) { detailResult, interactionFlags, pendingOverride ->
+                Triple(detailResult, interactionFlags, pendingOverride)
+            }.collect { (detailResult, interactionFlags, pendingOverride) ->
+                _uiState.value = when (detailResult) {
+                    DataResult.Loading -> DetailUiState(
+                        loadState = DfLoadState.LOADING,
+                        isLiked = pendingOverride.liked ?: interactionFlags.isLiked,
+                        isFavorited = pendingOverride.favorited ?: interactionFlags.isFavorited,
+                        isLikeUpdating = pendingOverride.likeInFlight,
+                        isFavoriteUpdating = pendingOverride.favoriteInFlight,
+                    )
+
+                    DataResult.Empty -> DetailUiState(
+                        loadState = DfLoadState.EMPTY,
+                        isLiked = pendingOverride.liked ?: interactionFlags.isLiked,
+                        isFavorited = pendingOverride.favorited ?: interactionFlags.isFavorited,
+                        isLikeUpdating = pendingOverride.likeInFlight,
+                        isFavoriteUpdating = pendingOverride.favoriteInFlight,
+                    )
+
+                    is DataResult.Error -> DetailUiState(
+                        loadState = DfLoadState.ERROR,
+                        errorMessage = detailResult.message,
+                        isLiked = pendingOverride.liked ?: interactionFlags.isLiked,
+                        isFavorited = pendingOverride.favorited ?: interactionFlags.isFavorited,
+                        isLikeUpdating = pendingOverride.likeInFlight,
+                        isFavoriteUpdating = pendingOverride.favoriteInFlight,
+                    )
+
+                    is DataResult.Success -> DetailUiState(
+                        loadState = DfLoadState.SUCCESS,
+                        payload = detailResult.value,
+                        isLiked = pendingOverride.liked ?: interactionFlags.isLiked,
+                        isFavorited = pendingOverride.favorited ?: interactionFlags.isFavorited,
+                        isLikeUpdating = pendingOverride.likeInFlight,
+                        isFavoriteUpdating = pendingOverride.favoriteInFlight,
+                    )
                 }
+            }
+        }
+    }
+
+    private fun handleToggleLike() {
+        val currentState = _uiState.value
+        if (currentState.isLikeUpdating) return
+        val nextLiked = !currentState.isLiked
+        Log.d(DetailInteractionLogTag, "detail_like_click drama=$dramaId nextLiked=$nextLiked")
+        pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+            liked = nextLiked,
+            likeInFlight = true,
+        )
+        viewModelScope.launch {
+            runCatching {
+                interactionRepository.toggleLike(dramaId)
+            }.onFailure { error ->
+                Log.e(
+                    DetailInteractionLogTag,
+                    "detail_interaction_persist_failed drama=$dramaId action=like message=${error.message}",
+                    error,
+                )
+                Log.d(DetailInteractionLogTag, "detail_interaction_rollback drama=$dramaId action=like")
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    liked = currentState.isLiked,
+                    likeInFlight = false,
+                )
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    liked = null,
+                    likeInFlight = false,
+                )
+            }.onSuccess {
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    liked = null,
+                    likeInFlight = false,
+                )
+            }
+        }
+    }
+
+    private fun handleToggleFavorite() {
+        val currentState = _uiState.value
+        if (currentState.isFavoriteUpdating) return
+        val nextFavorited = !currentState.isFavorited
+        Log.d(DetailInteractionLogTag, "detail_favorite_click drama=$dramaId nextFavorited=$nextFavorited")
+        pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+            favorited = nextFavorited,
+            favoriteInFlight = true,
+        )
+        viewModelScope.launch {
+            runCatching {
+                interactionRepository.toggleFavorite(dramaId)
+            }.onFailure { error ->
+                Log.e(
+                    DetailInteractionLogTag,
+                    "detail_interaction_persist_failed drama=$dramaId action=favorite message=${error.message}",
+                    error,
+                )
+                Log.d(DetailInteractionLogTag, "detail_interaction_rollback drama=$dramaId action=favorite")
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    favorited = currentState.isFavorited,
+                    favoriteInFlight = false,
+                )
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    favorited = null,
+                    favoriteInFlight = false,
+                )
+            }.onSuccess {
+                pendingInteractionOverride.value = pendingInteractionOverride.value.copy(
+                    favorited = null,
+                    favoriteInFlight = false,
+                )
             }
         }
     }
@@ -157,6 +293,14 @@ fun DetailScreen(
                             LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
                                 items(payload.drama.tags) { tag -> DfCategoryChip(label = tag.label) }
                             }
+                            DetailInteractionRow(
+                                isLiked = uiState.isLiked,
+                                isFavorited = uiState.isFavorited,
+                                isLikeUpdating = uiState.isLikeUpdating,
+                                isFavoriteUpdating = uiState.isFavoriteUpdating,
+                                onToggleLike = { onAction(DetailAction.ToggleLike) },
+                                onToggleFavorite = { onAction(DetailAction.ToggleFavorite) },
+                            )
                             Text("Cast: ${payload.drama.cast.joinToString()}", color = colors.textSecondary)
                             Text(payload.drama.heroNote, color = colors.accentStrong)
                             Row(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
@@ -204,6 +348,68 @@ fun DetailScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DetailInteractionRow(
+    isLiked: Boolean,
+    isFavorited: Boolean,
+    isLikeUpdating: Boolean,
+    isFavoriteUpdating: Boolean,
+    onToggleLike: () -> Unit,
+    onToggleFavorite: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    Row(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
+        DetailInteractionButton(
+            icon = if (isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+            label = if (isLiked) "Liked" else "Like",
+            selected = isLiked,
+            enabled = !isLikeUpdating,
+            onClick = onToggleLike,
+        )
+        DetailInteractionButton(
+            icon = if (isFavorited) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
+            label = if (isFavorited) "Saved" else "Save",
+            selected = isFavorited,
+            enabled = !isFavoriteUpdating,
+            onClick = onToggleFavorite,
+        )
+    }
+}
+
+@Composable
+private fun DetailInteractionButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Surface(
+        modifier = Modifier
+            .clip(DramaFlowThemeTokens.shapes.pill)
+            .clickable(enabled = enabled, onClick = onClick),
+        color = if (selected) colors.accentStrong else colors.surface,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (selected) colors.textInverse else colors.textPrimary,
+            )
+            Text(
+                text = label,
+                color = if (selected) colors.textInverse else colors.textPrimary,
+            )
         }
     }
 }
@@ -276,7 +482,12 @@ private fun DetailPreview() {
     )
     DramaFlowTheme {
         DetailScreen(
-            uiState = DetailUiState(loadState = DfLoadState.SUCCESS, payload = payload),
+            uiState = DetailUiState(
+                loadState = DfLoadState.SUCCESS,
+                payload = payload,
+                isLiked = true,
+                isFavorited = false,
+            ),
             onAction = {},
             onBack = {},
             onPlayEpisode = {},
