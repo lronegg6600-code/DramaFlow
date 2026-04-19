@@ -12,6 +12,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dramaflow.feature.detail.DetailRoute
 import com.dramaflow.feature.feed.FeedRoute
+import com.dramaflow.feature.feed.SearchRoute
 import com.dramaflow.feature.player.PlayerRoute
 import com.dramaflow.feature.profile.ProfileRoute
 import com.dramaflow.feature.subscription.SubscriptionEntrySource
@@ -32,6 +33,7 @@ sealed class DramaFlowDestination(val route: String) {
     }
 
     data object Profile : DramaFlowDestination("profile")
+    data object Search : DramaFlowDestination("search")
 }
 
 @Composable
@@ -50,8 +52,13 @@ fun RootNavHost(navController: NavHostController) {
             FeedRoute(
                 onDramaClick = { navController.navigate(DramaFlowDestination.Detail.createRoute(it)) },
                 onContinueWatching = { navController.navigate(DramaFlowDestination.Player.createRoute(it)) },
-                onProfileClick = { navController.navigate(DramaFlowDestination.Profile.route) },
-                onSubscriptionClick = { navController.navigate(DramaFlowDestination.Subscription.createRoute(SubscriptionEntrySource.FEED)) },
+                onSearchClick = { navController.navigate(DramaFlowDestination.Search.route) },
+            )
+        }
+        composable(DramaFlowDestination.Search.route) {
+            SearchRoute(
+                onBack = { navController.popBackStack() },
+                onDramaClick = { navController.navigate(DramaFlowDestination.Detail.createRoute(it)) },
             )
         }
         composable(

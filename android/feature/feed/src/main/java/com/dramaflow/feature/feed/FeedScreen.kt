@@ -1,0 +1,620 @@
+package com.dramaflow.feature.feed
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import com.dramaflow.core.common.DramaFlowMockData
+import com.dramaflow.core.designsystem.component.DfCategoryChip
+import com.dramaflow.core.designsystem.component.DfEmptyCard
+import com.dramaflow.core.designsystem.component.DfErrorCard
+import com.dramaflow.core.designsystem.component.DfLoadingIndicator
+import com.dramaflow.core.designsystem.component.DfPrimaryButton
+import com.dramaflow.core.designsystem.component.DfWhiteMessageCard
+import com.dramaflow.core.designsystem.theme.DramaFlowThemeTokens
+import com.dramaflow.core.model.DramaCard
+import com.dramaflow.core.ui.DfLoadState
+import android.util.Log
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun FeedRoute(
+    onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    viewModel: FeedViewModel = hiltViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    FeedScreen(
+        uiState = uiState,
+        onAction = viewModel::onAction,
+        onDramaClick = onDramaClick,
+        onContinueWatching = onContinueWatching,
+        onSearchClick = onSearchClick,
+    )
+}
+
+@Composable
+fun FeedScreen(
+    uiState: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    when (uiState.selectedTab) {
+        HomePrimaryTab.RECOMMEND -> RecommendTabScreen(
+            uiState = uiState,
+            onAction = onAction,
+            onDramaClick = onDramaClick,
+            onContinueWatching = onContinueWatching,
+            onSearchClick = onSearchClick,
+        )
+
+        HomePrimaryTab.WATCH -> WatchTabScreen(
+            uiState = uiState,
+            onAction = onAction,
+            onDramaClick = onDramaClick,
+            onSearchClick = onSearchClick,
+        )
+
+        else -> TabPlaceholderScreen(
+            tab = uiState.selectedTab,
+            onSearchClick = onSearchClick,
+            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
+        )
+    }
+}
+
+@Composable
+private fun RecommendTabScreen(
+    uiState: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val items = uiState.recommendItems
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var canAutoplay by remember { mutableStateOf(true) }
+    val previewController = rememberFeedPreviewPlayerController()
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> canAutoplay = true
+                Lifecycle.Event.ON_STOP -> {
+                    canAutoplay = false
+                    previewController.pause()
+                }
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+    ) {
+        when (uiState.loadState) {
+            DfLoadState.LOADING -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfLoadingIndicator()
+            }
+
+            DfLoadState.EMPTY -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = spacing.xl, vertical = spacing.section),
+                contentAlignment = Alignment.Center,
+            ) {
+                DfEmptyCard(
+                    title = "No recommendations yet",
+                    message = "No titles are available in the recommendation stream.",
+                )
+            }
+
+            DfLoadState.ERROR -> Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = spacing.xl, vertical = spacing.section),
+                contentAlignment = Alignment.Center,
+            ) {
+                DfErrorCard(
+                    message = uiState.errorMessage,
+                    actionLabel = "Reload",
+                    onAction = { onAction(FeedAction.Retry) },
+                )
+            }
+
+            DfLoadState.SUCCESS -> {
+                if (items.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = spacing.xl, vertical = spacing.section),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        DfEmptyCard(
+                            title = "No recommendations yet",
+                            message = "No titles are available in the recommendation stream.",
+                        )
+                    }
+                } else {
+                    val pagerState = rememberPagerState(
+                        initialPage = uiState.activeRecommendPage.coerceIn(0, items.lastIndex),
+                        pageCount = { items.size },
+                    )
+                    LaunchedEffect(pagerState) {
+                        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
+                            onAction(FeedAction.SetRecommendActivePage(page))
+                        }
+                    }
+                    LaunchedEffect(uiState.activeRecommendPage, canAutoplay, items) {
+                        val activeItem = items.getOrNull(uiState.activeRecommendPage)
+                        previewController.activate(
+                            preview = activeItem?.preview,
+                            autoplayEnabled = canAutoplay && activeItem != null,
+                        )
+                    }
+                    VerticalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize(),
+                    ) { page ->
+                        RecommendPagerCard(
+                            item = items[page],
+                            isActive = page == uiState.activeRecommendPage && canAutoplay,
+                            previewController = previewController,
+                            onDramaClick = onDramaClick,
+                            onContinueWatching = onContinueWatching,
+                            onAction = onAction,
+                        )
+                    }
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .padding(horizontal = spacing.lg, vertical = spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(spacing.md),
+        ) {
+            FeedSearchEntry(
+                hint = "Search dramas",
+                darkMode = true,
+                onClick = onSearchClick,
+            )
+            PrimaryTabRow(
+                selectedTab = HomePrimaryTab.RECOMMEND,
+                onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
+                darkMode = true,
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecommendPagerCard(
+    item: RecommendFeedItem,
+    isActive: Boolean,
+    previewController: FeedPreviewPlayerController,
+    onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
+    onAction: (FeedAction) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    fun openPrimaryPlayback() {
+        Log.d("FeedPreview", "preview_click_enter_player drama=${item.card.drama.id}")
+        val episodeId = item.preview.entryEpisodeId
+            ?: item.card.lastProgress?.episodeId
+            ?: DramaFlowMockData.episodesForDrama(item.card.drama.id).firstOrNull()?.id
+        if (episodeId != null) {
+            onContinueWatching(episodeId)
+        } else {
+            onDramaClick(item.card.drama.id)
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        FeedPreviewPlayer(
+            preview = item.preview,
+            isActive = isActive,
+            controller = previewController,
+            modifier = Modifier.fillMaxSize(),
+            onOpenPlayer = ::openPrimaryPlayback,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.Black.copy(alpha = 0.35f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.75f),
+                        ),
+                    ),
+                ),
+        )
+        Surface(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(76.dp)
+                .clip(DramaFlowThemeTokens.shapes.pill)
+                .clickable {
+                    openPrimaryPlayback()
+                },
+            color = Color.White.copy(alpha = 0.22f),
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Icon(
+                    imageVector = Icons.Rounded.PlayArrow,
+                    contentDescription = "Play",
+                    tint = Color.White,
+                    modifier = Modifier.size(44.dp),
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = spacing.lg, end = 88.dp, bottom = spacing.section),
+            verticalArrangement = Arrangement.spacedBy(spacing.md),
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                item.card.drama.tags.take(2).forEach { tag ->
+                    Surface(
+                        shape = DramaFlowThemeTokens.shapes.pill,
+                        color = Color.Black.copy(alpha = 0.35f),
+                    ) {
+                        Text(
+                            text = tag.label,
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.xs),
+                        )
+                    }
+                }
+            }
+            Text(
+                text = item.card.drama.title,
+                style = DramaFlowThemeTokens.typography.headlineMedium,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.clickable { onDramaClick(item.card.drama.id) },
+            )
+            Text(
+                text = item.card.drama.shortDescription,
+                style = DramaFlowThemeTokens.typography.bodyLarge,
+                color = Color.White.copy(alpha = 0.9f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = spacing.lg, bottom = spacing.section + 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(spacing.lg),
+        ) {
+            SideActionButton(
+                icon = if (item.isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                label = formatCount(item.likeCount),
+                onClick = { onAction(FeedAction.ToggleLike(item.card.drama.id)) },
+            )
+            SideActionButton(
+                icon = if (item.isFavorited) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
+                label = "Save",
+                onClick = { onAction(FeedAction.ToggleFavorite(item.card.drama.id)) },
+            )
+            SideActionButton(
+                icon = Icons.Rounded.Share,
+                label = formatCount(item.shareCount),
+                onClick = { onAction(FeedAction.ShareDrama(item.card.drama.id)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun SideActionButton(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            modifier = Modifier
+                .size(52.dp)
+                .clip(DramaFlowThemeTokens.shapes.pill)
+                .clickable(onClick = onClick),
+            color = Color.Black.copy(alpha = 0.3f),
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Icon(icon, contentDescription = null, tint = Color.White)
+            }
+        }
+        Spacer(modifier = Modifier.height(spacing.xs))
+        Text(
+            text = label,
+            style = DramaFlowThemeTokens.typography.labelMedium,
+            color = Color.White,
+        )
+    }
+}
+
+@Composable
+private fun WatchTabScreen(
+    uiState: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onDramaClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    val watchState = uiState.watchBrowse
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colors.background)
+            .padding(horizontal = spacing.lg, vertical = spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(spacing.md),
+    ) {
+        FeedSearchEntry(
+            hint = "Search title, actor, or genre",
+            darkMode = false,
+            onClick = onSearchClick,
+        )
+        PrimaryTabRow(
+            selectedTab = HomePrimaryTab.WATCH,
+            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
+            darkMode = false,
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            items(watchState.filters) { filter ->
+                DfCategoryChip(
+                    label = filter.label,
+                    selected = watchState.selectedFilterId == filter.id,
+                    onClick = { onAction(FeedAction.SelectWatchFilter(filter.id)) },
+                )
+            }
+        }
+
+        when (watchState.loadState) {
+            DfLoadState.LOADING -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfLoadingIndicator()
+            }
+
+            DfLoadState.EMPTY -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfEmptyCard(title = "No dramas found", message = "Try switching filters.")
+            }
+
+            DfLoadState.ERROR -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfErrorCard(
+                    message = watchState.errorMessage,
+                    actionLabel = "Retry",
+                    onAction = { onAction(FeedAction.Retry) },
+                )
+            }
+
+            DfLoadState.SUCCESS -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.md),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = spacing.section),
+                ) {
+                    items(watchState.items, key = { it.drama.id }) { card ->
+                        WatchDramaGridCard(card = card, onDramaClick = onDramaClick)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WatchDramaGridCard(
+    card: DramaCard,
+    onDramaClick: (String) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(DramaFlowThemeTokens.shapes.medium)
+            .clickable { onDramaClick(card.drama.id) },
+        color = colors.whiteCard,
+        shadowElevation = DramaFlowThemeTokens.elevation.low,
+    ) {
+        Column {
+            AsyncImage(
+                model = card.drama.portraitPosterUrl,
+                contentDescription = card.drama.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp),
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier.padding(spacing.md),
+                verticalArrangement = Arrangement.spacedBy(spacing.xs),
+            ) {
+                Text(
+                    text = card.drama.title,
+                    style = DramaFlowThemeTokens.typography.titleMedium,
+                    color = colors.textPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = card.drama.tags.joinToString(" · ") { it.label } + " · ${card.drama.heatScore} heat",
+                    style = DramaFlowThemeTokens.typography.bodyMedium,
+                    color = colors.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TabPlaceholderScreen(
+    tab: HomePrimaryTab,
+    onSearchClick: () -> Unit,
+    onSelectTab: (HomePrimaryTab) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colors.background)
+            .padding(horizontal = spacing.lg, vertical = spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(spacing.lg),
+    ) {
+        FeedSearchEntry(
+            hint = "Search title, actor, or genre",
+            darkMode = false,
+            onClick = onSearchClick,
+        )
+        PrimaryTabRow(
+            selectedTab = tab,
+            onSelectTab = onSelectTab,
+            darkMode = false,
+        )
+        DfWhiteMessageCard(
+            title = "${tab.label} is not enabled yet",
+            body = "Recommend and Watch are fully active now. This tab remains a reserved extension point.",
+        )
+        DfPrimaryButton(
+            label = "Back to Recommend",
+            onClick = { onSelectTab(HomePrimaryTab.RECOMMEND) },
+        )
+    }
+}
+
+@Composable
+private fun FeedSearchEntry(
+    hint: String,
+    darkMode: Boolean,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val background = if (darkMode) Color.White.copy(alpha = 0.22f) else DramaFlowThemeTokens.colors.surface
+    val textColor = if (darkMode) Color.White.copy(alpha = 0.85f) else DramaFlowThemeTokens.colors.textSecondary
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(DramaFlowThemeTokens.shapes.pill)
+            .clickable(onClick = onClick),
+        color = background,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Search, contentDescription = null, tint = textColor)
+            Spacer(modifier = Modifier.width(spacing.sm))
+            Text(
+                text = hint,
+                color = textColor,
+                style = DramaFlowThemeTokens.typography.bodyLarge,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrimaryTabRow(
+    selectedTab: HomePrimaryTab,
+    onSelectTab: (HomePrimaryTab) -> Unit,
+    darkMode: Boolean,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val selectedColor = if (darkMode) Color.White else DramaFlowThemeTokens.colors.textPrimary
+    val normalColor = if (darkMode) Color.White.copy(alpha = 0.65f) else DramaFlowThemeTokens.colors.textSecondary
+    Row(horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
+        HomePrimaryTab.entries.forEach { tab ->
+            Text(
+                text = tab.label,
+                style = if (selectedTab == tab) {
+                    DramaFlowThemeTokens.typography.titleLarge
+                } else {
+                    DramaFlowThemeTokens.typography.titleMedium
+                },
+                color = if (selectedTab == tab) selectedColor else normalColor,
+                modifier = Modifier.clickable { onSelectTab(tab) },
+            )
+        }
+    }
+}
+
+private fun formatCount(value: Int): String {
+    return if (value >= 10_000) String.format("%.1fk", value / 1_000f) else value.toString()
+}

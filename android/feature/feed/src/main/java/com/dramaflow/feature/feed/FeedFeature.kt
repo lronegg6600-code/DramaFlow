@@ -1,52 +1,12 @@
 package com.dramaflow.feature.feed
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.WorkspacePremium
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dramaflow.core.common.DataResult
 import com.dramaflow.core.common.DramaFlowMockData
+import com.dramaflow.core.common.DataResult
 import com.dramaflow.core.common.FeedRepository
-import com.dramaflow.core.designsystem.component.DfCategoryChip
-import com.dramaflow.core.designsystem.component.DfDramaCard
-import com.dramaflow.core.designsystem.component.DfPrimaryButton
-import com.dramaflow.core.designsystem.component.DfTopBar
-import com.dramaflow.core.designsystem.component.DfWhiteMessageCard
-import com.dramaflow.core.designsystem.theme.DramaFlowTheme
-import com.dramaflow.core.designsystem.theme.DramaFlowThemeTokens
 import com.dramaflow.core.model.DramaCard
-import com.dramaflow.core.model.DramaTag
 import com.dramaflow.core.ui.DfLoadState
-import com.dramaflow.core.ui.DfScreenScaffold
-import com.dramaflow.core.ui.DfScrollableColumn
-import com.dramaflow.core.ui.DfStateLayout
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -55,26 +15,70 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+enum class HomePrimaryTab(val label: String) {
+    RECOMMEND("Recommend"),
+    WATCH("Watch"),
+    COMIC("Comic"),
+    RECENT("Recent"),
+    FAVORITE("Favorite"),
+}
+
+data class RecommendFeedItem(
+    val id: String,
+    val card: DramaCard,
+    val preview: RecommendPreviewMedia,
+    val likeCount: Int,
+    val commentCount: Int,
+    val shareCount: Int,
+    val isLiked: Boolean = false,
+    val isFavorited: Boolean = false,
+)
+
+data class RecommendPreviewMedia(
+    val mediaId: String,
+    val dramaId: String,
+    val entryEpisodeId: String?,
+    val previewUrl: String?,
+    val coverUrl: String,
+    val autoplayDelayMs: Long = 220L,
+)
+
+data class WatchFilter(
+    val id: String,
+    val label: String,
+)
+
+data class WatchBrowseUiState(
+    val loadState: DfLoadState = DfLoadState.LOADING,
+    val filters: List<WatchFilter> = defaultWatchFilters(),
+    val selectedFilterId: String = "hot",
+    val items: List<DramaCard> = emptyList(),
+    val errorMessage: String = "Watch list refresh failed. Please try again.",
+)
+
 data class FeedUiState(
     val loadState: DfLoadState = DfLoadState.LOADING,
-    val featured: DramaCard? = null,
-    val tags: List<DramaTag> = emptyList(),
-    val continueWatching: List<DramaCard> = emptyList(),
-    val hotTitles: List<DramaCard> = emptyList(),
-    val recommendations: List<DramaCard> = emptyList(),
-    val selectedTag: String? = null,
-    val errorMessage: String = "Unable to refresh the home feed.",
+    val selectedTab: HomePrimaryTab = HomePrimaryTab.RECOMMEND,
+    val activeRecommendPage: Int = 0,
+    val recommendItems: List<RecommendFeedItem> = emptyList(),
+    val watchBrowse: WatchBrowseUiState = WatchBrowseUiState(),
+    val errorMessage: String = "Home refresh failed. Please retry.",
 )
 
 sealed interface FeedAction {
-    data class SelectTag(val tag: String) : FeedAction
+    data class SelectPrimaryTab(val tab: HomePrimaryTab) : FeedAction
+    data class SetRecommendActivePage(val page: Int) : FeedAction
+    data class ToggleLike(val dramaId: String) : FeedAction
+    data class ToggleFavorite(val dramaId: String) : FeedAction
+    data class SelectWatchFilter(val filterId: String) : FeedAction
+    data class ShareDrama(val dramaId: String) : FeedAction
     data object Retry : FeedAction
 }
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val feedRepository: FeedRepository,
-) : androidx.lifecycle.ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(FeedUiState())
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
     private var observeJob: Job? = null
@@ -85,7 +89,57 @@ class FeedViewModel @Inject constructor(
 
     fun onAction(action: FeedAction) {
         when (action) {
-            is FeedAction.SelectTag -> _uiState.value = _uiState.value.copy(selectedTag = action.tag)
+            is FeedAction.SelectPrimaryTab -> {
+                _uiState.value = _uiState.value.copy(selectedTab = action.tab)
+            }
+
+            is FeedAction.SetRecommendActivePage -> {
+                if (action.page != _uiState.value.activeRecommendPage) {
+                    _uiState.value = _uiState.value.copy(activeRecommendPage = action.page)
+                }
+            }
+
+            is FeedAction.ToggleLike -> {
+                _uiState.value = _uiState.value.copy(
+                    recommendItems = _uiState.value.recommendItems.map { item ->
+                        if (item.card.drama.id != action.dramaId) {
+                            item
+                        } else {
+                            val nextLiked = !item.isLiked
+                            item.copy(
+                                isLiked = nextLiked,
+                                likeCount = if (nextLiked) item.likeCount + 1 else maxOf(0, item.likeCount - 1),
+                            )
+                        }
+                    },
+                )
+            }
+
+            is FeedAction.ToggleFavorite -> {
+                _uiState.value = _uiState.value.copy(
+                    recommendItems = _uiState.value.recommendItems.map { item ->
+                        if (item.card.drama.id != action.dramaId) item else item.copy(isFavorited = !item.isFavorited)
+                    },
+                )
+            }
+
+            is FeedAction.SelectWatchFilter -> {
+                val current = _uiState.value
+                _uiState.value = current.copy(
+                    watchBrowse = current.watchBrowse.copy(
+                        selectedFilterId = action.filterId,
+                        items = applyWatchFilter(
+                            items = current.watchBrowse.items,
+                            filterId = action.filterId,
+                        ),
+                    ),
+                )
+            }
+
+            is FeedAction.ShareDrama -> {
+                // Share entry is wired for callback now; system share sheet can be plugged in next.
+            }
+
             FeedAction.Retry -> observeFeed()
         }
     }
@@ -95,221 +149,128 @@ class FeedViewModel @Inject constructor(
         observeJob = viewModelScope.launch {
             feedRepository.observeFeed().collect { result ->
                 _uiState.value = when (result) {
-                    DataResult.Loading -> FeedUiState(loadState = DfLoadState.LOADING)
-                    DataResult.Empty -> FeedUiState(loadState = DfLoadState.EMPTY)
-                    is DataResult.Error -> FeedUiState(loadState = DfLoadState.ERROR, errorMessage = result.message)
-                    is DataResult.Success -> FeedUiState(
-                        loadState = DfLoadState.SUCCESS,
-                        featured = result.value.featured,
-                        tags = result.value.tags,
-                        continueWatching = result.value.continueWatching,
-                        hotTitles = result.value.hotTitles,
-                        recommendations = result.value.recommendations,
-                        selectedTag = result.value.tags.firstOrNull()?.label,
+                    DataResult.Loading -> FeedUiState(
+                        loadState = DfLoadState.LOADING,
+                        watchBrowse = WatchBrowseUiState(loadState = DfLoadState.LOADING),
                     )
-                }
-            }
-        }
-    }
-}
 
-@Composable
-fun FeedRoute(
-    onDramaClick: (String) -> Unit,
-    onContinueWatching: (String) -> Unit,
-    onProfileClick: () -> Unit,
-    onSubscriptionClick: () -> Unit,
-    viewModel: FeedViewModel = hiltViewModel(),
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    FeedScreen(
-        uiState = uiState,
-        onAction = viewModel::onAction,
-        onDramaClick = onDramaClick,
-        onContinueWatching = onContinueWatching,
-        onProfileClick = onProfileClick,
-        onSubscriptionClick = onSubscriptionClick,
-    )
-}
-
-@Composable
-fun FeedScreen(
-    uiState: FeedUiState,
-    onAction: (FeedAction) -> Unit,
-    onDramaClick: (String) -> Unit,
-    onContinueWatching: (String) -> Unit,
-    onProfileClick: () -> Unit,
-    onSubscriptionClick: () -> Unit,
-) {
-    val spacing = DramaFlowThemeTokens.spacing
-    val colors = DramaFlowThemeTokens.colors
-    DfScreenScaffold {
-        DfStateLayout(
-            state = uiState.loadState,
-            modifier = Modifier.padding(it),
-            errorMessage = uiState.errorMessage,
-            emptyTitle = "Your feed is warming up",
-            emptyMessage = "Once titles are published, your daily stack will appear here.",
-            onRetry = { onAction(FeedAction.Retry) },
-        ) {
-            DfScrollableColumn(modifier = Modifier.padding(it)) {
-                DfTopBar(
-                    title = "DramaFlow",
-                    subtitle = "Emotional cliffhangers, built for one-more-episode behavior",
-                    trailing = {
-                        Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                            Surface(
-                                modifier = Modifier.clip(DramaFlowThemeTokens.shapes.pill).clickable(onClick = onSubscriptionClick),
-                                color = colors.surface,
-                            ) {
-                                Icon(Icons.Rounded.WorkspacePremium, contentDescription = null, tint = colors.accentStrong, modifier = Modifier.padding(12.dp))
-                            }
-                            Surface(
-                                modifier = Modifier.clip(DramaFlowThemeTokens.shapes.pill).clickable(onClick = onProfileClick),
-                                color = colors.surface,
-                            ) {
-                                Icon(Icons.Rounded.Person, contentDescription = null, tint = colors.textPrimary, modifier = Modifier.padding(12.dp))
-                            }
-                        }
-                    },
-                )
-
-                Surface(shape = DramaFlowThemeTokens.shapes.medium, color = colors.surface, modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(Icons.Rounded.Search, contentDescription = null, tint = colors.textSecondary)
-                        Spacer(modifier = Modifier.padding(horizontal = spacing.sm))
-                        Text("Search and campaign landing slot", color = colors.textSecondary)
-                    }
-                }
-
-                uiState.featured?.let { featured ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(DramaFlowThemeTokens.shapes.large)
-                            .background(DramaFlowThemeTokens.gradients.hero)
-                            .padding(spacing.xxl),
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(spacing.md)) {
-                            Text("Featured tonight", style = DramaFlowThemeTokens.typography.labelLarge, color = colors.accentStrong)
-                            Text(featured.drama.title, style = DramaFlowThemeTokens.typography.headlineMedium, color = colors.textPrimary)
-                            Text(featured.drama.shortDescription, style = DramaFlowThemeTokens.typography.bodyLarge, color = colors.textSecondary)
-                            Row(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
-                                DfPrimaryButton(
-                                    label = featured.statusLabel ?: "Watch now",
-                                    modifier = Modifier.weight(1f),
-                                    onClick = {
-                                        val targetEpisode = featured.lastProgress?.episodeId ?: DramaFlowMockData.episodesForDrama(featured.drama.id).firstOrNull()?.id
-                                        if (targetEpisode != null) onContinueWatching(targetEpisode) else onDramaClick(featured.drama.id)
-                                    },
-                                )
-                                DfPrimaryButton(
-                                    label = "View details",
-                                    modifier = Modifier.weight(1f),
-                                    onClick = { onDramaClick(featured.drama.id) },
-                                )
-                            }
-                        }
-                    }
-                }
-
-                if (uiState.continueWatching.isNotEmpty()) {
-                    SectionRow(
-                        title = "Continue watching",
-                        items = uiState.continueWatching,
-                        onDramaClick = onDramaClick,
-                        onContinueWatching = onContinueWatching,
+                    DataResult.Empty -> FeedUiState(
+                        loadState = DfLoadState.EMPTY,
+                        watchBrowse = WatchBrowseUiState(loadState = DfLoadState.EMPTY),
                     )
-                }
 
-                Column(verticalArrangement = Arrangement.spacedBy(spacing.md)) {
-                    Text("Browse by vibe", style = DramaFlowThemeTokens.typography.titleLarge, color = colors.textPrimary)
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm), contentPadding = PaddingValues(end = spacing.md)) {
-                        items(uiState.tags) { tag ->
-                            DfCategoryChip(
-                                label = tag.label,
-                                selected = uiState.selectedTag == tag.label,
-                                onClick = { onAction(FeedAction.SelectTag(tag.label)) },
+                    is DataResult.Error -> FeedUiState(
+                        loadState = DfLoadState.ERROR,
+                        errorMessage = result.message,
+                        watchBrowse = WatchBrowseUiState(
+                            loadState = DfLoadState.ERROR,
+                            errorMessage = result.message,
+                        ),
+                    )
+
+                    is DataResult.Success -> {
+                        val watchSource = (result.value.hotTitles + result.value.recommendations + result.value.continueWatching)
+                            .distinctBy { it.drama.id }
+                        val recommendSource = (result.value.recommendations + result.value.hotTitles + result.value.continueWatching)
+                            .distinctBy { it.drama.id }
+
+                        val recommendItems = recommendSource.mapIndexed { index, card ->
+                            RecommendFeedItem(
+                                id = card.drama.id,
+                                card = card,
+                                preview = buildPreviewMedia(card),
+                                likeCount = estimateLikeCount(card, index),
+                                commentCount = estimateCommentCount(card, index),
+                                shareCount = estimateShareCount(card, index),
                             )
                         }
-                    }
-                }
 
-                SectionRow(
-                    title = "Trending now",
-                    items = uiState.hotTitles,
-                    onDramaClick = onDramaClick,
-                    onContinueWatching = onContinueWatching,
-                )
+                        val defaultFilter = "hot"
+                        val filteredWatchItems = applyWatchFilter(watchSource, defaultFilter)
 
-                DfWhiteMessageCard(
-                    title = "Live promo slot",
-                    body = "This block is reserved for seasonal campaigns, premium conversion pushes, and territory-specific highlights.",
-                )
-
-                SectionRow(
-                    title = "Because you finish episodes",
-                    items = uiState.recommendations,
-                    onDramaClick = onDramaClick,
-                    onContinueWatching = onContinueWatching,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SectionRow(
-    title: String,
-    items: List<DramaCard>,
-    onDramaClick: (String) -> Unit,
-    onContinueWatching: (String) -> Unit,
-) {
-    val spacing = DramaFlowThemeTokens.spacing
-    val colors = DramaFlowThemeTokens.colors
-    Column(verticalArrangement = Arrangement.spacedBy(spacing.md)) {
-        Text(title, style = DramaFlowThemeTokens.typography.titleLarge, color = colors.textPrimary)
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.md), contentPadding = PaddingValues(end = spacing.md)) {
-            items(items) { card ->
-                Column(modifier = Modifier.width(190.dp), verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                    DfDramaCard(card = card, onClick = { onDramaClick(card.drama.id) })
-                    card.lastProgress?.let { progress ->
-                        DfPrimaryButton(
-                            label = "Continue watching",
-                            onClick = { onContinueWatching(progress.episodeId) },
+                        FeedUiState(
+                            loadState = DfLoadState.SUCCESS,
+                            selectedTab = _uiState.value.selectedTab,
+                            activeRecommendPage = _uiState.value.activeRecommendPage.coerceIn(
+                                minimumValue = 0,
+                                maximumValue = maxOf(recommendItems.lastIndex, 0),
+                            ),
+                            recommendItems = recommendItems,
+                            watchBrowse = WatchBrowseUiState(
+                                loadState = DfLoadState.SUCCESS,
+                                filters = defaultWatchFilters(),
+                                selectedFilterId = defaultFilter,
+                                items = filteredWatchItems,
+                            ),
                         )
                     }
                 }
             }
         }
     }
+
+    private fun estimateLikeCount(card: DramaCard, index: Int): Int {
+        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 1000
+        return base.toInt() + 500 + index * 137
+    }
+
+    private fun estimateCommentCount(card: DramaCard, index: Int): Int {
+        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 120
+        return base.toInt() + 60 + index * 11
+    }
+
+    private fun estimateShareCount(card: DramaCard, index: Int): Int {
+        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 70
+        return base.toInt() + 30 + index * 7
+    }
+
+    private fun buildPreviewMedia(card: DramaCard): RecommendPreviewMedia {
+        // 推荐流预览先走最稳的 entry episode。
+        // 有本地/mock 对应集时直接拿首集预览，后续接真推荐接口时只需要把 previewUrl 改成后端字段。
+        val entryEpisode = card.lastProgress?.episodeId?.let(DramaFlowMockData::findEpisode)
+            ?: DramaFlowMockData.episodesForDrama(card.drama.id).firstOrNull()
+        return RecommendPreviewMedia(
+            mediaId = card.drama.id,
+            dramaId = card.drama.id,
+            entryEpisodeId = entryEpisode?.id,
+            previewUrl = entryEpisode?.streamUrl,
+            coverUrl = card.drama.heroImageUrl.ifBlank { card.drama.portraitPosterUrl },
+        )
+    }
 }
 
-@Preview
-@Composable
-private fun FeedSuccessPreview() {
-    val cards = DramaFlowMockData.dramas.map { it ->
-        DramaCard(drama = it, lastProgress = null, isUpdated = true, isLockedForUser = false, statusLabel = "Updated")
-    }
-    DramaFlowTheme {
-        FeedScreen(
-            uiState = FeedUiState(
-                loadState = DfLoadState.SUCCESS,
-                featured = cards.first(),
-                tags = DramaFlowMockData.tags,
-                continueWatching = cards.take(1),
-                hotTitles = cards,
-                recommendations = cards.reversed(),
-                selectedTag = DramaFlowMockData.tags.first().label,
-            ),
-            onAction = {},
-            onDramaClick = {},
-            onContinueWatching = {},
-            onProfileClick = {},
-            onSubscriptionClick = {},
-        )
+private fun defaultWatchFilters(): List<WatchFilter> {
+    return listOf(
+        WatchFilter("hot", "Hot"),
+        WatchFilter("new", "New"),
+        WatchFilter("modern", "Modern"),
+        WatchFilter("revenge", "Revenge"),
+        WatchFilter("urban", "Urban"),
+        WatchFilter("more", "More"),
+    )
+}
+
+private fun applyWatchFilter(
+    items: List<DramaCard>,
+    filterId: String,
+): List<DramaCard> {
+    return when (filterId) {
+        "hot" -> items.sortedByDescending { it.drama.heatScore.toFloatOrNull() ?: 0f }
+        "new" -> items.sortedByDescending { it.isUpdated }
+        "modern", "urban" -> items.filter { card ->
+            card.drama.tags.any { tag ->
+                tag.label.contains("modern", ignoreCase = true) ||
+                    tag.label.contains("urban", ignoreCase = true) ||
+                    tag.label.contains("ceo", ignoreCase = true)
+            }
+        }.ifEmpty { items }
+
+        "revenge" -> items.filter { card ->
+            card.drama.tags.any { tag ->
+                tag.label.contains("revenge", ignoreCase = true) || tag.label.contains("twist", ignoreCase = true)
+            }
+        }.ifEmpty { items }
+
+        else -> items
     }
 }
