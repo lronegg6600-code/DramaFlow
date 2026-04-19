@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -97,6 +99,9 @@ class DramaFlowPreferenceStore(context: Context) {
     private val refreshTokenKey = stringPreferencesKey("auth_refresh_token")
     private val accessTokenExpiryKey = stringPreferencesKey("auth_access_token_expiry")
     private val authUserIdKey = stringPreferencesKey("auth_user_id")
+    private val likedDramaIdsKey = stringSetPreferencesKey("liked_drama_ids")
+    private val favoriteDramaIdsKey = stringSetPreferencesKey("favorite_drama_ids")
+    private val interactionUpdatedAtKey = longPreferencesKey("interaction_updated_at")
 
     val premiumState: Flow<String> = dataStore.data.map { it[premiumStateKey] ?: "free" }
     val premiumProductId: Flow<String?> = dataStore.data.map { it[premiumProductKey] }
@@ -107,6 +112,9 @@ class DramaFlowPreferenceStore(context: Context) {
     val refreshToken: Flow<String?> = dataStore.data.map { it[refreshTokenKey] }
     val accessTokenExpiry: Flow<String?> = dataStore.data.map { it[accessTokenExpiryKey] }
     val authUserId: Flow<String?> = dataStore.data.map { it[authUserIdKey] }
+    val likedDramaIds: Flow<Set<String>> = dataStore.data.map { it[likedDramaIdsKey] ?: emptySet() }
+    val favoriteDramaIds: Flow<Set<String>> = dataStore.data.map { it[favoriteDramaIdsKey] ?: emptySet() }
+    val interactionUpdatedAt: Flow<Long> = dataStore.data.map { it[interactionUpdatedAtKey] ?: 0L }
 
     suspend fun setPremiumState(
         premiumState: String,
@@ -157,6 +165,27 @@ class DramaFlowPreferenceStore(context: Context) {
         setPremiumState(premiumState = "free", activeProductId = null)
     }
 
+    suspend fun setDramaInteractionState(
+        likedDramaIds: Set<String>,
+        favoriteDramaIds: Set<String>,
+        updatedAt: Long = System.currentTimeMillis(),
+    ) {
+        dataStore.edit { prefs ->
+            prefs[likedDramaIdsKey] = likedDramaIds
+            prefs[favoriteDramaIdsKey] = favoriteDramaIds
+            prefs[interactionUpdatedAtKey] = updatedAt
+        }
+    }
+
+    suspend fun snapshotDramaInteractionState(): DramaInteractionPreferenceSnapshot {
+        val prefs = dataStore.data.first()
+        return DramaInteractionPreferenceSnapshot(
+            likedDramaIds = prefs[likedDramaIdsKey] ?: emptySet(),
+            favoriteDramaIds = prefs[favoriteDramaIdsKey] ?: emptySet(),
+            updatedAt = prefs[interactionUpdatedAtKey] ?: 0L,
+        )
+    }
+
     suspend fun snapshotSelectedProduct(): Pair<String?, String?> {
         val prefs = dataStore.data.first()
         return prefs[lastSelectedProductKey] to prefs[lastSelectedOfferKey]
@@ -178,6 +207,12 @@ data class AuthPreferenceSnapshot(
     val refreshToken: String?,
     val expiresAt: String?,
     val userId: String?,
+)
+
+data class DramaInteractionPreferenceSnapshot(
+    val likedDramaIds: Set<String>,
+    val favoriteDramaIds: Set<String>,
+    val updatedAt: Long,
 )
 
 fun createDatabase(context: Context): DramaFlowDatabase {

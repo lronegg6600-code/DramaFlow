@@ -1,5 +1,8 @@
 package com.dramaflow.feature.feed
 
+import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,8 +41,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,11 +50,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.dramaflow.core.common.DramaFlowMockData
@@ -64,9 +69,9 @@ import com.dramaflow.core.designsystem.component.DfWhiteMessageCard
 import com.dramaflow.core.designsystem.theme.DramaFlowThemeTokens
 import com.dramaflow.core.model.DramaCard
 import com.dramaflow.core.ui.DfLoadState
-import android.util.Log
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.collectLatest
+
+private const val FeedShareLogTag = "FeedShare"
 
 @Composable
 fun FeedRoute(
@@ -76,6 +81,44 @@ fun FeedRoute(
     viewModel: FeedViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(viewModel, context) {
+        viewModel.effects.collectLatest { effect ->
+            when (effect) {
+                is FeedEffect.OpenShareSheet -> {
+                    val shareText = buildString {
+                        append(effect.payload.title)
+                        append("\n")
+                        append(effect.payload.description)
+                        append("\n")
+                        append(effect.payload.link)
+                    }
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_SUBJECT, effect.payload.title)
+                        putExtra(Intent.EXTRA_TEXT, shareText)
+                    }
+                    val chooserIntent = Intent.createChooser(shareIntent, "Share drama").apply {
+                        if (context !is Activity) {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                    }
+                    runCatching {
+                        Log.d(FeedShareLogTag, "feed_share_sheet_open drama=${effect.payload.dramaId}")
+                        context.startActivity(chooserIntent)
+                    }.onFailure { error ->
+                        Log.e(
+                            FeedShareLogTag,
+                            "feed_share_failed drama=${effect.payload.dramaId} message=${error.message}",
+                            error,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     FeedScreen(
         uiState = uiState,
         onAction = viewModel::onAction,
@@ -261,6 +304,7 @@ private fun RecommendPagerCard(
     onAction: (FeedAction) -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
+
     fun openPrimaryPlayback() {
         Log.d("FeedPreview", "preview_click_enter_player drama=${item.card.drama.id}")
         val episodeId = item.preview.entryEpisodeId
@@ -299,9 +343,7 @@ private fun RecommendPagerCard(
                 .align(Alignment.Center)
                 .size(76.dp)
                 .clip(DramaFlowThemeTokens.shapes.pill)
-                .clickable {
-                    openPrimaryPlayback()
-                },
+                .clickable { openPrimaryPlayback() },
             color = Color.White.copy(alpha = 0.22f),
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
@@ -362,16 +404,22 @@ private fun RecommendPagerCard(
                 icon = if (item.isLiked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                 label = formatCount(item.likeCount),
                 onClick = { onAction(FeedAction.ToggleLike(item.card.drama.id)) },
+                selected = item.isLiked,
+                enabled = !item.isLikeUpdating,
             )
             SideActionButton(
                 icon = if (item.isFavorited) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
-                label = "Save",
+                label = if (item.isFavorited) "Saved" else "Save",
                 onClick = { onAction(FeedAction.ToggleFavorite(item.card.drama.id)) },
+                selected = item.isFavorited,
+                enabled = !item.isFavoriteUpdating,
             )
             SideActionButton(
                 icon = Icons.Rounded.Share,
                 label = formatCount(item.shareCount),
                 onClick = { onAction(FeedAction.ShareDrama(item.card.drama.id)) },
+                selected = false,
+                enabled = true,
             )
         }
     }
@@ -382,25 +430,33 @@ private fun SideActionButton(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
+    selected: Boolean,
+    enabled: Boolean,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
+    val surfaceColor = when {
+        !enabled -> Color.Black.copy(alpha = 0.18f)
+        selected -> DramaFlowThemeTokens.colors.accentStrong.copy(alpha = 0.82f)
+        else -> Color.Black.copy(alpha = 0.3f)
+    }
+    val contentColor = if (enabled) Color.White else Color.White.copy(alpha = 0.45f)
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Surface(
             modifier = Modifier
                 .size(52.dp)
                 .clip(DramaFlowThemeTokens.shapes.pill)
-                .clickable(onClick = onClick),
-            color = Color.Black.copy(alpha = 0.3f),
+                .clickable(enabled = enabled, onClick = onClick),
+            color = surfaceColor,
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                Icon(icon, contentDescription = null, tint = Color.White)
+                Icon(icon, contentDescription = null, tint = contentColor)
             }
         }
         Spacer(modifier = Modifier.height(spacing.xs))
         Text(
             text = label,
             style = DramaFlowThemeTokens.typography.labelMedium,
-            color = Color.White,
+            color = contentColor,
         )
     }
 }

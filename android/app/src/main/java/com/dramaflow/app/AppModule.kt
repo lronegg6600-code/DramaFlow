@@ -14,6 +14,8 @@ import com.dramaflow.core.common.auth.PreferenceTokenStore
 import com.dramaflow.core.common.auth.TokenStore
 import com.dramaflow.core.common.CatalogRepository
 import com.dramaflow.core.common.DefaultMockBehaviorProvider
+import com.dramaflow.core.common.DefaultDramaInteractionRepository
+import com.dramaflow.core.common.DramaInteractionRepository
 import com.dramaflow.core.common.EntitlementRepository
 import com.dramaflow.core.common.FakeEntitlementRepository
 import com.dramaflow.core.common.FakeSubscriptionRepository
@@ -91,6 +93,10 @@ abstract class AppBindingsModule {
     @Binds
     @Singleton
     abstract fun bindAuthSessionManager(impl: DefaultAuthSessionManager): AuthSessionManager
+
+    @Binds
+    @Singleton
+    abstract fun bindDramaInteractionRepository(impl: DefaultDramaInteractionRepository): DramaInteractionRepository
 }
 
 @Module
@@ -141,8 +147,12 @@ object AppProvidesModule {
     @Provides
     @Singleton
     fun provideBillingRemoteDataSource(
+        @ApplicationContext context: Context,
         tokenStore: TokenStore,
-    ): BillingRemoteDataSource = RetrofitBillingRemoteDataSource(accessTokenProvider = tokenStore)
+    ): BillingRemoteDataSource = RetrofitBillingRemoteDataSource(
+        context = context,
+        accessTokenProvider = tokenStore,
+    )
 
     @Provides
     @Singleton

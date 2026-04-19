@@ -1,19 +1,30 @@
 package com.dramaflow.feature.feed
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dramaflow.core.common.DramaFlowMockData
 import com.dramaflow.core.common.DataResult
+import com.dramaflow.core.common.DramaFlowMockData
+import com.dramaflow.core.common.DramaInteractionFlags
+import com.dramaflow.core.common.DramaInteractionRepository
+import com.dramaflow.core.common.DramaInteractionState
 import com.dramaflow.core.common.FeedRepository
 import com.dramaflow.core.model.DramaCard
 import com.dramaflow.core.ui.DfLoadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+
+private const val FeedInteractionLogTag = "FeedInteraction"
 
 enum class HomePrimaryTab(val label: String) {
     RECOMMEND("Recommend"),
@@ -32,6 +43,8 @@ data class RecommendFeedItem(
     val shareCount: Int,
     val isLiked: Boolean = false,
     val isFavorited: Boolean = false,
+    val isLikeUpdating: Boolean = false,
+    val isFavoriteUpdating: Boolean = false,
 )
 
 data class RecommendPreviewMedia(
@@ -65,6 +78,20 @@ data class FeedUiState(
     val errorMessage: String = "Home refresh failed. Please retry.",
 )
 
+data class ShareDramaPayload(
+    val dramaId: String,
+    val title: String,
+    val description: String,
+    val link: String,
+)
+
+data class PendingInteractionOverride(
+    val liked: Boolean? = null,
+    val favorited: Boolean? = null,
+    val likeInFlight: Boolean = false,
+    val favoriteInFlight: Boolean = false,
+)
+
 sealed interface FeedAction {
     data class SelectPrimaryTab(val tab: HomePrimaryTab) : FeedAction
     data class SetRecommendActivePage(val page: Int) : FeedAction
@@ -75,13 +102,28 @@ sealed interface FeedAction {
     data object Retry : FeedAction
 }
 
+sealed interface FeedEffect {
+    data class OpenShareSheet(val payload: ShareDramaPayload) : FeedEffect
+}
+
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val feedRepository: FeedRepository,
+    private val interactionRepository: DramaInteractionRepository,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FeedUiState())
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
+
+    private val _effects = MutableSharedFlow<FeedEffect>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val effects: SharedFlow<FeedEffect> = _effects.asSharedFlow()
     private var observeJob: Job? = null
+
+    private val pendingInteractionOverrides =
+        MutableStateFlow<Map<String, PendingInteractionOverride>>(emptyMap())
 
     init {
         observeFeed()
@@ -99,29 +141,8 @@ class FeedViewModel @Inject constructor(
                 }
             }
 
-            is FeedAction.ToggleLike -> {
-                _uiState.value = _uiState.value.copy(
-                    recommendItems = _uiState.value.recommendItems.map { item ->
-                        if (item.card.drama.id != action.dramaId) {
-                            item
-                        } else {
-                            val nextLiked = !item.isLiked
-                            item.copy(
-                                isLiked = nextLiked,
-                                likeCount = if (nextLiked) item.likeCount + 1 else maxOf(0, item.likeCount - 1),
-                            )
-                        }
-                    },
-                )
-            }
-
-            is FeedAction.ToggleFavorite -> {
-                _uiState.value = _uiState.value.copy(
-                    recommendItems = _uiState.value.recommendItems.map { item ->
-                        if (item.card.drama.id != action.dramaId) item else item.copy(isFavorited = !item.isFavorited)
-                    },
-                )
-            }
+            is FeedAction.ToggleLike -> handleToggleLike(action.dramaId)
+            is FeedAction.ToggleFavorite -> handleToggleFavorite(action.dramaId)
 
             is FeedAction.SelectWatchFilter -> {
                 val current = _uiState.value
@@ -136,10 +157,7 @@ class FeedViewModel @Inject constructor(
                 )
             }
 
-            is FeedAction.ShareDrama -> {
-                // Share entry is wired for callback now; system share sheet can be plugged in next.
-            }
-
+            is FeedAction.ShareDrama -> handleShare(action.dramaId)
             FeedAction.Retry -> observeFeed()
         }
     }
@@ -147,71 +165,253 @@ class FeedViewModel @Inject constructor(
     private fun observeFeed() {
         observeJob?.cancel()
         observeJob = viewModelScope.launch {
-            feedRepository.observeFeed().collect { result ->
-                _uiState.value = when (result) {
-                    DataResult.Loading -> FeedUiState(
-                        loadState = DfLoadState.LOADING,
-                        watchBrowse = WatchBrowseUiState(loadState = DfLoadState.LOADING),
-                    )
-
-                    DataResult.Empty -> FeedUiState(
-                        loadState = DfLoadState.EMPTY,
-                        watchBrowse = WatchBrowseUiState(loadState = DfLoadState.EMPTY),
-                    )
-
-                    is DataResult.Error -> FeedUiState(
-                        loadState = DfLoadState.ERROR,
-                        errorMessage = result.message,
-                        watchBrowse = WatchBrowseUiState(
-                            loadState = DfLoadState.ERROR,
-                            errorMessage = result.message,
-                        ),
-                    )
-
-                    is DataResult.Success -> {
-                        val watchSource = (result.value.hotTitles + result.value.recommendations + result.value.continueWatching)
-                            .distinctBy { it.drama.id }
-                        val recommendSource = (result.value.recommendations + result.value.hotTitles + result.value.continueWatching)
-                            .distinctBy { it.drama.id }
-
-                        val recommendItems = recommendSource.mapIndexed { index, card ->
-                            RecommendFeedItem(
-                                id = card.drama.id,
-                                card = card,
-                                preview = buildPreviewMedia(card),
-                                likeCount = estimateLikeCount(card, index),
-                                commentCount = estimateCommentCount(card, index),
-                                shareCount = estimateShareCount(card, index),
-                            )
-                        }
-
-                        val defaultFilter = "hot"
-                        val filteredWatchItems = applyWatchFilter(watchSource, defaultFilter)
-
-                        FeedUiState(
-                            loadState = DfLoadState.SUCCESS,
-                            selectedTab = _uiState.value.selectedTab,
-                            activeRecommendPage = _uiState.value.activeRecommendPage.coerceIn(
-                                minimumValue = 0,
-                                maximumValue = maxOf(recommendItems.lastIndex, 0),
-                            ),
-                            recommendItems = recommendItems,
-                            watchBrowse = WatchBrowseUiState(
-                                loadState = DfLoadState.SUCCESS,
-                                filters = defaultWatchFilters(),
-                                selectedFilterId = defaultFilter,
-                                items = filteredWatchItems,
-                            ),
-                        )
-                    }
-                }
+            combine(
+                feedRepository.observeFeed(),
+                interactionRepository.observeInteractionState(),
+                pendingInteractionOverrides,
+            ) { feedResult, interactionState, pendingOverrides ->
+                Triple(feedResult, interactionState, pendingOverrides)
+            }.collect { (feedResult, interactionState, pendingOverrides) ->
+                _uiState.value = reduceFeedState(
+                    feedResult = feedResult,
+                    interactionState = interactionState,
+                    pendingOverrides = pendingOverrides,
+                    previousState = _uiState.value,
+                )
             }
         }
     }
 
-    private fun estimateLikeCount(card: DramaCard, index: Int): Int {
+    private fun reduceFeedState(
+        feedResult: DataResult<com.dramaflow.core.model.FeedPayload>,
+        interactionState: DramaInteractionState,
+        pendingOverrides: Map<String, PendingInteractionOverride>,
+        previousState: FeedUiState,
+    ): FeedUiState {
+        return when (feedResult) {
+            DataResult.Loading -> FeedUiState(
+                loadState = DfLoadState.LOADING,
+                selectedTab = previousState.selectedTab,
+                activeRecommendPage = previousState.activeRecommendPage,
+                watchBrowse = previousState.watchBrowse.copy(loadState = DfLoadState.LOADING),
+            )
+
+            DataResult.Empty -> FeedUiState(
+                loadState = DfLoadState.EMPTY,
+                selectedTab = previousState.selectedTab,
+                activeRecommendPage = 0,
+                watchBrowse = previousState.watchBrowse.copy(loadState = DfLoadState.EMPTY, items = emptyList()),
+            )
+
+            is DataResult.Error -> FeedUiState(
+                loadState = DfLoadState.ERROR,
+                selectedTab = previousState.selectedTab,
+                activeRecommendPage = previousState.activeRecommendPage,
+                errorMessage = feedResult.message,
+                watchBrowse = previousState.watchBrowse.copy(
+                    loadState = DfLoadState.ERROR,
+                    errorMessage = feedResult.message,
+                ),
+            )
+
+            is DataResult.Success -> {
+                val watchSource = (feedResult.value.hotTitles + feedResult.value.recommendations + feedResult.value.continueWatching)
+                    .distinctBy { it.drama.id }
+                val recommendSource = (feedResult.value.recommendations + feedResult.value.hotTitles + feedResult.value.continueWatching)
+                    .distinctBy { it.drama.id }
+                val interactionFlags = interactionRepository.backfill(
+                    dramaIds = recommendSource.map { it.drama.id },
+                    state = interactionState,
+                )
+
+                val recommendItems = recommendSource.mapIndexed { index, card ->
+                    val flags = interactionFlags[card.drama.id] ?: DramaInteractionFlags(
+                        isLiked = false,
+                        isFavorited = false,
+                    )
+                    val pending = pendingOverrides[card.drama.id]
+                    val effectiveLiked = pending?.liked ?: flags.isLiked
+                    val effectiveFavorited = pending?.favorited ?: flags.isFavorited
+                    RecommendFeedItem(
+                        id = card.drama.id,
+                        card = card,
+                        preview = buildPreviewMedia(card),
+                        likeCount = estimateLikeCount(card, index, effectiveLiked),
+                        commentCount = estimateCommentCount(card, index),
+                        shareCount = estimateShareCount(card, index),
+                        isLiked = effectiveLiked,
+                        isFavorited = effectiveFavorited,
+                        isLikeUpdating = pending?.likeInFlight == true,
+                        isFavoriteUpdating = pending?.favoriteInFlight == true,
+                    )
+                }
+
+                val selectedWatchFilter = previousState.watchBrowse.selectedFilterId
+                    .takeIf { filter -> defaultWatchFilters().any { it.id == filter } }
+                    ?: "hot"
+
+                FeedUiState(
+                    loadState = DfLoadState.SUCCESS,
+                    selectedTab = previousState.selectedTab,
+                    activeRecommendPage = previousState.activeRecommendPage.coerceIn(
+                        minimumValue = 0,
+                        maximumValue = maxOf(recommendItems.lastIndex, 0),
+                    ),
+                    recommendItems = recommendItems,
+                    watchBrowse = WatchBrowseUiState(
+                        loadState = DfLoadState.SUCCESS,
+                        filters = defaultWatchFilters(),
+                        selectedFilterId = selectedWatchFilter,
+                        items = applyWatchFilter(watchSource, selectedWatchFilter),
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun handleToggleLike(dramaId: String) {
+        val currentItem = _uiState.value.recommendItems.firstOrNull { it.card.drama.id == dramaId } ?: return
+        if (currentItem.isLikeUpdating) {
+            return
+        }
+        val nextLiked = !currentItem.isLiked
+        Log.d(FeedInteractionLogTag, "feed_like_click drama=$dramaId nextLiked=$nextLiked")
+        updatePendingOverride(dramaId) { current ->
+            current.copy(
+                liked = nextLiked,
+                likeInFlight = true,
+            )
+        }
+        viewModelScope.launch {
+            runCatching {
+                interactionRepository.toggleLike(dramaId)
+            }.onFailure { error ->
+                Log.e(
+                    FeedInteractionLogTag,
+                    "feed_like_persist_failed drama=$dramaId message=${error.message}",
+                    error,
+                )
+                updatePendingOverride(dramaId) { current ->
+                    current.copy(
+                        liked = currentItem.isLiked,
+                        likeInFlight = false,
+                    )
+                }
+                clearPendingField(
+                    dramaId = dramaId,
+                    clearLiked = true,
+                    clearFavorited = false,
+                )
+            }.onSuccess {
+                Log.d(FeedInteractionLogTag, "feed_like_persist_success drama=$dramaId liked=$nextLiked")
+                clearPendingField(
+                    dramaId = dramaId,
+                    clearLiked = true,
+                    clearFavorited = false,
+                )
+            }
+        }
+    }
+
+    private fun handleToggleFavorite(dramaId: String) {
+        val currentItem = _uiState.value.recommendItems.firstOrNull { it.card.drama.id == dramaId } ?: return
+        if (currentItem.isFavoriteUpdating) {
+            return
+        }
+        val nextFavorited = !currentItem.isFavorited
+        Log.d(FeedInteractionLogTag, "feed_favorite_click drama=$dramaId nextFavorited=$nextFavorited")
+        updatePendingOverride(dramaId) { current ->
+            current.copy(
+                favorited = nextFavorited,
+                favoriteInFlight = true,
+            )
+        }
+        viewModelScope.launch {
+            runCatching {
+                interactionRepository.toggleFavorite(dramaId)
+            }.onFailure { error ->
+                Log.e(
+                    FeedInteractionLogTag,
+                    "feed_favorite_persist_failed drama=$dramaId message=${error.message}",
+                    error,
+                )
+                updatePendingOverride(dramaId) { current ->
+                    current.copy(
+                        favorited = currentItem.isFavorited,
+                        favoriteInFlight = false,
+                    )
+                }
+                clearPendingField(
+                    dramaId = dramaId,
+                    clearLiked = false,
+                    clearFavorited = true,
+                )
+            }.onSuccess {
+                Log.d(
+                    FeedInteractionLogTag,
+                    "feed_favorite_persist_success drama=$dramaId favorited=$nextFavorited",
+                )
+                clearPendingField(
+                    dramaId = dramaId,
+                    clearLiked = false,
+                    clearFavorited = true,
+                )
+            }
+        }
+    }
+
+    private fun handleShare(dramaId: String) {
+        val item = _uiState.value.recommendItems.firstOrNull { it.card.drama.id == dramaId } ?: return
+        val payload = ShareDramaPayload(
+            dramaId = item.card.drama.id,
+            title = item.card.drama.title,
+            description = item.card.drama.shortDescription,
+            link = "https://www.dramaflow.app/drama/${item.card.drama.id}",
+        )
+        Log.d(FeedInteractionLogTag, "feed_share_click drama=$dramaId")
+        _effects.tryEmit(FeedEffect.OpenShareSheet(payload))
+    }
+
+    private fun updatePendingOverride(
+        dramaId: String,
+        transform: (PendingInteractionOverride) -> PendingInteractionOverride,
+    ) {
+        pendingInteractionOverrides.value = pendingInteractionOverrides.value.toMutableMap().apply {
+            val current = this[dramaId] ?: PendingInteractionOverride()
+            this[dramaId] = transform(current)
+        }
+    }
+
+    private fun clearPendingField(
+        dramaId: String,
+        clearLiked: Boolean,
+        clearFavorited: Boolean,
+    ) {
+        pendingInteractionOverrides.value = pendingInteractionOverrides.value.toMutableMap().apply {
+            val current = this[dramaId] ?: return@apply
+            val next = current.copy(
+                liked = if (clearLiked) null else current.liked,
+                favorited = if (clearFavorited) null else current.favorited,
+                likeInFlight = if (clearLiked) false else current.likeInFlight,
+                favoriteInFlight = if (clearFavorited) false else current.favoriteInFlight,
+            )
+            if (
+                next.liked == null &&
+                next.favorited == null &&
+                !next.likeInFlight &&
+                !next.favoriteInFlight
+            ) {
+                remove(dramaId)
+            } else {
+                this[dramaId] = next
+            }
+        }
+    }
+
+    private fun estimateLikeCount(card: DramaCard, index: Int, isLiked: Boolean): Int {
         val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 1000
-        return base.toInt() + 500 + index * 137
+        val seededCount = base.toInt() + 500 + index * 137
+        return if (isLiked) seededCount + 1 else seededCount
     }
 
     private fun estimateCommentCount(card: DramaCard, index: Int): Int {
@@ -226,7 +426,8 @@ class FeedViewModel @Inject constructor(
 
     private fun buildPreviewMedia(card: DramaCard): RecommendPreviewMedia {
         // 推荐流预览先走最稳的 entry episode。
-        // 有本地/mock 对应集时直接拿首集预览，后续接真推荐接口时只需要把 previewUrl 改成后端字段。
+        // 当前后端还没有专门的 preview 字段时，先用 mock episode 的 streamUrl 做轻量预览。
+        // 后续接入真实推荐接口时，只需要把 previewUrl 换成服务端字段，不需要重写页面结构。
         val entryEpisode = card.lastProgress?.episodeId?.let(DramaFlowMockData::findEpisode)
             ?: DramaFlowMockData.episodesForDrama(card.drama.id).firstOrNull()
         return RecommendPreviewMedia(
@@ -267,7 +468,8 @@ private fun applyWatchFilter(
 
         "revenge" -> items.filter { card ->
             card.drama.tags.any { tag ->
-                tag.label.contains("revenge", ignoreCase = true) || tag.label.contains("twist", ignoreCase = true)
+                tag.label.contains("revenge", ignoreCase = true) ||
+                    tag.label.contains("twist", ignoreCase = true)
             }
         }.ifEmpty { items }
 
