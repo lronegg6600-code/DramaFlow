@@ -97,11 +97,15 @@ fun RootNavHost(navController: NavHostController) {
                 onPurchaseSuccess = { navController.popBackStack() },
             )
         }
-        composable(DramaFlowDestination.Profile.route) {
+        composable(
+            route = DramaFlowDestination.Profile.route,
+            deepLinks = listOf(navDeepLink { uriPattern = "dramaflow://open/profile" }),
+        ) {
             ProfileRoute(
                 onBack = { navController.popBackStack() },
                 onSubscriptionClick = { navController.navigate(DramaFlowDestination.Subscription.createRoute(SubscriptionEntrySource.PROFILE)) },
                 onContinueWatching = { navController.navigate(DramaFlowDestination.Player.createRoute(it)) },
+                onDramaClick = { navController.navigate(DramaFlowDestination.Detail.createRoute(it)) },
             )
         }
     }
