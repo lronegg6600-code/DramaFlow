@@ -112,7 +112,17 @@ data class EntitlementState(
     val activeProductId: String?,
     val unlockedEpisodeIds: List<String>,
     val sourceLabel: String,
+    val updatedAtEpochMs: Long = 0L,
+    val expiresAtEpochMs: Long? = null,
 )
+
+fun EntitlementState.canAccessDrama(drama: Drama): Boolean {
+    return !drama.isPremiumSeries || isPremium
+}
+
+fun EntitlementState.canAccessEpisode(episode: Episode): Boolean {
+    return !episode.requiresPremium || isPremium || episode.id in unlockedEpisodeIds
+}
 
 @Serializable
 data class BillingSyncResult(

@@ -1,4 +1,6 @@
 package com.dramaflow.core.common
+
+import android.util.Log
 import com.dramaflow.core.common.auth.AuthSessionManager
 import com.dramaflow.core.common.entitlement.EntitlementStateStore
 import com.dramaflow.core.model.EntitlementState
@@ -10,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+
+private const val EntitlementLogTag = "Entitlement"
 
 @Singleton
 class RemoteEntitlementRepository @Inject constructor(
@@ -29,25 +33,31 @@ class RemoteEntitlementRepository @Inject constructor(
     override suspend fun currentEntitlement(): EntitlementState = observeEntitlement().first()
 
     override suspend fun grantPremium(productId: String) {
-        stateStore.persist(
-            EntitlementState(
-                isPremium = true,
-                activeProductId = productId,
-                unlockedEpisodeIds = emptyList(),
-                sourceLabel = "client_pending_sync",
-            ),
+        val state = EntitlementState(
+            isPremium = true,
+            activeProductId = productId,
+            unlockedEpisodeIds = emptyList(),
+            sourceLabel = "client_pending_sync",
+            updatedAtEpochMs = System.currentTimeMillis(),
         )
+        stateStore.persist(state)
+        Log.d(EntitlementLogTag, "entitlement_grant product=$productId source=${state.sourceLabel}")
     }
 
     override suspend fun refresh(): EntitlementState {
         authSessionManager.ensureGuestSession()
         val state = remoteDataSource.getMyEntitlements()
         stateStore.persist(state)
+        Log.d(
+            EntitlementLogTag,
+            "entitlement_state_refresh premium=${state.isPremium} product=${state.activeProductId} source=${state.sourceLabel}",
+        )
         return state
     }
 
     override suspend fun reset() {
         stateStore.reset()
+        Log.d(EntitlementLogTag, "entitlement_revoke source=remote_reset")
     }
 }
 

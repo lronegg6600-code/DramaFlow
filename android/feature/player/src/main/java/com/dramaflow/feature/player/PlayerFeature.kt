@@ -1,5 +1,6 @@
 package com.dramaflow.feature.player
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,7 @@ import com.dramaflow.core.model.NextEpisodeHint
 import com.dramaflow.core.model.PlaybackDataMode
 import com.dramaflow.core.model.PreviewLimit
 import com.dramaflow.core.model.WatchProgress
+import com.dramaflow.core.model.canAccessEpisode
 import com.dramaflow.core.player.AutoNextCoordinator
 import com.dramaflow.core.player.BridgePlaybackState
 import com.dramaflow.core.player.DefaultMedia3PlayerBridge
@@ -77,6 +79,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+private const val PlayerEntitlementLogTag = "PlayerEntitlement"
 
 enum class PlayerRemoteMode {
     FAKE_ONLY,
@@ -177,7 +181,20 @@ class PlayerViewModel @Inject constructor(
     private fun observeEntitlement() {
         viewModelScope.launch {
             entitlementRepository.observeEntitlement().collect { entitlement ->
-                _uiState.update { it.copy(entitlementState = entitlement) }
+                val episode = uiState.value.episode
+                _uiState.update { current ->
+                    val shouldDismissPaywall =
+                        current.paywallVisible && episode != null && entitlement.canAccessEpisode(episode)
+                    current.copy(
+                        entitlementState = entitlement,
+                        paywallVisible = if (shouldDismissPaywall) false else current.paywallVisible,
+                        previewLimit = if (shouldDismissPaywall) null else current.previewLimit,
+                        previewCountdown = if (shouldDismissPaywall) null else current.previewCountdown,
+                    )
+                }
+                if (episode != null && entitlement.canAccessEpisode(episode) && uiState.value.playbackState.isPrepared) {
+                    media3PlayerBridge.dispatch(PlaybackAction.Play)
+                }
             }
         }
     }
@@ -206,6 +223,10 @@ class PlayerViewModel @Inject constructor(
                     }
                     is PlayerEvent.PreviewLimitReached -> {
                         appendAnalytics(PlayerAnalyticsEvent.PREVIEW_LIMIT_REACHED)
+                        Log.d(
+                            PlayerEntitlementLogTag,
+                            "player_paywall_shown episode=${uiState.value.episode?.id} source=player_event premium=${uiState.value.entitlementState.isPremium}",
+                        )
                         _uiState.update {
                             it.copy(
                                 previewLimit = event.previewLimit,
@@ -315,6 +336,10 @@ class PlayerViewModel @Inject constructor(
                     current.copy(previewLimit = blocked, previewCountdown = 0, paywallVisible = true)
                 }
                 appendAnalytics(PlayerAnalyticsEvent.PAYWALL_SHOWN)
+                Log.d(
+                    PlayerEntitlementLogTag,
+                    "player_paywall_shown episode=${episode.id} source=preview_policy premium=${state.entitlementState.isPremium}",
+                )
                 return
             }
         }
@@ -374,6 +399,10 @@ class PlayerViewModel @Inject constructor(
                                 ),
                             )
                         }
+                        Log.d(
+                            PlayerEntitlementLogTag,
+                            "player_paywall_shown episode=${episode.id} source=remote_heartbeat premium=${state.entitlementState.isPremium}",
+                        )
                     }
                 }
             }

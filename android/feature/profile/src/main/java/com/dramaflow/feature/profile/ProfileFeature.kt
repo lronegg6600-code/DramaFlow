@@ -526,6 +526,14 @@ fun ProfileScreen(
                                 if (payload.entitlementState.isPremium) "Premium active" else "Free member",
                                 color = if (payload.entitlementState.isPremium) colors.accentStrong else colors.textPrimary,
                             )
+                            Text(
+                                payload.entitlementState.activeProductId?.let { "Plan: $it" } ?: "Plan: free tier",
+                                color = colors.textSecondary,
+                            )
+                            Text(
+                                "Source: ${payload.entitlementState.sourceLabel}",
+                                color = colors.textSecondary,
+                            )
                             Text(payload.unlockedSummary, color = colors.textSecondary)
                         }
                     }

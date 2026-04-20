@@ -104,6 +104,9 @@ class DramaFlowPreferenceStore(context: Context) {
 
     private val premiumStateKey = stringPreferencesKey("mock_premium_state")
     private val premiumProductKey = stringPreferencesKey("mock_premium_product")
+    private val premiumSourceKey = stringPreferencesKey("mock_premium_source")
+    private val premiumUpdatedAtKey = longPreferencesKey("mock_premium_updated_at")
+    private val premiumExpiresAtKey = longPreferencesKey("mock_premium_expires_at")
     private val lastSelectedProductKey = stringPreferencesKey("last_selected_product")
     private val lastSelectedOfferKey = stringPreferencesKey("last_selected_offer")
     private val lastPlayedEpisodeKey = stringPreferencesKey("last_played_episode")
@@ -117,6 +120,9 @@ class DramaFlowPreferenceStore(context: Context) {
 
     val premiumState: Flow<String> = dataStore.data.map { it[premiumStateKey] ?: "free" }
     val premiumProductId: Flow<String?> = dataStore.data.map { it[premiumProductKey] }
+    val premiumSourceLabel: Flow<String> = dataStore.data.map { it[premiumSourceKey] ?: "free_tier" }
+    val premiumUpdatedAtEpochMs: Flow<Long> = dataStore.data.map { it[premiumUpdatedAtKey] ?: 0L }
+    val premiumExpiresAtEpochMs: Flow<Long?> = dataStore.data.map { it[premiumExpiresAtKey] }
     val lastSelectedProductId: Flow<String?> = dataStore.data.map { it[lastSelectedProductKey] }
     val lastSelectedOfferId: Flow<String?> = dataStore.data.map { it[lastSelectedOfferKey] }
     val lastPlayedEpisodeId: Flow<String?> = dataStore.data.map { it[lastPlayedEpisodeKey] }
@@ -131,6 +137,9 @@ class DramaFlowPreferenceStore(context: Context) {
     suspend fun setPremiumState(
         premiumState: String,
         activeProductId: String?,
+        sourceLabel: String = if (premiumState == "premium") "mock_purchase" else "free_tier",
+        updatedAtEpochMs: Long = System.currentTimeMillis(),
+        expiresAtEpochMs: Long? = null,
     ) {
         dataStore.edit { prefs ->
             prefs[premiumStateKey] = premiumState
@@ -138,6 +147,13 @@ class DramaFlowPreferenceStore(context: Context) {
                 prefs.remove(premiumProductKey)
             } else {
                 prefs[premiumProductKey] = activeProductId
+            }
+            prefs[premiumSourceKey] = sourceLabel
+            prefs[premiumUpdatedAtKey] = updatedAtEpochMs
+            if (expiresAtEpochMs == null) {
+                prefs.remove(premiumExpiresAtKey)
+            } else {
+                prefs[premiumExpiresAtKey] = expiresAtEpochMs
             }
         }
     }
@@ -174,7 +190,13 @@ class DramaFlowPreferenceStore(context: Context) {
     }
 
     suspend fun resetPremiumState() {
-        setPremiumState(premiumState = "free", activeProductId = null)
+        setPremiumState(
+            premiumState = "free",
+            activeProductId = null,
+            sourceLabel = "free_tier",
+            updatedAtEpochMs = System.currentTimeMillis(),
+            expiresAtEpochMs = null,
+        )
     }
 
     suspend fun setDramaInteractionState(
@@ -195,6 +217,17 @@ class DramaFlowPreferenceStore(context: Context) {
             likedDramaIds = prefs[likedDramaIdsKey] ?: emptySet(),
             favoriteDramaIds = prefs[favoriteDramaIdsKey] ?: emptySet(),
             updatedAt = prefs[interactionUpdatedAtKey] ?: 0L,
+        )
+    }
+
+    suspend fun snapshotEntitlementState(): EntitlementPreferenceSnapshot {
+        val prefs = dataStore.data.first()
+        return EntitlementPreferenceSnapshot(
+            premiumState = prefs[premiumStateKey] ?: "free",
+            activeProductId = prefs[premiumProductKey],
+            sourceLabel = prefs[premiumSourceKey] ?: "free_tier",
+            updatedAtEpochMs = prefs[premiumUpdatedAtKey] ?: 0L,
+            expiresAtEpochMs = prefs[premiumExpiresAtKey],
         )
     }
 
@@ -225,6 +258,14 @@ data class DramaInteractionPreferenceSnapshot(
     val likedDramaIds: Set<String>,
     val favoriteDramaIds: Set<String>,
     val updatedAt: Long,
+)
+
+data class EntitlementPreferenceSnapshot(
+    val premiumState: String,
+    val activeProductId: String?,
+    val sourceLabel: String,
+    val updatedAtEpochMs: Long,
+    val expiresAtEpochMs: Long?,
 )
 
 fun createDatabase(context: Context): DramaFlowDatabase {

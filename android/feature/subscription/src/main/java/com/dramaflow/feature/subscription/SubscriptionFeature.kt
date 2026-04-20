@@ -3,6 +3,7 @@ package com.dramaflow.feature.subscription
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -67,6 +68,13 @@ enum class SubscriptionEntrySource {
     FEED,
 }
 
+enum class SubscriptionPurchaseStatus {
+    IDLE,
+    IN_PROGRESS,
+    SUCCESS,
+    FAILED,
+}
+
 data class SubscriptionUiState(
     val loadState: DfLoadState = DfLoadState.LOADING,
     val entrySource: SubscriptionEntrySource = SubscriptionEntrySource.DETAIL,
@@ -77,6 +85,7 @@ data class SubscriptionUiState(
     val selectedOfferId: String? = null,
     val isPremium: Boolean = false,
     val isProcessing: Boolean = false,
+    val purchaseStatus: SubscriptionPurchaseStatus = SubscriptionPurchaseStatus.IDLE,
     val restoreState: RestorePurchaseState = RestorePurchaseState.IDLE,
     val message: String? = null,
     val errorMessage: String = "Unable to load membership options.",
@@ -87,8 +96,11 @@ sealed interface SubscriptionAction {
     data object ContinuePurchase : SubscriptionAction
     data object Retry : SubscriptionAction
     data object RestorePurchases : SubscriptionAction
+    data object ResetEntitlement : SubscriptionAction
     data object DismissMessage : SubscriptionAction
 }
+
+private const val SubscriptionLogTag = "SubscriptionFlow"
 
 @HiltViewModel
 class SubscriptionViewModel @Inject constructor(
@@ -122,6 +134,7 @@ class SubscriptionViewModel @Inject constructor(
             SubscriptionAction.ContinuePurchase -> startPurchase(onPurchaseSuccess)
             SubscriptionAction.Retry -> observeSubscription()
             SubscriptionAction.RestorePurchases -> restorePurchases()
+            SubscriptionAction.ResetEntitlement -> resetEntitlement()
             SubscriptionAction.DismissMessage -> _uiState.update { it.copy(message = null) }
         }
     }
@@ -143,6 +156,7 @@ class SubscriptionViewModel @Inject constructor(
                             selectedProductId = result.value.selectedProductId,
                             selectedOfferId = result.value.selectedOfferId,
                             isPremium = result.value.entitlementState.isPremium,
+                            message = current.message,
                         )
                     }
                 }
@@ -164,31 +178,82 @@ class SubscriptionViewModel @Inject constructor(
         val product = state.products.firstOrNull { it.id == state.selectedProductId } ?: return
         val offer = product.offers.firstOrNull { it.id == state.selectedOfferId } ?: product.offers.first()
         viewModelScope.launch {
-            _uiState.update { it.copy(isProcessing = true, message = null) }
-            when (val result = purchaseLauncher.launchPurchase(product.id, offer.id, offer.offerToken)) {
-                is PurchaseResult.Success -> {
-                    val syncResult = subscriptionSyncCoordinator.syncPurchase(
-                        purchase = result.purchase,
-                        sourcePage = uiState.value.entrySource.name.lowercase(),
-                    )
-                    repository.setSelectedOffer(product.id, offer.id)
-                    _uiState.update {
-                        it.copy(
-                            isProcessing = false,
-                            isPremium = syncResult.second.isPremium,
-                            message = if (syncResult.first.syncAccepted) {
-                                "Purchase synced. Entitlement state: ${syncResult.first.entitlementState}."
-                            } else {
-                                "Purchase captured but backend sync is pending."
-                            },
+            Log.d(
+                SubscriptionLogTag,
+                "subscription_purchase_start product=${product.id} offer=${offer.id} source=${uiState.value.entrySource.name.lowercase()}",
+            )
+            _uiState.update {
+                it.copy(
+                    isProcessing = true,
+                    purchaseStatus = SubscriptionPurchaseStatus.IN_PROGRESS,
+                    message = null,
+                )
+            }
+            runCatching {
+                when (val result = purchaseLauncher.launchPurchase(product.id, offer.id, offer.offerToken)) {
+                    is PurchaseResult.Success -> {
+                        val syncResult = subscriptionSyncCoordinator.syncPurchase(
+                            purchase = result.purchase,
+                            sourcePage = uiState.value.entrySource.name.lowercase(),
                         )
+                        repository.setSelectedOffer(product.id, offer.id)
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                isPremium = syncResult.second.isPremium,
+                                purchaseStatus = SubscriptionPurchaseStatus.SUCCESS,
+                                message = if (syncResult.first.syncAccepted) {
+                                    "Purchase synced. Entitlement state: ${syncResult.first.entitlementState}."
+                                } else {
+                                    "Purchase captured but backend sync is pending."
+                                },
+                            )
+                        }
+                        Log.d(
+                            SubscriptionLogTag,
+                            "subscription_purchase_success product=${product.id} premium=${syncResult.second.isPremium} source=${syncResult.second.sourceLabel}",
+                        )
+                        if (syncResult.second.isPremium) {
+                            onPurchaseSuccess?.invoke()
+                        }
                     }
-                    if (syncResult.second.isPremium) {
-                        onPurchaseSuccess?.invoke()
+                    PurchaseResult.Cancelled -> {
+                        Log.d(SubscriptionLogTag, "subscription_purchase_failed reason=cancelled product=${product.id}")
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                purchaseStatus = SubscriptionPurchaseStatus.FAILED,
+                                message = "Purchase cancelled.",
+                            )
+                        }
+                    }
+                    is PurchaseResult.Error -> {
+                        Log.e(
+                            SubscriptionLogTag,
+                            "subscription_purchase_failed reason=launcher_error product=${product.id} message=${result.message}",
+                        )
+                        _uiState.update {
+                            it.copy(
+                                isProcessing = false,
+                                purchaseStatus = SubscriptionPurchaseStatus.FAILED,
+                                message = result.message,
+                            )
+                        }
                     }
                 }
-                PurchaseResult.Cancelled -> _uiState.update { it.copy(isProcessing = false, message = "Purchase cancelled.") }
-                is PurchaseResult.Error -> _uiState.update { it.copy(isProcessing = false, message = result.message) }
+            }.onFailure { error ->
+                Log.e(
+                    SubscriptionLogTag,
+                    "subscription_purchase_failed reason=sync_exception product=${product.id} message=${error.message}",
+                    error,
+                )
+                _uiState.update {
+                    it.copy(
+                        isProcessing = false,
+                        purchaseStatus = SubscriptionPurchaseStatus.FAILED,
+                        message = "Purchase sync failed. Please try again.",
+                    )
+                }
             }
         }
     }
@@ -196,12 +261,36 @@ class SubscriptionViewModel @Inject constructor(
     private fun restorePurchases() {
         viewModelScope.launch {
             _uiState.update { it.copy(restoreState = RestorePurchaseState.RESTORING, message = null) }
-            val restoreResult = subscriptionSyncCoordinator.restorePurchases(uiState.value.entrySource.name.lowercase())
+            runCatching {
+                subscriptionSyncCoordinator.restorePurchases(uiState.value.entrySource.name.lowercase())
+            }.onSuccess { restoreResult ->
+                _uiState.update {
+                    it.copy(
+                        restoreState = RestorePurchaseState.RESTORED,
+                        isPremium = restoreResult.second.isPremium,
+                        message = "Restore synced ${restoreResult.first.size} purchase(s).",
+                    )
+                }
+            }.onFailure { error ->
+                Log.e(SubscriptionLogTag, "subscription_purchase_failed reason=restore message=${error.message}", error)
+                _uiState.update {
+                    it.copy(
+                        restoreState = RestorePurchaseState.FAILED,
+                        message = "Restore failed. Please try again.",
+                    )
+                }
+            }
+        }
+    }
+
+    private fun resetEntitlement() {
+        viewModelScope.launch {
+            entitlementRepository.reset()
             _uiState.update {
                 it.copy(
-                    restoreState = RestorePurchaseState.RESTORED,
-                    isPremium = restoreResult.second.isPremium,
-                    message = "Restore synced ${restoreResult.first.size} purchase(s).",
+                    isPremium = false,
+                    purchaseStatus = SubscriptionPurchaseStatus.IDLE,
+                    message = "Mock premium access reset.",
                 )
             }
         }
@@ -302,6 +391,15 @@ fun SubscriptionScreen(
                         Row(modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Rounded.Refresh, contentDescription = null)
                             Text(" Restore purchase", color = colors.textPrimary)
+                        }
+                    }
+                    Surface(
+                        modifier = Modifier.clip(DramaFlowThemeTokens.shapes.pill).clickable { onAction(SubscriptionAction.ResetEntitlement) },
+                        color = colors.surface,
+                    ) {
+                        Row(modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Rounded.Refresh, contentDescription = null)
+                            Text(" Reset access", color = colors.textPrimary)
                         }
                     }
                     Text("Terms", color = colors.textSecondary)

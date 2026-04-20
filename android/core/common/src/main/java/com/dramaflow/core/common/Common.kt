@@ -7,6 +7,7 @@ import com.dramaflow.core.database.DramaFlowDatabase
 import com.dramaflow.core.database.DramaFlowPreferenceStore
 import com.dramaflow.core.database.WatchHistoryEntity
 import com.dramaflow.core.database.WatchProgressEntity
+import com.dramaflow.core.common.entitlement.EntitlementStateStore
 import com.dramaflow.core.model.DetailPayload
 import com.dramaflow.core.model.Drama
 import com.dramaflow.core.model.DramaCard
@@ -100,6 +101,7 @@ object AppEnvironment {
 }
 
 private const val WatchHistoryLogTag = "WatchHistory"
+private const val EntitlementLogTag = "Entitlement"
 
 interface FeedRepository {
     fun observeFeed(): Flow<DataResult<FeedPayload>>
@@ -179,31 +181,36 @@ private fun <T> wrapWithBehavior(
 
 @Singleton
 class FakeEntitlementRepository @Inject constructor(
-    private val preferences: DramaFlowPreferenceStore,
+    private val stateStore: EntitlementStateStore,
 ) : EntitlementRepository {
-    override fun observeEntitlement(): Flow<EntitlementState> {
-        return combine(preferences.premiumState, preferences.premiumProductId) { state, productId ->
-            EntitlementState(
-                isPremium = state == "premium",
-                activeProductId = productId,
-                unlockedEpisodeIds = emptyList(),
-                sourceLabel = if (state == "premium") "mock_purchase" else "free_tier",
-            )
-        }
-    }
+    override fun observeEntitlement(): Flow<EntitlementState> = stateStore.observe()
 
-    override suspend fun currentEntitlement(): EntitlementState {
-        return observeEntitlement().first()
-    }
+    override suspend fun currentEntitlement(): EntitlementState = stateStore.current()
 
     override suspend fun grantPremium(productId: String) {
-        preferences.setPremiumState(premiumState = "premium", activeProductId = productId)
+        val state = EntitlementState(
+            isPremium = true,
+            activeProductId = productId,
+            unlockedEpisodeIds = emptyList(),
+            sourceLabel = "mock_purchase",
+            updatedAtEpochMs = System.currentTimeMillis(),
+        )
+        stateStore.persist(state)
+        Log.d(EntitlementLogTag, "entitlement_grant product=$productId source=${state.sourceLabel}")
     }
 
-    override suspend fun refresh(): EntitlementState = currentEntitlement()
+    override suspend fun refresh(): EntitlementState {
+        val state = currentEntitlement()
+        Log.d(
+            EntitlementLogTag,
+            "entitlement_state_refresh premium=${state.isPremium} product=${state.activeProductId} source=${state.sourceLabel}",
+        )
+        return state
+    }
 
     override suspend fun reset() {
-        preferences.resetPremiumState()
+        stateStore.reset()
+        Log.d(EntitlementLogTag, "entitlement_revoke source=fake_reset")
     }
 }
 

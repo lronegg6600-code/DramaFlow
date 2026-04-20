@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SmartDisplay
@@ -53,6 +54,7 @@ import com.dramaflow.core.common.DramaFlowMockData
 import com.dramaflow.core.common.DramaInteractionFlags
 import com.dramaflow.core.common.DramaInteractionRepository
 import com.dramaflow.core.common.DramaInteractionState
+import com.dramaflow.core.common.EntitlementRepository
 import com.dramaflow.core.designsystem.component.DfEmptyCard
 import com.dramaflow.core.designsystem.component.DfErrorCard
 import com.dramaflow.core.designsystem.component.DfLoadingIndicator
@@ -60,6 +62,8 @@ import com.dramaflow.core.designsystem.component.DfWhiteMessageCard
 import com.dramaflow.core.designsystem.theme.DramaFlowThemeTokens
 import com.dramaflow.core.model.Drama
 import com.dramaflow.core.model.DramaCard
+import com.dramaflow.core.model.EntitlementState
+import com.dramaflow.core.model.canAccessDrama
 import com.dramaflow.core.ui.DfLoadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -140,6 +144,7 @@ sealed interface SearchAction {
 class SearchViewModel @Inject constructor(
     private val historyStore: SearchHistoryStore,
     private val interactionRepository: DramaInteractionRepository,
+    private val entitlementRepository: EntitlementRepository,
 ) : androidx.lifecycle.ViewModel() {
     private val contentState = MutableStateFlow(
         SearchContentState(
@@ -168,13 +173,15 @@ class SearchViewModel @Inject constructor(
                 contentState,
                 interactionRepository.observeInteractionState(),
                 pendingInteractionOverrides,
-            ) { content, interactionState, pendingOverrides ->
-                Triple(content, interactionState, pendingOverrides)
-            }.collect { (content, interactionState, pendingOverrides) ->
+                entitlementRepository.observeEntitlement(),
+            ) { content, interactionState, pendingOverrides, entitlementState ->
+                SearchCombinedState(content, interactionState, pendingOverrides, entitlementState)
+            }.collect { combined ->
                 _uiState.value = reduceUiState(
-                    content = content,
-                    interactionState = interactionState,
-                    pendingOverrides = pendingOverrides,
+                    content = combined.content,
+                    interactionState = combined.interactionState,
+                    pendingOverrides = combined.pendingOverrides,
+                    entitlementState = combined.entitlementState,
                 )
             }
         }
@@ -249,19 +256,21 @@ class SearchViewModel @Inject constructor(
         content: SearchContentState,
         interactionState: DramaInteractionState,
         pendingOverrides: Map<String, SearchPendingInteractionOverride>,
+        entitlementState: EntitlementState,
     ): SearchUiState {
         val flags = interactionRepository.backfill(
             dramaIds = content.rawResultItems.map { it.drama.id },
             state = interactionState,
         )
         val resultItems = content.rawResultItems.map { card ->
+            val entitledCard = card.withEntitlement(entitlementState)
             val currentFlags = flags[card.drama.id] ?: DramaInteractionFlags(
                 isLiked = false,
                 isFavorited = false,
             )
             val pending = pendingOverrides[card.drama.id]
             SearchResultItem(
-                card = card,
+                card = entitledCard,
                 isLiked = pending?.liked ?: currentFlags.isLiked,
                 isFavorited = pending?.favorited ?: currentFlags.isFavorited,
                 isLikeUpdating = pending?.likeInFlight == true,
@@ -405,6 +414,13 @@ class SearchViewModel @Inject constructor(
         }
     }
 }
+
+private data class SearchCombinedState(
+    val content: SearchContentState,
+    val interactionState: DramaInteractionState,
+    val pendingOverrides: Map<String, SearchPendingInteractionOverride>,
+    val entitlementState: EntitlementState,
+)
 
 @Singleton
 class SearchHistoryStore @Inject constructor(
@@ -775,6 +791,25 @@ private fun SearchResultCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
+                if (item.card.isLockedForUser || !item.card.statusLabel.isNullOrBlank()) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (item.card.isLockedForUser) {
+                            Icon(
+                                imageVector = Icons.Rounded.Lock,
+                                contentDescription = null,
+                                tint = colors.warning,
+                            )
+                        }
+                        Text(
+                            text = item.card.statusLabel ?: if (item.card.isLockedForUser) "Premium" else "",
+                            color = if (item.card.isLockedForUser) colors.warning else colors.textSecondary,
+                            style = DramaFlowThemeTokens.typography.labelMedium,
+                        )
+                    }
+                }
                 Text(
                     text = item.card.drama.tags.joinToString(" · ") { it.label },
                     color = colors.textSecondary,
@@ -864,5 +899,19 @@ private fun Drama.toSearchDramaCard(
         isUpdated = isFeatured,
         isLockedForUser = false,
         statusLabel = statusLabel,
+    )
+}
+
+private fun DramaCard.withEntitlement(
+    entitlementState: EntitlementState,
+): DramaCard {
+    val isLocked = !entitlementState.canAccessDrama(drama)
+    return copy(
+        isLockedForUser = isLocked,
+        statusLabel = when {
+            isLocked -> "Premium"
+            statusLabel == "Premium" -> "${drama.totalEpisodes} episodes"
+            else -> statusLabel
+        },
     )
 }
