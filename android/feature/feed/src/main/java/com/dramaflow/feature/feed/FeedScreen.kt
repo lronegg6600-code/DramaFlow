@@ -27,6 +27,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -362,27 +363,10 @@ private fun RecommendPagerCard(
                 .padding(start = spacing.lg, end = 88.dp, bottom = spacing.section),
             verticalArrangement = Arrangement.spacedBy(spacing.md),
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-                item.card.drama.tags.take(2).forEach { tag ->
-                    Surface(
-                        shape = DramaFlowThemeTokens.shapes.pill,
-                        color = Color.Black.copy(alpha = 0.35f),
-                    ) {
-                        Text(
-                            text = tag.label,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.xs),
-                        )
-                    }
-                }
-            }
-            Text(
-                text = item.card.drama.title,
-                style = DramaFlowThemeTokens.typography.headlineMedium,
-                color = Color.White,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.clickable { onDramaClick(item.card.drama.id) },
+            DramaTitleEntry(
+                title = item.card.drama.title,
+                tags = item.card.drama.tags.take(2).map { it.label },
+                onClick = { onDramaClick(item.card.drama.id) },
             )
             Text(
                 text = item.card.drama.shortDescription,
@@ -421,6 +405,61 @@ private fun RecommendPagerCard(
                 selected = false,
                 enabled = true,
             )
+        }
+    }
+}
+
+@Composable
+private fun DramaTitleEntry(
+    title: String,
+    tags: List<String>,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    Surface(
+        modifier = Modifier
+            .clip(DramaFlowThemeTokens.shapes.large)
+            .clickable(onClick = onClick),
+        color = Color.Black.copy(alpha = 0.26f),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(spacing.sm),
+        ) {
+            if (tags.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+                    tags.forEach { tag ->
+                        Surface(
+                            shape = DramaFlowThemeTokens.shapes.pill,
+                            color = Color.White.copy(alpha = 0.12f),
+                        ) {
+                            Text(
+                                text = tag,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.xs),
+                            )
+                        }
+                    }
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = title,
+                    style = DramaFlowThemeTokens.typography.headlineMedium,
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                Icon(
+                    imageVector = Icons.Rounded.ChevronRight,
+                    contentDescription = "Open drama details",
+                    tint = Color.White.copy(alpha = 0.88f),
+                )
+            }
         }
     }
 }

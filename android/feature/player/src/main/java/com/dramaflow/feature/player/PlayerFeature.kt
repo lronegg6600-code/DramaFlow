@@ -6,26 +6,38 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -99,10 +111,24 @@ data class PlayerUiState(
     val paywallVisible: Boolean = false,
     val nextEpisodeHint: NextEpisodeHint? = null,
     val analyticsEvents: List<PlayerAnalyticsEvent> = emptyList(),
+    val currentEpisodeLabel: String = "",
+    val episodeSelectorSummary: String = "",
+    val episodeSheetVisible: Boolean = false,
+    val episodeItems: List<PlayerEpisodeItem> = emptyList(),
     val errorMessage: String = "Playback failed to initialize.",
     val sessionId: String? = null,
     val isRemotePlayback: Boolean = false,
     val remoteMode: PlayerRemoteMode = PlayerRemoteMode.FAKE_ONLY,
+)
+
+data class PlayerEpisodeItem(
+    val episodeId: String,
+    val episodeNumber: Int,
+    val title: String,
+    val isCurrent: Boolean,
+    val isCompleted: Boolean,
+    val isLocked: Boolean,
+    val accessibilityLabel: String,
 )
 
 sealed interface PlayerAction {
@@ -110,6 +136,9 @@ sealed interface PlayerAction {
     data object Retry : PlayerAction
     data object UnlockPremium : PlayerAction
     data object PlayNextNow : PlayerAction
+    data object ShowEpisodeSheet : PlayerAction
+    data object HideEpisodeSheet : PlayerAction
+    data class SelectEpisode(val episodeId: String) : PlayerAction
     data object AppStarted : PlayerAction
     data object AppStopped : PlayerAction
 }
@@ -157,6 +186,12 @@ class PlayerViewModel @Inject constructor(
             PlayerAction.Retry -> loadEpisode(currentEpisodeId, autoPlay = true)
             PlayerAction.UnlockPremium -> _uiState.update { it.copy(paywallVisible = true) }
             PlayerAction.PlayNextNow -> uiState.value.nextEpisodeHint?.episodeId?.let(::switchToEpisode)
+            PlayerAction.ShowEpisodeSheet -> _uiState.update { it.copy(episodeSheetVisible = true) }
+            PlayerAction.HideEpisodeSheet -> _uiState.update { it.copy(episodeSheetVisible = false) }
+            is PlayerAction.SelectEpisode -> {
+                _uiState.update { it.copy(episodeSheetVisible = false) }
+                switchToEpisode(action.episodeId)
+            }
             PlayerAction.AppStarted -> {
                 if (uiState.value.playbackState.isPrepared && !uiState.value.paywallVisible) {
                     media3PlayerBridge.dispatch(PlaybackAction.Play)
@@ -187,6 +222,16 @@ class PlayerViewModel @Inject constructor(
                         current.paywallVisible && episode != null && entitlement.canAccessEpisode(episode)
                     current.copy(
                         entitlementState = entitlement,
+                        episodeItems = refreshEpisodeItems(
+                            current.episodeItems,
+                            entitlement = entitlement,
+                            currentEpisodeId = currentEpisodeId,
+                        ),
+                        episodeSelectorSummary = buildEpisodeSelectorSummary(
+                            episodeCount = current.episodeItems.size,
+                            currentEpisode = episode,
+                            entitlement = entitlement,
+                        ),
                         paywallVisible = if (shouldDismissPaywall) false else current.paywallVisible,
                         previewLimit = if (shouldDismissPaywall) null else current.previewLimit,
                         previewCountdown = if (shouldDismissPaywall) null else current.previewCountdown,
@@ -272,6 +317,11 @@ class PlayerViewModel @Inject constructor(
                     val nextHint = descriptor?.nextEpisodeHint ?: session.nextEpisode?.let {
                         NextEpisodeHint(it.id, "Episode ${it.episodeNumber}", 5)
                     }
+                    val episodeItems = buildEpisodeItems(
+                        dramaId = session.drama.id,
+                        currentEpisodeId = session.episode.id,
+                        entitlement = session.entitlementState,
+                    )
                     _uiState.update {
                         it.copy(
                             loadState = DfLoadState.SUCCESS,
@@ -279,6 +329,14 @@ class PlayerViewModel @Inject constructor(
                             episode = session.episode,
                             entitlementState = session.entitlementState,
                             nextEpisodeHint = nextHint,
+                            currentEpisodeLabel = formatEpisodeLabel(session.episode),
+                            episodeSelectorSummary = buildEpisodeSelectorSummary(
+                                episodeCount = episodeItems.size,
+                                currentEpisode = session.episode,
+                                entitlement = session.entitlementState,
+                            ),
+                            episodeItems = episodeItems,
+                            episodeSheetVisible = false,
                             errorMessage = "",
                             sessionId = descriptor?.sessionId,
                             isRemotePlayback = session.isRemotePlayback,
@@ -470,6 +528,61 @@ class PlayerViewModel @Inject constructor(
     private fun appendAnalytics(event: PlayerAnalyticsEvent) {
         _uiState.update { it.copy(analyticsEvents = (it.analyticsEvents + event).takeLast(14)) }
     }
+
+    private suspend fun buildEpisodeItems(
+        dramaId: String,
+        currentEpisodeId: String,
+        entitlement: EntitlementState,
+    ): List<PlayerEpisodeItem> {
+        return DramaFlowMockData.episodesForDrama(dramaId).map { episode ->
+            val progress = progressRepository.getProgressForEpisode(episode.id)
+            PlayerEpisodeItem(
+                episodeId = episode.id,
+                episodeNumber = episode.episodeNumber,
+                title = episode.title,
+                isCurrent = episode.id == currentEpisodeId,
+                isCompleted = progress?.completed == true || (progress?.progressPercent ?: 0f) >= 0.9f,
+                isLocked = !entitlement.canAccessEpisode(episode),
+                accessibilityLabel = when {
+                    episode.id == currentEpisodeId -> "Current episode"
+                    progress?.completed == true -> "Watched"
+                    !entitlement.canAccessEpisode(episode) -> "Premium locked"
+                    else -> "Available"
+                },
+            )
+        }
+    }
+
+    private fun refreshEpisodeItems(
+        currentItems: List<PlayerEpisodeItem>,
+        entitlement: EntitlementState,
+        currentEpisodeId: String,
+    ): List<PlayerEpisodeItem> {
+        return currentItems.map { item ->
+            item.copy(
+                isCurrent = item.episodeId == currentEpisodeId,
+                isLocked = DramaFlowMockData.findEpisode(item.episodeId)?.let { !entitlement.canAccessEpisode(it) } ?: item.isLocked,
+            )
+        }
+    }
+}
+
+private fun formatEpisodeLabel(episode: Episode?): String {
+    return episode?.let { "Episode ${it.episodeNumber}" }.orEmpty()
+}
+
+private fun buildEpisodeSelectorSummary(
+    episodeCount: Int,
+    currentEpisode: Episode?,
+    entitlement: EntitlementState,
+): String {
+    if (episodeCount == 0) return "Episodes"
+    val accessLabel = when {
+        entitlement.isPremium -> "Premium unlocked"
+        currentEpisode?.requiresPremium == true -> "Preview available"
+        else -> "Free to watch"
+    }
+    return "Episodes · $episodeCount total · $accessLabel"
 }
 
 @Composable
@@ -500,6 +613,7 @@ fun PlayerRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
     uiState: PlayerUiState,
@@ -528,23 +642,6 @@ fun PlayerScreen(
                     .padding(spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(spacing.lg),
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Surface(
-                        modifier = Modifier.clip(DramaFlowThemeTokens.shapes.pill).clickable(onClick = onBack),
-                        color = colors.surface,
-                    ) {
-                        Icon(Icons.Rounded.ArrowBack, contentDescription = null, modifier = Modifier.padding(12.dp))
-                    }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(uiState.drama?.title.orEmpty(), color = colors.textPrimary)
-                        Text(uiState.episode?.title.orEmpty(), color = colors.textSecondary)
-                    }
-                }
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -564,17 +661,38 @@ fun PlayerScreen(
                         update = { it.player = playerBridge.player },
                     )
 
+                    PlayerTopOverlay(
+                        episodeLabel = uiState.currentEpisodeLabel,
+                        onBack = onBack,
+                    )
+
+                    EpisodeSelectorBar(
+                        summary = uiState.episodeSelectorSummary,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = spacing.lg, vertical = spacing.lg),
+                        onClick = { onAction(PlayerAction.ShowEpisodeSheet) },
+                    )
+
                     if (uiState.playbackState.isBuffering) {
-                        OverlayMessage("Buffering episode...")
+                        OverlayMessage(
+                            text = "Buffering episode...",
+                            modifier = Modifier.align(Alignment.Center),
+                        )
                     }
                     uiState.previewCountdown?.let { remaining ->
-                        OverlayMessage("Preview ends in ${remaining}s")
+                        OverlayMessage(
+                            text = "Preview ends in ${remaining}s",
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 92.dp),
+                        )
                     }
                     if (uiState.paywallVisible && uiState.previewLimit != null) {
                         Surface(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
-                                .padding(spacing.lg),
+                                .padding(start = spacing.lg, end = spacing.lg, bottom = 92.dp),
                             shape = DramaFlowThemeTokens.shapes.large,
                             color = colors.whiteCard,
                         ) {
@@ -687,16 +805,212 @@ fun PlayerScreen(
                     body = uiState.analyticsEvents.joinToString(separator = " | ") { it.name.lowercase() },
                 )
             }
+
+            if (uiState.episodeSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = { onAction(PlayerAction.HideEpisodeSheet) },
+                    containerColor = colors.background,
+                ) {
+                    EpisodeSelectorSheet(
+                        dramaTitle = uiState.drama?.title.orEmpty(),
+                        summary = uiState.episodeSelectorSummary,
+                        items = uiState.episodeItems,
+                        onEpisodeClick = { onAction(PlayerAction.SelectEpisode(it)) },
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun OverlayMessage(text: String) {
+private fun PlayerTopOverlay(
+    episodeLabel: String,
+    onBack: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = spacing.lg, vertical = spacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Surface(
+            modifier = Modifier.clip(DramaFlowThemeTokens.shapes.pill).clickable(onClick = onBack),
+            color = colors.surface.copy(alpha = 0.88f),
+        ) {
+            Icon(
+                Icons.AutoMirrored.Rounded.ArrowBack,
+                contentDescription = "Back",
+                tint = colors.textPrimary,
+                modifier = Modifier.padding(12.dp),
+            )
+        }
+        Surface(
+            shape = DramaFlowThemeTokens.shapes.pill,
+            color = colors.surface.copy(alpha = 0.88f),
+        ) {
+            Text(
+                text = episodeLabel,
+                modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm),
+                color = colors.textPrimary,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@Composable
+private fun EpisodeSelectorBar(
+    summary: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
     Surface(
-        modifier = Modifier.padding(spacing.lg),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(DramaFlowThemeTokens.shapes.large)
+            .clickable(onClick = onClick),
+        color = Color.Black.copy(alpha = 0.58f),
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = summary,
+                color = Color.White,
+                style = DramaFlowThemeTokens.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Icon(
+                imageVector = Icons.Rounded.ExpandLess,
+                contentDescription = "Open episode selector",
+                tint = Color.White,
+            )
+        }
+    }
+}
+
+@Composable
+private fun EpisodeSelectorSheet(
+    dramaTitle: String,
+    summary: String,
+    items: List<PlayerEpisodeItem>,
+    onEpisodeClick: (String) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(spacing.md),
+    ) {
+        Text(
+            text = dramaTitle,
+            style = DramaFlowThemeTokens.typography.titleLarge,
+            color = colors.textPrimary,
+        )
+        Text(
+            text = summary,
+            style = DramaFlowThemeTokens.typography.bodyMedium,
+            color = colors.textSecondary,
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 420.dp),
+            contentPadding = PaddingValues(bottom = spacing.xl),
+            horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(spacing.sm),
+        ) {
+            items(items, key = { it.episodeId }) { item ->
+                EpisodeSelectorItem(
+                    item = item,
+                    onClick = { onEpisodeClick(item.episodeId) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EpisodeSelectorItem(
+    item: PlayerEpisodeItem,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    val background = when {
+        item.isCurrent -> colors.accentStrong
+        item.isLocked -> colors.surfaceMuted
+        else -> colors.surface
+    }
+    val contentColor = when {
+        item.isCurrent -> colors.textInverse
+        item.isLocked -> colors.textSecondary
+        else -> colors.textPrimary
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(DramaFlowThemeTokens.shapes.medium)
+            .clickable(onClick = onClick),
+        color = background,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = spacing.sm, vertical = spacing.md),
+            verticalArrangement = Arrangement.spacedBy(spacing.xs),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = item.episodeNumber.toString(),
+                color = contentColor,
+                style = DramaFlowThemeTokens.typography.titleMedium,
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                when {
+                    item.isLocked -> Icon(Icons.Rounded.Lock, contentDescription = item.accessibilityLabel, tint = contentColor)
+                    item.isCompleted -> Icon(Icons.Rounded.CheckCircle, contentDescription = item.accessibilityLabel, tint = contentColor)
+                    item.isCurrent -> Icon(Icons.Rounded.PlayArrow, contentDescription = item.accessibilityLabel, tint = contentColor)
+                    else -> Icon(Icons.Rounded.ExpandMore, contentDescription = item.accessibilityLabel, tint = contentColor)
+                }
+                Text(
+                    text = when {
+                        item.isCurrent -> "Playing"
+                        item.isLocked -> "Locked"
+                        item.isCompleted -> "Watched"
+                        else -> "Open"
+                    },
+                    color = contentColor,
+                    style = DramaFlowThemeTokens.typography.labelMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OverlayMessage(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Surface(
+        modifier = modifier,
         color = colors.surface.copy(alpha = 0.9f),
         shape = DramaFlowThemeTokens.shapes.pill,
     ) {
