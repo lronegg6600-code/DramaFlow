@@ -1,5 +1,6 @@
 package com.dramaflow.core.common
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dramaflow.core.database.DramaFlowDatabase
@@ -98,6 +99,8 @@ object AppEnvironment {
     )
 }
 
+private const val WatchHistoryLogTag = "WatchHistory"
+
 interface FeedRepository {
     fun observeFeed(): Flow<DataResult<FeedPayload>>
 }
@@ -133,6 +136,8 @@ interface ProgressRepository {
     suspend fun getProgressForEpisode(episodeId: String): WatchProgress?
     suspend fun saveProgress(progress: WatchProgress)
     suspend fun saveEpisodeComplete(episode: Episode, drama: Drama, progressPercent: Float)
+    suspend fun removeHistoryForDrama(dramaId: String)
+    suspend fun clearHistory()
     suspend fun clearAll()
     fun observeLastPlayedEpisodeId(): Flow<String?>
     suspend fun setLastPlayedEpisodeId(episodeId: String?)
@@ -210,17 +215,12 @@ class FakeProgressRepository @Inject constructor(
     private val dao = database.watchStateDao()
 
     override fun observeHistory(): Flow<List<WatchHistoryItem>> {
-        return dao.observeHistory().map { history ->
-            history.map { entity ->
-                WatchHistoryItem(
-                    dramaId = entity.dramaId,
-                    episodeId = entity.episodeId,
-                    title = entity.title,
-                    artworkUrl = entity.artworkUrl,
-                    watchedAtEpochMs = entity.watchedAtEpochMs,
-                    progressPercent = entity.progressPercent,
-                )
-            }
+        return combine(dao.observeHistory(), dao.observeAllProgress()) { history, progressList ->
+            history.sortedByDescending { it.watchedAtEpochMs }
+                .distinctBy { it.dramaId }
+                .mapNotNull { entity ->
+                    entity.toWatchHistoryItem(progressList.firstOrNull { it.episodeId == entity.episodeId })
+                }
         }
     }
 
@@ -241,31 +241,103 @@ class FakeProgressRepository @Inject constructor(
     }
 
     override suspend fun saveProgress(progress: WatchProgress) {
-        dao.upsertProgress(progress.toEntity())
+        runCatching {
+            dao.upsertProgress(progress.toEntity())
+            upsertHistoryRecord(progress)
+        }.onFailure { error ->
+            Log.e(
+                WatchHistoryLogTag,
+                "history_persist_failed action=upsert drama=${progress.dramaId} episode=${progress.episodeId} message=${error.message}",
+                error,
+            )
+        }
     }
 
     override suspend fun saveEpisodeComplete(episode: Episode, drama: Drama, progressPercent: Float) {
-        dao.upsertHistory(
-            WatchHistoryEntity(
+        runCatching {
+            dao.upsertHistory(
+                WatchHistoryEntity(
                 episodeId = episode.id,
                 dramaId = drama.id,
                 title = "${drama.title} · ${episode.title}",
                 artworkUrl = drama.portraitPosterUrl,
                 watchedAtEpochMs = System.currentTimeMillis(),
                 progressPercent = progressPercent,
-            ),
-        )
+                ),
+            )
+            Log.d(
+                WatchHistoryLogTag,
+                "history_record_upsert drama=${drama.id} episode=${episode.id} progress=$progressPercent completed=true",
+            )
+        }.onFailure { error ->
+            Log.e(
+                WatchHistoryLogTag,
+                "history_persist_failed action=complete drama=${drama.id} episode=${episode.id} message=${error.message}",
+                error,
+            )
+        }
+    }
+
+    override suspend fun removeHistoryForDrama(dramaId: String) {
+        runCatching {
+            dao.deleteDramaWatchState(dramaId)
+            val lastPlayedEpisodeId = preferences.lastPlayedEpisodeId.first()
+            if (lastPlayedEpisodeId?.let { DramaFlowMockData.findEpisode(it)?.dramaId } == dramaId) {
+                preferences.setLastPlayedEpisode(null)
+            }
+            Log.d(WatchHistoryLogTag, "history_record_remove drama=$dramaId")
+        }.getOrElse { error ->
+            Log.e(
+                WatchHistoryLogTag,
+                "history_persist_failed action=remove drama=$dramaId message=${error.message}",
+                error,
+            )
+            throw error
+        }
+    }
+
+    override suspend fun clearHistory() {
+        runCatching {
+            dao.clearAllWatchState()
+            preferences.setLastPlayedEpisode(null)
+            Log.d(WatchHistoryLogTag, "history_record_clear scope=all")
+        }.getOrElse { error ->
+            Log.e(
+                WatchHistoryLogTag,
+                "history_persist_failed action=clear_all message=${error.message}",
+                error,
+            )
+            throw error
+        }
     }
 
     override suspend fun clearAll() {
-        dao.clearAllWatchState()
-        preferences.setLastPlayedEpisode(null)
+        clearHistory()
     }
 
     override fun observeLastPlayedEpisodeId(): Flow<String?> = preferences.lastPlayedEpisodeId
 
     override suspend fun setLastPlayedEpisodeId(episodeId: String?) {
         preferences.setLastPlayedEpisode(episodeId)
+    }
+
+    private suspend fun upsertHistoryRecord(progress: WatchProgress) {
+        val episode = DramaFlowMockData.findEpisode(progress.episodeId) ?: return
+        val drama = DramaFlowMockData.findDrama(progress.dramaId) ?: return
+        dao.upsertHistory(
+            WatchHistoryEntity(
+                episodeId = episode.id,
+                dramaId = drama.id,
+                title = "${drama.title} - ${episode.title}",
+                artworkUrl = drama.portraitPosterUrl,
+                watchedAtEpochMs = progress.lastUpdatedEpochMs,
+                progressPercent = progress.progressPercent,
+            ),
+        )
+        Log.d(
+            WatchHistoryLogTag,
+            "history_record_upsert drama=${drama.id} episode=${episode.id} progress=${progress.progressPercent}",
+        )
     }
 }
 
@@ -622,6 +694,30 @@ private fun WatchProgressEntity.toModel(): WatchProgress {
         lastUpdatedEpochMs = lastUpdatedEpochMs,
         completed = completed,
     )
+}
+
+private fun WatchHistoryEntity.toWatchHistoryItem(progress: WatchProgressEntity?): WatchHistoryItem? {
+    val episode = DramaFlowMockData.findEpisode(episodeId)
+    val drama = DramaFlowMockData.findDrama(dramaId)
+    val titleParts = title.split(" - ", limit = 2)
+    val resolvedDramaTitle = drama?.title ?: titleParts.firstOrNull().orEmpty()
+    val resolvedEpisodeTitle = episode?.title ?: titleParts.getOrNull(1) ?: "Episode"
+    val resolvedEpisodeNumber = episode?.episodeNumber ?: progress?.let { DramaFlowMockData.findEpisode(it.episodeId)?.episodeNumber } ?: 0
+    val resolvedDurationMs = progress?.durationMs ?: episode?.durationSeconds?.times(1000L) ?: 0L
+    return resolvedDramaTitle.takeIf { it.isNotBlank() }?.let {
+        WatchHistoryItem(
+            dramaId = dramaId,
+            episodeId = episodeId,
+            dramaTitle = resolvedDramaTitle,
+            episodeTitle = resolvedEpisodeTitle,
+            episodeNumber = resolvedEpisodeNumber,
+            artworkUrl = drama?.portraitPosterUrl ?: artworkUrl,
+            watchedAtEpochMs = watchedAtEpochMs,
+            progressPercent = progress?.progressPercent ?: progressPercent,
+            positionMs = progress?.positionMs ?: 0L,
+            durationMs = resolvedDurationMs,
+        )
+    }
 }
 
 fun ViewModel.launchDataLoad(

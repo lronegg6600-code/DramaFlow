@@ -127,10 +127,14 @@ fun RecentHistoryItemDto.toDomain(title: String, artworkUrl: String): WatchHisto
     WatchHistoryItem(
         dramaId = dramaId,
         episodeId = episodeId,
-        title = title,
+        dramaTitle = title,
+        episodeTitle = "Episode",
+        episodeNumber = 0,
         artworkUrl = artworkUrl,
         watchedAtEpochMs = Instant.parse(watchedAt).toEpochMilli(),
         progressPercent = 0f,
+        positionMs = 0L,
+        durationMs = 0L,
     )
 
 fun PlaybackSessionDto.toDomain(): PlaybackDescriptor =

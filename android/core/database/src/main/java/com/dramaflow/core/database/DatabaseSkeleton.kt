@@ -63,11 +63,23 @@ interface WatchStateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertHistory(entity: WatchHistoryEntity)
 
+    @Query("DELETE FROM watch_history WHERE dramaId = :dramaId")
+    suspend fun deleteHistoryByDramaId(dramaId: String)
+
+    @Query("DELETE FROM watch_progress WHERE dramaId = :dramaId")
+    suspend fun deleteProgressByDramaId(dramaId: String)
+
     @Query("DELETE FROM watch_progress")
     suspend fun clearProgress()
 
     @Query("DELETE FROM watch_history")
     suspend fun clearHistory()
+
+    @Transaction
+    suspend fun deleteDramaWatchState(dramaId: String) {
+        deleteHistoryByDramaId(dramaId)
+        deleteProgressByDramaId(dramaId)
+    }
 
     @Transaction
     suspend fun clearAllWatchState() {

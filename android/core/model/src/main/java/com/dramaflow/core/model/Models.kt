@@ -174,10 +174,14 @@ data class UserProfile(
 data class WatchHistoryItem(
     val dramaId: String,
     val episodeId: String,
-    val title: String,
+    val dramaTitle: String,
+    val episodeTitle: String,
+    val episodeNumber: Int,
     val artworkUrl: String,
     val watchedAtEpochMs: Long,
     val progressPercent: Float,
+    val positionMs: Long,
+    val durationMs: Long,
 )
 
 @Serializable
