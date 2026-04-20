@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,6 +117,9 @@ data class PlayerUiState(
     val episodeSelectorSummary: String = "",
     val episodeSheetVisible: Boolean = false,
     val episodeItems: List<PlayerEpisodeItem> = emptyList(),
+    val currentEpisodeIndex: Int = 0,
+    val episodeSheetInitialIndex: Int = 0,
+    val hasNextEpisode: Boolean = false,
     val errorMessage: String = "Playback failed to initialize.",
     val sessionId: String? = null,
     val isRemotePlayback: Boolean = false,
@@ -127,9 +132,18 @@ data class PlayerEpisodeItem(
     val title: String,
     val isCurrent: Boolean,
     val isCompleted: Boolean,
+    val hasStarted: Boolean,
     val isLocked: Boolean,
+    val isPreviewAccessible: Boolean,
+    val progressPercent: Float,
+    val stateLabel: String,
     val accessibilityLabel: String,
 )
+
+private enum class EpisodeSwitchReason {
+    MANUAL,
+    AUTO_NEXT,
+}
 
 sealed interface PlayerAction {
     data object TogglePlayPause : PlayerAction
@@ -185,12 +199,14 @@ class PlayerViewModel @Inject constructor(
             PlayerAction.TogglePlayPause -> media3PlayerBridge.dispatch(PlaybackAction.TogglePlayPause)
             PlayerAction.Retry -> loadEpisode(currentEpisodeId, autoPlay = true)
             PlayerAction.UnlockPremium -> _uiState.update { it.copy(paywallVisible = true) }
-            PlayerAction.PlayNextNow -> uiState.value.nextEpisodeHint?.episodeId?.let(::switchToEpisode)
+            PlayerAction.PlayNextNow -> uiState.value.nextEpisodeHint?.episodeId?.let {
+                switchToEpisode(it, reason = EpisodeSwitchReason.AUTO_NEXT, markCurrentComplete = true)
+            }
             PlayerAction.ShowEpisodeSheet -> _uiState.update { it.copy(episodeSheetVisible = true) }
             PlayerAction.HideEpisodeSheet -> _uiState.update { it.copy(episodeSheetVisible = false) }
             is PlayerAction.SelectEpisode -> {
                 _uiState.update { it.copy(episodeSheetVisible = false) }
-                switchToEpisode(action.episodeId)
+                switchToEpisode(action.episodeId, reason = EpisodeSwitchReason.MANUAL)
             }
             PlayerAction.AppStarted -> {
                 if (uiState.value.playbackState.isPrepared && !uiState.value.paywallVisible) {
@@ -232,6 +248,7 @@ class PlayerViewModel @Inject constructor(
                             currentEpisode = episode,
                             entitlement = entitlement,
                         ),
+                        hasNextEpisode = current.nextEpisodeHint != null,
                         paywallVisible = if (shouldDismissPaywall) false else current.paywallVisible,
                         previewLimit = if (shouldDismissPaywall) null else current.previewLimit,
                         previewCountdown = if (shouldDismissPaywall) null else current.previewCountdown,
@@ -261,7 +278,9 @@ class PlayerViewModel @Inject constructor(
                         appendAnalytics(PlayerAnalyticsEvent.EPISODE_COMPLETE)
                         sendCompletion()
                         persistCurrentProgress(markComplete = true)
-                        uiState.value.nextEpisodeHint?.episodeId?.let(::switchToEpisode)
+                        uiState.value.nextEpisodeHint?.episodeId?.let {
+                            switchToEpisode(it, reason = EpisodeSwitchReason.AUTO_NEXT, markCurrentComplete = true)
+                        }
                     }
                     is PlayerEvent.PlaybackError -> {
                         _uiState.update { it.copy(errorMessage = event.message) }
@@ -280,7 +299,12 @@ class PlayerViewModel @Inject constructor(
                             )
                         }
                     }
-                    is PlayerEvent.AutoNextAvailable -> _uiState.update { it.copy(nextEpisodeHint = event.hint) }
+                    is PlayerEvent.AutoNextAvailable -> _uiState.update {
+                        it.copy(
+                            nextEpisodeHint = event.hint,
+                            hasNextEpisode = true,
+                        )
+                    }
                 }
             }
         }
@@ -322,6 +346,9 @@ class PlayerViewModel @Inject constructor(
                         currentEpisodeId = session.episode.id,
                         entitlement = session.entitlementState,
                     )
+                    val currentEpisodeIndex = episodeItems.indexOfFirst { item ->
+                        item.episodeId == session.episode.id
+                    }.coerceAtLeast(0)
                     _uiState.update {
                         it.copy(
                             loadState = DfLoadState.SUCCESS,
@@ -336,6 +363,9 @@ class PlayerViewModel @Inject constructor(
                                 entitlement = session.entitlementState,
                             ),
                             episodeItems = episodeItems,
+                            currentEpisodeIndex = currentEpisodeIndex,
+                            episodeSheetInitialIndex = currentEpisodeIndex,
+                            hasNextEpisode = nextHint != null,
                             episodeSheetVisible = false,
                             errorMessage = "",
                             sessionId = descriptor?.sessionId,
@@ -384,6 +414,7 @@ class PlayerViewModel @Inject constructor(
             it.copy(
                 previewCountdown = preview?.remainingSeconds?.takeIf { remaining -> remaining in 1..10 },
                 nextEpisodeHint = nextHint,
+                hasNextEpisode = nextHint != null,
             )
         }
 
@@ -480,11 +511,27 @@ class PlayerViewModel @Inject constructor(
         if (bridgeState.durationMs > 0L) {
             persistCurrentProgress(markComplete = bridgeState.hasEnded)
             appendAnalytics(PlayerAnalyticsEvent.PROGRESS_SAVED)
+            refreshCurrentEpisodeProgress(
+                progressPercent = if (bridgeState.durationMs == 0L) {
+                    0f
+                } else {
+                    (bridgeState.positionMs.toFloat() / bridgeState.durationMs.toFloat()).coerceIn(0f, 1f)
+                },
+                markComplete = bridgeState.hasEnded,
+            )
         }
     }
 
-    private fun switchToEpisode(episodeId: String) {
-        appendAnalytics(PlayerAnalyticsEvent.AUTO_NEXT_TRIGGERED)
+    private fun switchToEpisode(
+        episodeId: String,
+        reason: EpisodeSwitchReason,
+        markCurrentComplete: Boolean = false,
+    ) {
+        if (episodeId == currentEpisodeId && uiState.value.loadState == DfLoadState.SUCCESS) return
+        persistCurrentProgress(markComplete = markCurrentComplete)
+        if (reason == EpisodeSwitchReason.AUTO_NEXT) {
+            appendAnalytics(PlayerAnalyticsEvent.AUTO_NEXT_TRIGGERED)
+        }
         loadEpisode(episodeId, autoPlay = true)
     }
 
@@ -536,17 +583,34 @@ class PlayerViewModel @Inject constructor(
     ): List<PlayerEpisodeItem> {
         return DramaFlowMockData.episodesForDrama(dramaId).map { episode ->
             val progress = progressRepository.getProgressForEpisode(episode.id)
+            val progressPercent = progress?.progressPercent ?: 0f
+            val isCompleted = progress?.completed == true || progressPercent >= 0.9f
+            val hasStarted = progressPercent > 0.02f
+            val isPreviewAccessible = episode.requiresPremium && episode.isPreviewEnabled && !entitlement.isPremium
             PlayerEpisodeItem(
                 episodeId = episode.id,
                 episodeNumber = episode.episodeNumber,
                 title = episode.title,
                 isCurrent = episode.id == currentEpisodeId,
-                isCompleted = progress?.completed == true || (progress?.progressPercent ?: 0f) >= 0.9f,
+                isCompleted = isCompleted,
+                hasStarted = hasStarted,
                 isLocked = !entitlement.canAccessEpisode(episode),
+                isPreviewAccessible = isPreviewAccessible,
+                progressPercent = progressPercent,
+                stateLabel = when {
+                    episode.id == currentEpisodeId -> "Playing"
+                    isCompleted -> "Watched"
+                    !entitlement.canAccessEpisode(episode) -> "Locked"
+                    isPreviewAccessible -> "Preview"
+                    hasStarted -> "Resume"
+                    else -> "Open"
+                },
                 accessibilityLabel = when {
                     episode.id == currentEpisodeId -> "Current episode"
-                    progress?.completed == true -> "Watched"
+                    isCompleted -> "Watched"
                     !entitlement.canAccessEpisode(episode) -> "Premium locked"
+                    isPreviewAccessible -> "Preview available"
+                    hasStarted -> "Resume episode"
                     else -> "Available"
                 },
             )
@@ -559,9 +623,54 @@ class PlayerViewModel @Inject constructor(
         currentEpisodeId: String,
     ): List<PlayerEpisodeItem> {
         return currentItems.map { item ->
+            val episode = DramaFlowMockData.findEpisode(item.episodeId)
+            val isLocked = episode?.let { !entitlement.canAccessEpisode(it) } ?: item.isLocked
+            val isPreviewAccessible = episode?.let {
+                it.requiresPremium && it.isPreviewEnabled && !entitlement.isPremium
+            } ?: item.isPreviewAccessible
             item.copy(
                 isCurrent = item.episodeId == currentEpisodeId,
-                isLocked = DramaFlowMockData.findEpisode(item.episodeId)?.let { !entitlement.canAccessEpisode(it) } ?: item.isLocked,
+                isLocked = isLocked,
+                isPreviewAccessible = isPreviewAccessible,
+                stateLabel = when {
+                    item.episodeId == currentEpisodeId -> "Playing"
+                    item.isCompleted -> "Watched"
+                    isLocked -> "Locked"
+                    isPreviewAccessible -> "Preview"
+                    item.hasStarted -> "Resume"
+                    else -> "Open"
+                },
+            )
+        }
+    }
+
+    private fun refreshCurrentEpisodeProgress(
+        progressPercent: Float,
+        markComplete: Boolean,
+    ) {
+        _uiState.update { current ->
+            current.copy(
+                episodeItems = current.episodeItems.map { item ->
+                    if (item.episodeId != currentEpisodeId) {
+                        item
+                    } else {
+                        val normalizedProgress = if (markComplete) 1f else maxOf(item.progressPercent, progressPercent)
+                        val isCompleted = markComplete || normalizedProgress >= 0.9f
+                        item.copy(
+                            hasStarted = normalizedProgress > 0.02f,
+                            isCompleted = isCompleted,
+                            progressPercent = normalizedProgress,
+                            stateLabel = when {
+                                item.isCurrent -> "Playing"
+                                isCompleted -> "Watched"
+                                item.isLocked -> "Locked"
+                                item.isPreviewAccessible -> "Preview"
+                                normalizedProgress > 0.02f -> "Resume"
+                                else -> "Open"
+                            },
+                        )
+                    }
+                },
             )
         }
     }
@@ -577,12 +686,14 @@ private fun buildEpisodeSelectorSummary(
     entitlement: EntitlementState,
 ): String {
     if (episodeCount == 0) return "Episodes"
+    val episodeLabel = currentEpisode?.let { "Episode ${it.episodeNumber}" } ?: "Episodes"
     val accessLabel = when {
         entitlement.isPremium -> "Premium unlocked"
-        currentEpisode?.requiresPremium == true -> "Preview available"
+        currentEpisode?.requiresPremium == true && currentEpisode.isPreviewEnabled -> "Preview available"
+        currentEpisode?.requiresPremium == true -> "Premium locked"
         else -> "Free to watch"
     }
-    return "Episodes · $episodeCount total · $accessLabel"
+    return "$episodeLabel · $episodeCount total · $accessLabel"
 }
 
 @Composable
@@ -815,6 +926,7 @@ fun PlayerScreen(
                         dramaTitle = uiState.drama?.title.orEmpty(),
                         summary = uiState.episodeSelectorSummary,
                         items = uiState.episodeItems,
+                        initialIndex = uiState.episodeSheetInitialIndex,
                         onEpisodeClick = { onAction(PlayerAction.SelectEpisode(it)) },
                     )
                 }
@@ -904,10 +1016,18 @@ private fun EpisodeSelectorSheet(
     dramaTitle: String,
     summary: String,
     items: List<PlayerEpisodeItem>,
+    initialIndex: Int,
     onEpisodeClick: (String) -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
+    val gridState = rememberLazyGridState()
+    LaunchedEffect(initialIndex, items.size) {
+        if (items.isEmpty()) return@LaunchedEffect
+        val safeIndex = initialIndex.coerceIn(0, items.lastIndex)
+        val anchorIndex = (safeIndex - 4).coerceAtLeast(0)
+        gridState.scrollToItem(anchorIndex)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -929,6 +1049,7 @@ private fun EpisodeSelectorSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 420.dp),
+            state = gridState,
             contentPadding = PaddingValues(bottom = spacing.xl),
             horizontalArrangement = Arrangement.spacedBy(spacing.sm),
             verticalArrangement = Arrangement.spacedBy(spacing.sm),
@@ -952,11 +1073,13 @@ private fun EpisodeSelectorItem(
     val colors = DramaFlowThemeTokens.colors
     val background = when {
         item.isCurrent -> colors.accentStrong
+        item.isCompleted -> colors.accentSoft
         item.isLocked -> colors.surfaceMuted
         else -> colors.surface
     }
     val contentColor = when {
         item.isCurrent -> colors.textInverse
+        item.isCompleted -> colors.accentStrong
         item.isLocked -> colors.textSecondary
         else -> colors.textPrimary
     }
@@ -973,9 +1096,18 @@ private fun EpisodeSelectorItem(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = item.episodeNumber.toString(),
+                text = "Ep ${item.episodeNumber}",
                 color = contentColor,
                 style = DramaFlowThemeTokens.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = item.title,
+                color = contentColor,
+                style = DramaFlowThemeTokens.typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(spacing.xs),
@@ -988,12 +1120,7 @@ private fun EpisodeSelectorItem(
                     else -> Icon(Icons.Rounded.ExpandMore, contentDescription = item.accessibilityLabel, tint = contentColor)
                 }
                 Text(
-                    text = when {
-                        item.isCurrent -> "Playing"
-                        item.isLocked -> "Locked"
-                        item.isCompleted -> "Watched"
-                        else -> "Open"
-                    },
+                    text = item.stateLabel,
                     color = contentColor,
                     style = DramaFlowThemeTokens.typography.labelMedium,
                 )
