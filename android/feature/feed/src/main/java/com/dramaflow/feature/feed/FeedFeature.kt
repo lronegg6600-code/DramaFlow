@@ -82,9 +82,20 @@ data class ChartTab(
     val label: String,
 )
 
+data class ChannelPlaybackEntry(
+    val episodeId: String?,
+    val ctaLabel: String,
+    val supportingLabel: String,
+)
+
+data class ChannelBrowseItem(
+    val card: DramaCard,
+    val playbackEntry: ChannelPlaybackEntry,
+)
+
 data class ChartRankItem(
     val rank: Int,
-    val card: DramaCard,
+    val browseItem: ChannelBrowseItem,
     val heatText: String,
     val statusText: String,
     val badgeText: String,
@@ -95,7 +106,7 @@ data class ChartsBrowseUiState(
     val chartTabs: List<ChartTab> = ChartType.entries.map { ChartTab(it, it.label) },
     val selectedChartType: ChartType = ChartType.HOT,
     val rankItems: List<ChartRankItem> = emptyList(),
-    val spotlightItems: List<DramaCard> = emptyList(),
+    val spotlightItems: List<ChannelBrowseItem> = emptyList(),
     val errorMessage: String = "Chart refresh failed. Please try again.",
 )
 
@@ -117,7 +128,7 @@ data class CategoriesBrowseUiState(
     },
     val selectedSortId: String = CategorySort.HOT.id,
     val resultCount: Int = 0,
-    val items: List<DramaCard> = emptyList(),
+    val items: List<ChannelBrowseItem> = emptyList(),
     val errorMessage: String = "Category refresh failed. Please try again.",
 )
 
@@ -379,7 +390,7 @@ class FeedViewModel @Inject constructor(
         val rankItems = rankedSource.mapIndexed { index, card ->
             ChartRankItem(
                 rank = index + 1,
-                card = card,
+                browseItem = card.toChannelBrowseItem(),
                 heatText = "${card.drama.heatScore} heat",
                 statusText = card.drama.statusText(),
                 badgeText = chartBadgeText(selectedType, card, index),
@@ -388,7 +399,7 @@ class FeedViewModel @Inject constructor(
         return previousState.copy(
             loadState = if (rankItems.isEmpty()) DfLoadState.EMPTY else DfLoadState.SUCCESS,
             rankItems = rankItems,
-            spotlightItems = rankedSource.take(6),
+            spotlightItems = rankedSource.take(6).map { it.toChannelBrowseItem() },
         )
     }
 
@@ -408,7 +419,7 @@ class FeedViewModel @Inject constructor(
             loadState = if (filtered.isEmpty()) DfLoadState.EMPTY else DfLoadState.SUCCESS,
             genreFilters = genreFilters,
             selectedGenreId = selectedGenre,
-            items = filtered,
+            items = filtered.map { it.toChannelBrowseItem() },
             resultCount = filtered.size,
         )
     }
@@ -644,6 +655,19 @@ private fun scoreValue(drama: Drama): Float {
 }
 
 private fun Drama.heatValue(): Float = heatScore.toFloatOrNull() ?: 7.5f
+
+private fun DramaCard.toChannelBrowseItem(): ChannelBrowseItem {
+    val resumeEpisode = lastProgress?.episodeId?.let(DramaFlowMockData::findEpisode)
+    val entryEpisode = resumeEpisode ?: DramaFlowMockData.episodesForDrama(drama.id).firstOrNull()
+    return ChannelBrowseItem(
+        card = this,
+        playbackEntry = ChannelPlaybackEntry(
+            episodeId = entryEpisode?.id,
+            ctaLabel = if (resumeEpisode != null) "Continue" else "Watch now",
+            supportingLabel = entryEpisode?.let { "Episode ${it.episodeNumber}" } ?: "Open details",
+        ),
+    )
+}
 
 private fun Drama.statusText(): String {
     val releaseState = if (isFeatured) "Ongoing" else "Completed"

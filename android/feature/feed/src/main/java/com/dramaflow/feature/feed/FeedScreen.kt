@@ -153,6 +153,7 @@ fun FeedScreen(
             uiState = uiState,
             onAction = onAction,
             onDramaClick = onDramaClick,
+            onContinueWatching = onContinueWatching,
             onSearchClick = onSearchClick,
         )
 
@@ -160,6 +161,7 @@ fun FeedScreen(
             uiState = uiState,
             onAction = onAction,
             onDramaClick = onDramaClick,
+            onContinueWatching = onContinueWatching,
             onSearchClick = onSearchClick,
         )
     }
@@ -419,6 +421,7 @@ private fun ChartsTabScreen(
     uiState: FeedUiState,
     onAction: (FeedAction) -> Unit,
     onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
@@ -484,10 +487,17 @@ private fun ChartsTabScreen(
                             body = "Track the strongest titles before dropping into the immersive feed.",
                         )
                     }
-                    items(chartsState.rankItems.take(10), key = { it.card.drama.id }) { item ->
+                    items(chartsState.rankItems.take(10), key = { it.browseItem.card.drama.id }) { item ->
                         ChartRankCard(
                             item = item,
-                            onClick = { onDramaClick(item.card.drama.id) },
+                            onDramaClick = { onDramaClick(item.browseItem.card.drama.id) },
+                            onWatchClick = {
+                                openBrowsePlayback(
+                                    item = item.browseItem,
+                                    onContinueWatching = onContinueWatching,
+                                    onDramaClick = onDramaClick,
+                                )
+                            },
                         )
                     }
                     item {
@@ -499,10 +509,17 @@ private fun ChartsTabScreen(
                     }
                     item {
                         LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
-                            items(chartsState.spotlightItems, key = { it.drama.id }) { card ->
+                            items(chartsState.spotlightItems, key = { it.card.drama.id }) { card ->
                                 SpotlightDramaCard(
-                                    card = card,
+                                    item = card,
                                     onDramaClick = onDramaClick,
+                                    onWatchClick = {
+                                        openBrowsePlayback(
+                                            item = card,
+                                            onContinueWatching = onContinueWatching,
+                                            onDramaClick = onDramaClick,
+                                        )
+                                    },
                                 )
                             }
                         }
@@ -518,6 +535,7 @@ private fun CategoriesTabScreen(
     uiState: FeedUiState,
     onAction: (FeedAction) -> Unit,
     onDramaClick: (String) -> Unit,
+    onContinueWatching: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
@@ -614,10 +632,17 @@ private fun CategoriesTabScreen(
                     horizontalArrangement = Arrangement.spacedBy(spacing.md),
                     contentPadding = PaddingValues(bottom = spacing.section),
                 ) {
-                    items(categoriesState.items, key = { it.drama.id }) { card ->
+                    items(categoriesState.items, key = { it.card.drama.id }) { card ->
                         CategoryDramaCard(
-                            card = card,
+                            item = card,
                             onDramaClick = onDramaClick,
+                            onWatchClick = {
+                                openBrowsePlayback(
+                                    item = card,
+                                    onContinueWatching = onContinueWatching,
+                                    onDramaClick = onDramaClick,
+                                )
+                            },
                         )
                     }
                 }
@@ -807,6 +832,20 @@ private fun FeedCategoryEntry(
     }
 }
 
+private fun openBrowsePlayback(
+    item: ChannelBrowseItem,
+    onContinueWatching: (String) -> Unit,
+    onDramaClick: (String) -> Unit,
+) {
+    val episodeId = item.playbackEntry.episodeId
+    if (episodeId != null) {
+        Log.d("FeedChannel", "channel_watch_click drama=${item.card.drama.id} episode=$episodeId")
+        onContinueWatching(episodeId)
+    } else {
+        onDramaClick(item.card.drama.id)
+    }
+}
+
 @Composable
 private fun PrimaryTabRow(
     selectedTab: HomePrimaryTab,
@@ -833,9 +872,50 @@ private fun PrimaryTabRow(
 }
 
 @Composable
+private fun BrowseWatchCta(
+    label: String,
+    supportingLabel: String,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Surface(
+        modifier = Modifier
+            .clip(DramaFlowThemeTokens.shapes.large)
+            .clickable(onClick = onClick),
+        color = colors.accentSoft,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.PlayArrow,
+                contentDescription = null,
+                tint = colors.accentStrong,
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = label,
+                    color = colors.accentStrong,
+                    style = DramaFlowThemeTokens.typography.labelLarge,
+                )
+                Text(
+                    text = supportingLabel,
+                    color = colors.textSecondary,
+                    style = DramaFlowThemeTokens.typography.labelMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ChartRankCard(
     item: ChartRankItem,
-    onClick: () -> Unit,
+    onDramaClick: () -> Unit,
+    onWatchClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
@@ -843,7 +923,7 @@ private fun ChartRankCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(DramaFlowThemeTokens.shapes.medium)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onDramaClick),
         color = colors.whiteCard,
         shadowElevation = DramaFlowThemeTokens.elevation.low,
     ) {
@@ -859,8 +939,8 @@ private fun ChartRankCard(
                 fontWeight = FontWeight.Bold,
             )
             AsyncImage(
-                model = item.card.drama.portraitPosterUrl,
-                contentDescription = item.card.drama.title,
+                model = item.browseItem.card.drama.portraitPosterUrl,
+                contentDescription = item.browseItem.card.drama.title,
                 modifier = Modifier
                     .width(88.dp)
                     .height(124.dp)
@@ -872,14 +952,14 @@ private fun ChartRankCard(
                 verticalArrangement = Arrangement.spacedBy(spacing.xs),
             ) {
                 Text(
-                    text = item.card.drama.title,
+                    text = item.browseItem.card.drama.title,
                     style = DramaFlowThemeTokens.typography.titleMedium,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = item.card.drama.tags.joinToString(" · ") { it.label },
+                    text = item.browseItem.card.drama.tags.joinToString(" · ") { it.label },
                     color = colors.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -904,6 +984,11 @@ private fun ChartRankCard(
                         modifier = Modifier.padding(horizontal = spacing.sm, vertical = spacing.xs),
                     )
                 }
+                BrowseWatchCta(
+                    label = item.browseItem.playbackEntry.ctaLabel,
+                    supportingLabel = item.browseItem.playbackEntry.supportingLabel,
+                    onClick = onWatchClick,
+                )
             }
         }
     }
@@ -911,8 +996,9 @@ private fun ChartRankCard(
 
 @Composable
 private fun SpotlightDramaCard(
-    card: DramaCard,
+    item: ChannelBrowseItem,
     onDramaClick: (String) -> Unit,
+    onWatchClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
@@ -920,13 +1006,13 @@ private fun SpotlightDramaCard(
         modifier = Modifier
             .width(180.dp)
             .clip(DramaFlowThemeTokens.shapes.large)
-            .clickable { onDramaClick(card.drama.id) },
+            .clickable { onDramaClick(item.card.drama.id) },
         color = colors.whiteCard,
     ) {
         Column {
             AsyncImage(
-                model = card.drama.heroImageUrl.ifBlank { card.drama.portraitPosterUrl },
-                contentDescription = card.drama.title,
+                model = item.card.drama.heroImageUrl.ifBlank { item.card.drama.portraitPosterUrl },
+                contentDescription = item.card.drama.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
@@ -937,16 +1023,21 @@ private fun SpotlightDramaCard(
                 verticalArrangement = Arrangement.spacedBy(spacing.xs),
             ) {
                 Text(
-                    text = card.drama.title,
+                    text = item.card.drama.title,
                     style = DramaFlowThemeTokens.typography.titleMedium,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = card.drama.channelStatusText(),
+                    text = item.card.drama.channelStatusText(),
                     style = DramaFlowThemeTokens.typography.labelMedium,
                     color = colors.textSecondary,
+                )
+                BrowseWatchCta(
+                    label = item.playbackEntry.ctaLabel,
+                    supportingLabel = item.playbackEntry.supportingLabel,
+                    onClick = onWatchClick,
                 )
             }
         }
@@ -982,8 +1073,9 @@ private fun CategoryFilterSection(
 
 @Composable
 private fun CategoryDramaCard(
-    card: DramaCard,
+    item: ChannelBrowseItem,
     onDramaClick: (String) -> Unit,
+    onWatchClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
@@ -991,14 +1083,14 @@ private fun CategoryDramaCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(DramaFlowThemeTokens.shapes.medium)
-            .clickable { onDramaClick(card.drama.id) },
+            .clickable { onDramaClick(item.card.drama.id) },
         color = colors.whiteCard,
         shadowElevation = DramaFlowThemeTokens.elevation.low,
     ) {
         Column {
             AsyncImage(
-                model = card.drama.portraitPosterUrl,
-                contentDescription = card.drama.title,
+                model = item.card.drama.portraitPosterUrl,
+                contentDescription = item.card.drama.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(220.dp),
@@ -1009,25 +1101,30 @@ private fun CategoryDramaCard(
                 verticalArrangement = Arrangement.spacedBy(spacing.xs),
             ) {
                 Text(
-                    text = card.drama.title,
+                    text = item.card.drama.title,
                     style = DramaFlowThemeTokens.typography.titleMedium,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = card.drama.tags.joinToString(" · ") { it.label },
+                    text = item.card.drama.tags.joinToString(" · ") { it.label },
                     style = DramaFlowThemeTokens.typography.bodyMedium,
                     color = colors.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "${card.drama.heatScore} heat · ${card.drama.channelStatusText()}",
+                    text = "${item.card.drama.heatScore} heat · ${item.card.drama.channelStatusText()}",
                     style = DramaFlowThemeTokens.typography.labelMedium,
                     color = colors.textSecondary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
+                )
+                BrowseWatchCta(
+                    label = item.playbackEntry.ctaLabel,
+                    supportingLabel = item.playbackEntry.supportingLabel,
+                    onClick = onWatchClick,
                 )
             }
         }
