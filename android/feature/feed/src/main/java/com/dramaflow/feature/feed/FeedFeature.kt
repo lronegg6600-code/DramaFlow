@@ -9,12 +9,13 @@ import com.dramaflow.core.common.DramaInteractionFlags
 import com.dramaflow.core.common.DramaInteractionRepository
 import com.dramaflow.core.common.DramaInteractionState
 import com.dramaflow.core.common.FeedRepository
+import com.dramaflow.core.model.Drama
 import com.dramaflow.core.model.DramaCard
 import com.dramaflow.core.ui.DfLoadState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -28,10 +29,30 @@ private const val FeedInteractionLogTag = "FeedInteraction"
 
 enum class HomePrimaryTab(val label: String) {
     RECOMMEND("Recommend"),
-    WATCH("Watch"),
-    COMIC("Comic"),
-    RECENT("Recent"),
-    FAVORITE("Favorite"),
+    CHARTS("Charts"),
+    CATEGORIES("Categories"),
+}
+
+enum class ChartType(val id: String, val label: String) {
+    HOT("hot", "Hot"),
+    NEW("new", "New"),
+    RISING("rising", "Rising"),
+    COMPLETE("complete", "Complete"),
+    BUZZ("buzz", "Buzz"),
+}
+
+enum class CategoryAvailability(val id: String, val label: String) {
+    ALL("all", "All"),
+    FREE("free", "Free"),
+    PREMIUM("premium", "Premium"),
+    COMPLETE("complete", "Complete"),
+    ONGOING("ongoing", "Ongoing"),
+}
+
+enum class CategorySort(val id: String, val label: String) {
+    HOT("hot", "Hot"),
+    LATEST("latest", "Latest"),
+    SCORE("score", "Top rated"),
 }
 
 data class RecommendFeedItem(
@@ -56,17 +77,48 @@ data class RecommendPreviewMedia(
     val autoplayDelayMs: Long = 220L,
 )
 
-data class WatchFilter(
+data class ChartTab(
+    val type: ChartType,
+    val label: String,
+)
+
+data class ChartRankItem(
+    val rank: Int,
+    val card: DramaCard,
+    val heatText: String,
+    val statusText: String,
+    val badgeText: String,
+)
+
+data class ChartsBrowseUiState(
+    val loadState: DfLoadState = DfLoadState.LOADING,
+    val chartTabs: List<ChartTab> = ChartType.entries.map { ChartTab(it, it.label) },
+    val selectedChartType: ChartType = ChartType.HOT,
+    val rankItems: List<ChartRankItem> = emptyList(),
+    val spotlightItems: List<DramaCard> = emptyList(),
+    val errorMessage: String = "Chart refresh failed. Please try again.",
+)
+
+data class CategoryFilterOption(
     val id: String,
     val label: String,
 )
 
-data class WatchBrowseUiState(
+data class CategoriesBrowseUiState(
     val loadState: DfLoadState = DfLoadState.LOADING,
-    val filters: List<WatchFilter> = defaultWatchFilters(),
-    val selectedFilterId: String = "hot",
+    val genreFilters: List<CategoryFilterOption> = emptyList(),
+    val selectedGenreId: String = "all",
+    val availabilityFilters: List<CategoryFilterOption> = CategoryAvailability.entries.map {
+        CategoryFilterOption(it.id, it.label)
+    },
+    val selectedAvailabilityId: String = CategoryAvailability.ALL.id,
+    val sortFilters: List<CategoryFilterOption> = CategorySort.entries.map {
+        CategoryFilterOption(it.id, it.label)
+    },
+    val selectedSortId: String = CategorySort.HOT.id,
+    val resultCount: Int = 0,
     val items: List<DramaCard> = emptyList(),
-    val errorMessage: String = "Watch list refresh failed. Please try again.",
+    val errorMessage: String = "Category refresh failed. Please try again.",
 )
 
 data class FeedUiState(
@@ -74,7 +126,8 @@ data class FeedUiState(
     val selectedTab: HomePrimaryTab = HomePrimaryTab.RECOMMEND,
     val activeRecommendPage: Int = 0,
     val recommendItems: List<RecommendFeedItem> = emptyList(),
-    val watchBrowse: WatchBrowseUiState = WatchBrowseUiState(),
+    val chartsBrowse: ChartsBrowseUiState = ChartsBrowseUiState(),
+    val categoriesBrowse: CategoriesBrowseUiState = CategoriesBrowseUiState(),
     val errorMessage: String = "Home refresh failed. Please retry.",
 )
 
@@ -97,8 +150,12 @@ sealed interface FeedAction {
     data class SetRecommendActivePage(val page: Int) : FeedAction
     data class ToggleLike(val dramaId: String) : FeedAction
     data class ToggleFavorite(val dramaId: String) : FeedAction
-    data class SelectWatchFilter(val filterId: String) : FeedAction
+    data class SelectChartType(val type: ChartType) : FeedAction
+    data class SelectCategoryGenre(val genreId: String) : FeedAction
+    data class SelectCategoryAvailability(val availabilityId: String) : FeedAction
+    data class SelectCategorySort(val sortId: String) : FeedAction
     data class ShareDrama(val dramaId: String) : FeedAction
+    data object ResetCategoryFilters : FeedAction
     data object Retry : FeedAction
 }
 
@@ -120,8 +177,8 @@ class FeedViewModel @Inject constructor(
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val effects: SharedFlow<FeedEffect> = _effects.asSharedFlow()
-    private var observeJob: Job? = null
 
+    private var observeJob: Job? = null
     private val pendingInteractionOverrides =
         MutableStateFlow<Map<String, PendingInteractionOverride>>(emptyMap())
 
@@ -143,21 +200,43 @@ class FeedViewModel @Inject constructor(
 
             is FeedAction.ToggleLike -> handleToggleLike(action.dramaId)
             is FeedAction.ToggleFavorite -> handleToggleFavorite(action.dramaId)
+            is FeedAction.SelectChartType -> {
+                _uiState.value = _uiState.value.copy(
+                    chartsBrowse = _uiState.value.chartsBrowse.copy(selectedChartType = action.type),
+                )
+            }
 
-            is FeedAction.SelectWatchFilter -> {
-                val current = _uiState.value
-                _uiState.value = current.copy(
-                    watchBrowse = current.watchBrowse.copy(
-                        selectedFilterId = action.filterId,
-                        items = applyWatchFilter(
-                            items = current.watchBrowse.items,
-                            filterId = action.filterId,
-                        ),
+            is FeedAction.SelectCategoryGenre -> {
+                _uiState.value = _uiState.value.copy(
+                    categoriesBrowse = _uiState.value.categoriesBrowse.copy(selectedGenreId = action.genreId),
+                )
+            }
+
+            is FeedAction.SelectCategoryAvailability -> {
+                _uiState.value = _uiState.value.copy(
+                    categoriesBrowse = _uiState.value.categoriesBrowse.copy(
+                        selectedAvailabilityId = action.availabilityId,
                     ),
                 )
             }
 
+            is FeedAction.SelectCategorySort -> {
+                _uiState.value = _uiState.value.copy(
+                    categoriesBrowse = _uiState.value.categoriesBrowse.copy(selectedSortId = action.sortId),
+                )
+            }
+
             is FeedAction.ShareDrama -> handleShare(action.dramaId)
+            FeedAction.ResetCategoryFilters -> {
+                _uiState.value = _uiState.value.copy(
+                    categoriesBrowse = _uiState.value.categoriesBrowse.copy(
+                        selectedGenreId = "all",
+                        selectedAvailabilityId = CategoryAvailability.ALL.id,
+                        selectedSortId = CategorySort.HOT.id,
+                    ),
+                )
+            }
+
             FeedAction.Retry -> observeFeed()
         }
     }
@@ -169,111 +248,174 @@ class FeedViewModel @Inject constructor(
                 feedRepository.observeFeed(),
                 interactionRepository.observeInteractionState(),
                 pendingInteractionOverrides,
-            ) { feedResult, interactionState, pendingOverrides ->
-                Triple(feedResult, interactionState, pendingOverrides)
-            }.collect { (feedResult, interactionState, pendingOverrides) ->
-                _uiState.value = reduceFeedState(
-                    feedResult = feedResult,
-                    interactionState = interactionState,
-                    pendingOverrides = pendingOverrides,
-                    previousState = _uiState.value,
-                )
+                _uiState,
+            ) { feedResult, interactionState, pendingOverrides, currentUi ->
+                FeedReductionInput(feedResult, interactionState, pendingOverrides, currentUi)
+            }.collect { input ->
+                _uiState.value = reduceFeedState(input)
             }
         }
     }
 
     private fun reduceFeedState(
-        feedResult: DataResult<com.dramaflow.core.model.FeedPayload>,
-        interactionState: DramaInteractionState,
-        pendingOverrides: Map<String, PendingInteractionOverride>,
-        previousState: FeedUiState,
+        input: FeedReductionInput,
     ): FeedUiState {
-        return when (feedResult) {
-            DataResult.Loading -> FeedUiState(
+        val previousState = input.currentUi
+        return when (val feedResult = input.feedResult) {
+            DataResult.Loading -> previousState.copy(
                 loadState = DfLoadState.LOADING,
-                selectedTab = previousState.selectedTab,
-                activeRecommendPage = previousState.activeRecommendPage,
-                watchBrowse = previousState.watchBrowse.copy(loadState = DfLoadState.LOADING),
+                chartsBrowse = previousState.chartsBrowse.copy(loadState = DfLoadState.LOADING),
+                categoriesBrowse = previousState.categoriesBrowse.copy(loadState = DfLoadState.LOADING),
             )
 
-            DataResult.Empty -> FeedUiState(
+            DataResult.Empty -> previousState.copy(
                 loadState = DfLoadState.EMPTY,
-                selectedTab = previousState.selectedTab,
                 activeRecommendPage = 0,
-                watchBrowse = previousState.watchBrowse.copy(loadState = DfLoadState.EMPTY, items = emptyList()),
+                recommendItems = emptyList(),
+                chartsBrowse = previousState.chartsBrowse.copy(
+                    loadState = DfLoadState.EMPTY,
+                    rankItems = emptyList(),
+                    spotlightItems = emptyList(),
+                ),
+                categoriesBrowse = previousState.categoriesBrowse.copy(
+                    loadState = DfLoadState.EMPTY,
+                    items = emptyList(),
+                    resultCount = 0,
+                ),
             )
 
-            is DataResult.Error -> FeedUiState(
+            is DataResult.Error -> previousState.copy(
                 loadState = DfLoadState.ERROR,
-                selectedTab = previousState.selectedTab,
-                activeRecommendPage = previousState.activeRecommendPage,
                 errorMessage = feedResult.message,
-                watchBrowse = previousState.watchBrowse.copy(
+                chartsBrowse = previousState.chartsBrowse.copy(
+                    loadState = DfLoadState.ERROR,
+                    errorMessage = feedResult.message,
+                ),
+                categoriesBrowse = previousState.categoriesBrowse.copy(
                     loadState = DfLoadState.ERROR,
                     errorMessage = feedResult.message,
                 ),
             )
 
             is DataResult.Success -> {
-                val watchSource = (feedResult.value.hotTitles + feedResult.value.recommendations + feedResult.value.continueWatching)
-                    .distinctBy { it.drama.id }
-                val recommendSource = (feedResult.value.recommendations + feedResult.value.hotTitles + feedResult.value.continueWatching)
-                    .distinctBy { it.drama.id }
-                val interactionFlags = interactionRepository.backfill(
-                    dramaIds = recommendSource.map { it.drama.id },
-                    state = interactionState,
+                val allCards = buildChannelSource(feedResult.value)
+                val recommendItems = buildRecommendItems(
+                    cards = allCards,
+                    interactionState = input.interactionState,
+                    pendingOverrides = input.pendingOverrides,
                 )
-
-                val recommendItems = recommendSource.mapIndexed { index, card ->
-                    val flags = interactionFlags[card.drama.id] ?: DramaInteractionFlags(
-                        isLiked = false,
-                        isFavorited = false,
-                    )
-                    val pending = pendingOverrides[card.drama.id]
-                    val effectiveLiked = pending?.liked ?: flags.isLiked
-                    val effectiveFavorited = pending?.favorited ?: flags.isFavorited
-                    RecommendFeedItem(
-                        id = card.drama.id,
-                        card = card,
-                        preview = buildPreviewMedia(card),
-                        likeCount = estimateLikeCount(card, index, effectiveLiked),
-                        commentCount = estimateCommentCount(card, index),
-                        shareCount = estimateShareCount(card, index),
-                        isLiked = effectiveLiked,
-                        isFavorited = effectiveFavorited,
-                        isLikeUpdating = pending?.likeInFlight == true,
-                        isFavoriteUpdating = pending?.favoriteInFlight == true,
-                    )
-                }
-
-                val selectedWatchFilter = previousState.watchBrowse.selectedFilterId
-                    .takeIf { filter -> defaultWatchFilters().any { it.id == filter } }
-                    ?: "hot"
-
-                FeedUiState(
+                val chartsState = buildChartsState(
+                    allCards = allCards,
+                    previousState = previousState.chartsBrowse,
+                )
+                val categoriesState = buildCategoriesState(
+                    allCards = allCards,
+                    previousState = previousState.categoriesBrowse,
+                )
+                previousState.copy(
                     loadState = DfLoadState.SUCCESS,
-                    selectedTab = previousState.selectedTab,
                     activeRecommendPage = previousState.activeRecommendPage.coerceIn(
-                        minimumValue = 0,
-                        maximumValue = maxOf(recommendItems.lastIndex, 0),
+                        0,
+                        maxOf(recommendItems.lastIndex, 0),
                     ),
                     recommendItems = recommendItems,
-                    watchBrowse = WatchBrowseUiState(
-                        loadState = DfLoadState.SUCCESS,
-                        filters = defaultWatchFilters(),
-                        selectedFilterId = selectedWatchFilter,
-                        items = applyWatchFilter(watchSource, selectedWatchFilter),
-                    ),
+                    chartsBrowse = chartsState,
+                    categoriesBrowse = categoriesState,
                 )
             }
         }
     }
 
+    private fun buildRecommendItems(
+        cards: List<DramaCard>,
+        interactionState: DramaInteractionState,
+        pendingOverrides: Map<String, PendingInteractionOverride>,
+    ): List<RecommendFeedItem> {
+        val interactionFlags = interactionRepository.backfill(
+            dramaIds = cards.map { it.drama.id },
+            state = interactionState,
+        )
+        return cards.mapIndexed { index, card ->
+            val flags = interactionFlags[card.drama.id] ?: DramaInteractionFlags(false, false)
+            val pending = pendingOverrides[card.drama.id]
+            val effectiveLiked = pending?.liked ?: flags.isLiked
+            val effectiveFavorited = pending?.favorited ?: flags.isFavorited
+            RecommendFeedItem(
+                id = card.drama.id,
+                card = card,
+                preview = buildPreviewMedia(card),
+                likeCount = estimateLikeCount(card, index, effectiveLiked),
+                commentCount = estimateCommentCount(card, index),
+                shareCount = estimateShareCount(card, index),
+                isLiked = effectiveLiked,
+                isFavorited = effectiveFavorited,
+                isLikeUpdating = pending?.likeInFlight == true,
+                isFavoriteUpdating = pending?.favoriteInFlight == true,
+            )
+        }
+    }
+
+    private fun buildChartsState(
+        allCards: List<DramaCard>,
+        previousState: ChartsBrowseUiState,
+    ): ChartsBrowseUiState {
+        val selectedType = previousState.selectedChartType
+        val rankedSource = when (selectedType) {
+            ChartType.HOT -> allCards.sortedByDescending { it.drama.heatValue() }
+            ChartType.NEW -> allCards.sortedWith(
+                compareByDescending<DramaCard> { it.isUpdated }
+                    .thenByDescending { it.drama.heatValue() },
+            )
+
+            ChartType.RISING -> allCards.sortedByDescending { risingScore(it) }
+            ChartType.COMPLETE -> allCards.sortedWith(
+                compareByDescending<DramaCard> { !it.isUpdated }
+                    .thenByDescending { it.drama.totalEpisodes }
+                    .thenByDescending { it.drama.heatValue() },
+            )
+
+            ChartType.BUZZ -> allCards.sortedByDescending { buzzScore(it) }
+        }
+        val rankItems = rankedSource.mapIndexed { index, card ->
+            ChartRankItem(
+                rank = index + 1,
+                card = card,
+                heatText = "${card.drama.heatScore} heat",
+                statusText = card.drama.statusText(),
+                badgeText = chartBadgeText(selectedType, card, index),
+            )
+        }
+        return previousState.copy(
+            loadState = if (rankItems.isEmpty()) DfLoadState.EMPTY else DfLoadState.SUCCESS,
+            rankItems = rankItems,
+            spotlightItems = rankedSource.take(6),
+        )
+    }
+
+    private fun buildCategoriesState(
+        allCards: List<DramaCard>,
+        previousState: CategoriesBrowseUiState,
+    ): CategoriesBrowseUiState {
+        val genreFilters = buildGenreFilters(allCards)
+        val selectedGenre = previousState.selectedGenreId
+            .takeIf { selected -> genreFilters.any { it.id == selected } }
+            ?: "all"
+        val filtered = allCards
+            .filter { card -> matchesGenre(card, selectedGenre) }
+            .filter { card -> matchesAvailability(card, previousState.selectedAvailabilityId) }
+            .let { items -> sortCategoryItems(items, previousState.selectedSortId) }
+        return previousState.copy(
+            loadState = if (filtered.isEmpty()) DfLoadState.EMPTY else DfLoadState.SUCCESS,
+            genreFilters = genreFilters,
+            selectedGenreId = selectedGenre,
+            items = filtered,
+            resultCount = filtered.size,
+        )
+    }
+
     private fun handleToggleLike(dramaId: String) {
         val currentItem = _uiState.value.recommendItems.firstOrNull { it.card.drama.id == dramaId } ?: return
-        if (currentItem.isLikeUpdating) {
-            return
-        }
+        if (currentItem.isLikeUpdating) return
         val nextLiked = !currentItem.isLiked
         Log.d(FeedInteractionLogTag, "feed_like_click drama=$dramaId nextLiked=$nextLiked")
         updatePendingOverride(dramaId) { current ->
@@ -297,27 +439,17 @@ class FeedViewModel @Inject constructor(
                         likeInFlight = false,
                     )
                 }
-                clearPendingField(
-                    dramaId = dramaId,
-                    clearLiked = true,
-                    clearFavorited = false,
-                )
+                clearPendingField(dramaId, clearLiked = true, clearFavorited = false)
             }.onSuccess {
                 Log.d(FeedInteractionLogTag, "feed_like_persist_success drama=$dramaId liked=$nextLiked")
-                clearPendingField(
-                    dramaId = dramaId,
-                    clearLiked = true,
-                    clearFavorited = false,
-                )
+                clearPendingField(dramaId, clearLiked = true, clearFavorited = false)
             }
         }
     }
 
     private fun handleToggleFavorite(dramaId: String) {
         val currentItem = _uiState.value.recommendItems.firstOrNull { it.card.drama.id == dramaId } ?: return
-        if (currentItem.isFavoriteUpdating) {
-            return
-        }
+        if (currentItem.isFavoriteUpdating) return
         val nextFavorited = !currentItem.isFavorited
         Log.d(FeedInteractionLogTag, "feed_favorite_click drama=$dramaId nextFavorited=$nextFavorited")
         updatePendingOverride(dramaId) { current ->
@@ -341,21 +473,13 @@ class FeedViewModel @Inject constructor(
                         favoriteInFlight = false,
                     )
                 }
-                clearPendingField(
-                    dramaId = dramaId,
-                    clearLiked = false,
-                    clearFavorited = true,
-                )
+                clearPendingField(dramaId, clearLiked = false, clearFavorited = true)
             }.onSuccess {
                 Log.d(
                     FeedInteractionLogTag,
                     "feed_favorite_persist_success drama=$dramaId favorited=$nextFavorited",
                 )
-                clearPendingField(
-                    dramaId = dramaId,
-                    clearLiked = false,
-                    clearFavorited = true,
-                )
+                clearPendingField(dramaId, clearLiked = false, clearFavorited = true)
             }
         }
     }
@@ -409,25 +533,22 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun estimateLikeCount(card: DramaCard, index: Int, isLiked: Boolean): Int {
-        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 1000
+        val base = card.drama.heatValue() * 1000
         val seededCount = base.toInt() + 500 + index * 137
         return if (isLiked) seededCount + 1 else seededCount
     }
 
     private fun estimateCommentCount(card: DramaCard, index: Int): Int {
-        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 120
+        val base = card.drama.heatValue() * 120
         return base.toInt() + 60 + index * 11
     }
 
     private fun estimateShareCount(card: DramaCard, index: Int): Int {
-        val base = (card.drama.heatScore.toFloatOrNull() ?: 7.5f) * 70
+        val base = card.drama.heatValue() * 70
         return base.toInt() + 30 + index * 7
     }
 
     private fun buildPreviewMedia(card: DramaCard): RecommendPreviewMedia {
-        // 推荐流预览先走最稳的 entry episode。
-        // 当前后端还没有专门的 preview 字段时，先用 mock episode 的 streamUrl 做轻量预览。
-        // 后续接入真实推荐接口时，只需要把 previewUrl 换成服务端字段，不需要重写页面结构。
         val entryEpisode = card.lastProgress?.episodeId?.let(DramaFlowMockData::findEpisode)
             ?: DramaFlowMockData.episodesForDrama(card.drama.id).firstOrNull()
         return RecommendPreviewMedia(
@@ -440,39 +561,92 @@ class FeedViewModel @Inject constructor(
     }
 }
 
-private fun defaultWatchFilters(): List<WatchFilter> {
-    return listOf(
-        WatchFilter("hot", "Hot"),
-        WatchFilter("new", "New"),
-        WatchFilter("modern", "Modern"),
-        WatchFilter("revenge", "Revenge"),
-        WatchFilter("urban", "Urban"),
-        WatchFilter("more", "More"),
-    )
+private data class FeedReductionInput(
+    val feedResult: DataResult<com.dramaflow.core.model.FeedPayload>,
+    val interactionState: DramaInteractionState,
+    val pendingOverrides: Map<String, PendingInteractionOverride>,
+    val currentUi: FeedUiState,
+)
+
+private fun buildChannelSource(
+    payload: com.dramaflow.core.model.FeedPayload,
+): List<DramaCard> {
+    return (payload.recommendations + payload.hotTitles + payload.continueWatching + payload.banners)
+        .distinctBy { it.drama.id }
 }
 
-private fun applyWatchFilter(
+private fun buildGenreFilters(items: List<DramaCard>): List<CategoryFilterOption> {
+    val genres = items.flatMap { it.drama.tags.map { tag -> tag.label } }
+        .distinct()
+        .sorted()
+        .take(8)
+        .map { label ->
+            CategoryFilterOption(
+                id = label.lowercase(),
+                label = label,
+            )
+        }
+    return listOf(CategoryFilterOption("all", "All")) + genres
+}
+
+private fun matchesGenre(card: DramaCard, genreId: String): Boolean {
+    if (genreId == "all") return true
+    return card.drama.tags.any { it.label.equals(genreId, ignoreCase = true) }
+}
+
+private fun matchesAvailability(card: DramaCard, availabilityId: String): Boolean {
+    return when (availabilityId) {
+        CategoryAvailability.ALL.id -> true
+        CategoryAvailability.FREE.id -> !card.drama.isPremiumSeries
+        CategoryAvailability.PREMIUM.id -> card.drama.isPremiumSeries
+        CategoryAvailability.COMPLETE.id -> !card.isUpdated
+        CategoryAvailability.ONGOING.id -> card.isUpdated
+        else -> true
+    }
+}
+
+private fun sortCategoryItems(
     items: List<DramaCard>,
-    filterId: String,
+    sortId: String,
 ): List<DramaCard> {
-    return when (filterId) {
-        "hot" -> items.sortedByDescending { it.drama.heatScore.toFloatOrNull() ?: 0f }
-        "new" -> items.sortedByDescending { it.isUpdated }
-        "modern", "urban" -> items.filter { card ->
-            card.drama.tags.any { tag ->
-                tag.label.contains("modern", ignoreCase = true) ||
-                    tag.label.contains("urban", ignoreCase = true) ||
-                    tag.label.contains("ceo", ignoreCase = true)
-            }
-        }.ifEmpty { items }
+    return when (sortId) {
+        CategorySort.HOT.id -> items.sortedByDescending { it.drama.heatValue() }
+        CategorySort.LATEST.id -> items.sortedWith(
+            compareByDescending<DramaCard> { it.isUpdated }
+                .thenByDescending { it.drama.heatValue() },
+        )
 
-        "revenge" -> items.filter { card ->
-            card.drama.tags.any { tag ->
-                tag.label.contains("revenge", ignoreCase = true) ||
-                    tag.label.contains("twist", ignoreCase = true)
-            }
-        }.ifEmpty { items }
-
+        CategorySort.SCORE.id -> items.sortedByDescending { scoreValue(it.drama) }
         else -> items
     }
+}
+
+private fun chartBadgeText(type: ChartType, card: DramaCard, index: Int): String {
+    return when (type) {
+        ChartType.HOT -> if (index == 0) "Top heat" else "Trending"
+        ChartType.NEW -> if (card.isUpdated) "Fresh drop" else "Completed"
+        ChartType.RISING -> "Fast rising"
+        ChartType.COMPLETE -> "Binge ready"
+        ChartType.BUZZ -> if (card.drama.isPremiumSeries) "Premium buzz" else "All audience"
+    }
+}
+
+private fun risingScore(card: DramaCard): Float {
+    return card.drama.heatValue() + if (card.isUpdated) 1.5f else 0.5f
+}
+
+private fun buzzScore(card: DramaCard): Float {
+    return card.drama.heatValue() + (card.drama.cast.size * 0.25f) + if (card.drama.isPremiumSeries) 0.6f else 0f
+}
+
+private fun scoreValue(drama: Drama): Float {
+    return drama.heatValue() + (drama.tags.size * 0.12f)
+}
+
+private fun Drama.heatValue(): Float = heatScore.toFloatOrNull() ?: 7.5f
+
+private fun Drama.statusText(): String {
+    val releaseState = if (isFeatured) "Ongoing" else "Completed"
+    val accessState = if (isPremiumSeries) "Premium" else "Free"
+    return "$totalEpisodes eps · $releaseState · $accessState"
 }

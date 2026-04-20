@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,12 +26,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
@@ -52,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,6 +72,7 @@ import com.dramaflow.core.designsystem.component.DfLoadingIndicator
 import com.dramaflow.core.designsystem.component.DfPrimaryButton
 import com.dramaflow.core.designsystem.component.DfWhiteMessageCard
 import com.dramaflow.core.designsystem.theme.DramaFlowThemeTokens
+import com.dramaflow.core.model.Drama
 import com.dramaflow.core.model.DramaCard
 import com.dramaflow.core.ui.DfLoadState
 import kotlinx.coroutines.flow.collectLatest
@@ -101,9 +106,7 @@ fun FeedRoute(
                         putExtra(Intent.EXTRA_TEXT, shareText)
                     }
                     val chooserIntent = Intent.createChooser(shareIntent, "Share drama").apply {
-                        if (context !is Activity) {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        }
+                        if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
                     runCatching {
                         Log.d(FeedShareLogTag, "feed_share_sheet_open drama=${effect.payload.dramaId}")
@@ -146,17 +149,18 @@ fun FeedScreen(
             onSearchClick = onSearchClick,
         )
 
-        HomePrimaryTab.WATCH -> WatchTabScreen(
+        HomePrimaryTab.CHARTS -> ChartsTabScreen(
             uiState = uiState,
             onAction = onAction,
             onDramaClick = onDramaClick,
             onSearchClick = onSearchClick,
         )
 
-        else -> TabPlaceholderScreen(
-            tab = uiState.selectedTab,
+        HomePrimaryTab.CATEGORIES -> CategoriesTabScreen(
+            uiState = uiState,
+            onAction = onAction,
+            onDramaClick = onDramaClick,
             onSearchClick = onSearchClick,
-            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
         )
     }
 }
@@ -281,10 +285,11 @@ private fun RecommendTabScreen(
                 .padding(horizontal = spacing.lg, vertical = spacing.xl),
             verticalArrangement = Arrangement.spacedBy(spacing.md),
         ) {
-            FeedSearchEntry(
-                hint = "Search dramas",
+            FeedTopBar(
+                hint = "Search hot dramas, actors, and tags",
                 darkMode = true,
-                onClick = onSearchClick,
+                onSearchClick = onSearchClick,
+                onCategoryClick = { onAction(FeedAction.SelectPrimaryTab(HomePrimaryTab.CATEGORIES)) },
             )
             PrimaryTabRow(
                 selectedTab = HomePrimaryTab.RECOMMEND,
@@ -410,6 +415,218 @@ private fun RecommendPagerCard(
 }
 
 @Composable
+private fun ChartsTabScreen(
+    uiState: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onDramaClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    val chartsState = uiState.chartsBrowse
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colors.background)
+            .padding(horizontal = spacing.lg, vertical = spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(spacing.md),
+    ) {
+        FeedTopBar(
+            hint = "Search charting titles and genres",
+            darkMode = false,
+            onSearchClick = onSearchClick,
+            onCategoryClick = { onAction(FeedAction.SelectPrimaryTab(HomePrimaryTab.CATEGORIES)) },
+        )
+        PrimaryTabRow(
+            selectedTab = HomePrimaryTab.CHARTS,
+            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
+            darkMode = false,
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            items(chartsState.chartTabs) { tab ->
+                DfCategoryChip(
+                    label = tab.label,
+                    selected = chartsState.selectedChartType == tab.type,
+                    onClick = { onAction(FeedAction.SelectChartType(tab.type)) },
+                )
+            }
+        }
+
+        when (chartsState.loadState) {
+            DfLoadState.LOADING -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfLoadingIndicator()
+            }
+
+            DfLoadState.EMPTY -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfEmptyCard(
+                    title = "No charts available",
+                    message = "Chart data will appear when titles are available.",
+                )
+            }
+
+            DfLoadState.ERROR -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfErrorCard(
+                    message = chartsState.errorMessage,
+                    actionLabel = "Retry",
+                    onAction = { onAction(FeedAction.Retry) },
+                )
+            }
+
+            DfLoadState.SUCCESS -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md),
+                    contentPadding = PaddingValues(bottom = spacing.section),
+                ) {
+                    item {
+                        DfWhiteMessageCard(
+                            title = "${chartsState.selectedChartType.label} chart",
+                            body = "Track the strongest titles before dropping into the immersive feed.",
+                        )
+                    }
+                    items(chartsState.rankItems.take(10), key = { it.card.drama.id }) { item ->
+                        ChartRankCard(
+                            item = item,
+                            onClick = { onDramaClick(item.card.drama.id) },
+                        )
+                    }
+                    item {
+                        Text(
+                            text = "Keep watching",
+                            style = DramaFlowThemeTokens.typography.titleLarge,
+                            color = colors.textPrimary,
+                        )
+                    }
+                    item {
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.md)) {
+                            items(chartsState.spotlightItems, key = { it.drama.id }) { card ->
+                                SpotlightDramaCard(
+                                    card = card,
+                                    onDramaClick = onDramaClick,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoriesTabScreen(
+    uiState: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onDramaClick: (String) -> Unit,
+    onSearchClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    val categoriesState = uiState.categoriesBrowse
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colors.background)
+            .padding(horizontal = spacing.lg, vertical = spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(spacing.md),
+    ) {
+        FeedTopBar(
+            hint = "Search by tag, type, or cast",
+            darkMode = false,
+            onSearchClick = onSearchClick,
+            onCategoryClick = {},
+        )
+        PrimaryTabRow(
+            selectedTab = HomePrimaryTab.CATEGORIES,
+            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
+            darkMode = false,
+        )
+        CategoryFilterSection(
+            title = "Genres",
+            options = categoriesState.genreFilters,
+            selectedId = categoriesState.selectedGenreId,
+            onClick = { onAction(FeedAction.SelectCategoryGenre(it)) },
+        )
+        CategoryFilterSection(
+            title = "Access",
+            options = categoriesState.availabilityFilters,
+            selectedId = categoriesState.selectedAvailabilityId,
+            onClick = { onAction(FeedAction.SelectCategoryAvailability(it)) },
+        )
+        CategoryFilterSection(
+            title = "Sort",
+            options = categoriesState.sortFilters,
+            selectedId = categoriesState.selectedSortId,
+            onClick = { onAction(FeedAction.SelectCategorySort(it)) },
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "${categoriesState.resultCount} titles",
+                style = DramaFlowThemeTokens.typography.titleMedium,
+                color = colors.textPrimary,
+            )
+            Surface(
+                modifier = Modifier
+                    .clip(DramaFlowThemeTokens.shapes.pill)
+                    .clickable { onAction(FeedAction.ResetCategoryFilters) },
+                color = colors.surface,
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.xs),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Rounded.Refresh, contentDescription = null, tint = colors.textPrimary)
+                    Text("Reset", color = colors.textPrimary)
+                }
+            }
+        }
+
+        when (categoriesState.loadState) {
+            DfLoadState.LOADING -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfLoadingIndicator()
+            }
+
+            DfLoadState.EMPTY -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfEmptyCard(
+                    title = "No titles match these filters",
+                    message = "Try widening the genre or access filters.",
+                )
+            }
+
+            DfLoadState.ERROR -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                DfErrorCard(
+                    message = categoriesState.errorMessage,
+                    actionLabel = "Retry",
+                    onAction = { onAction(FeedAction.Retry) },
+                )
+            }
+
+            DfLoadState.SUCCESS -> {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(spacing.md),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.md),
+                    contentPadding = PaddingValues(bottom = spacing.section),
+                ) {
+                    items(categoriesState.items, key = { it.drama.id }) { card ->
+                        CategoryDramaCard(
+                            card = card,
+                            onDramaClick = onDramaClick,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun DramaTitleEntry(
     title: String,
     tags: List<String>,
@@ -501,70 +718,191 @@ private fun SideActionButton(
 }
 
 @Composable
-private fun WatchTabScreen(
-    uiState: FeedUiState,
-    onAction: (FeedAction) -> Unit,
-    onDramaClick: (String) -> Unit,
+private fun FeedTopBar(
+    hint: String,
+    darkMode: Boolean,
     onSearchClick: () -> Unit,
+    onCategoryClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FeedSearchEntry(
+            hint = hint,
+            darkMode = darkMode,
+            modifier = Modifier.weight(1f),
+            onClick = onSearchClick,
+        )
+        FeedCategoryEntry(
+            darkMode = darkMode,
+            onClick = onCategoryClick,
+        )
+    }
+}
+
+@Composable
+private fun FeedSearchEntry(
+    hint: String,
+    darkMode: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val background = if (darkMode) Color.White.copy(alpha = 0.22f) else DramaFlowThemeTokens.colors.surface
+    val textColor = if (darkMode) Color.White.copy(alpha = 0.85f) else DramaFlowThemeTokens.colors.textSecondary
+    Surface(
+        modifier = modifier
+            .clip(DramaFlowThemeTokens.shapes.pill)
+            .clickable(onClick = onClick),
+        color = background,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Search, contentDescription = null, tint = textColor)
+            Spacer(modifier = Modifier.width(spacing.sm))
+            Text(
+                text = hint,
+                color = textColor,
+                style = DramaFlowThemeTokens.typography.bodyLarge,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FeedCategoryEntry(
+    darkMode: Boolean,
+    onClick: () -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val background = if (darkMode) Color.White.copy(alpha = 0.22f) else DramaFlowThemeTokens.colors.surface
+    val textColor = if (darkMode) Color.White.copy(alpha = 0.92f) else DramaFlowThemeTokens.colors.textPrimary
+    Surface(
+        modifier = Modifier
+            .clip(DramaFlowThemeTokens.shapes.pill)
+            .clickable(onClick = onClick),
+        color = background,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = spacing.md, vertical = spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Apps,
+                contentDescription = null,
+                tint = textColor,
+            )
+            Text(
+                text = "Categories",
+                color = textColor,
+                style = DramaFlowThemeTokens.typography.labelMedium,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PrimaryTabRow(
+    selectedTab: HomePrimaryTab,
+    onSelectTab: (HomePrimaryTab) -> Unit,
+    darkMode: Boolean,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val selectedColor = if (darkMode) Color.White else DramaFlowThemeTokens.colors.textPrimary
+    val normalColor = if (darkMode) Color.White.copy(alpha = 0.65f) else DramaFlowThemeTokens.colors.textSecondary
+    Row(horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
+        HomePrimaryTab.entries.forEach { tab ->
+            Text(
+                text = tab.label,
+                style = if (selectedTab == tab) {
+                    DramaFlowThemeTokens.typography.titleLarge
+                } else {
+                    DramaFlowThemeTokens.typography.titleMedium
+                },
+                color = if (selectedTab == tab) selectedColor else normalColor,
+                modifier = Modifier.clickable { onSelectTab(tab) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChartRankCard(
+    item: ChartRankItem,
+    onClick: () -> Unit,
 ) {
     val spacing = DramaFlowThemeTokens.spacing
     val colors = DramaFlowThemeTokens.colors
-    val watchState = uiState.watchBrowse
-    Column(
+    Surface(
         modifier = Modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .padding(horizontal = spacing.lg, vertical = spacing.xl),
-        verticalArrangement = Arrangement.spacedBy(spacing.md),
+            .fillMaxWidth()
+            .clip(DramaFlowThemeTokens.shapes.medium)
+            .clickable(onClick = onClick),
+        color = colors.whiteCard,
+        shadowElevation = DramaFlowThemeTokens.elevation.low,
     ) {
-        FeedSearchEntry(
-            hint = "Search title, actor, or genre",
-            darkMode = false,
-            onClick = onSearchClick,
-        )
-        PrimaryTabRow(
-            selectedTab = HomePrimaryTab.WATCH,
-            onSelectTab = { onAction(FeedAction.SelectPrimaryTab(it)) },
-            darkMode = false,
-        )
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
-            items(watchState.filters) { filter ->
-                DfCategoryChip(
-                    label = filter.label,
-                    selected = watchState.selectedFilterId == filter.id,
-                    onClick = { onAction(FeedAction.SelectWatchFilter(filter.id)) },
+        Row(
+            modifier = Modifier.padding(spacing.md),
+            horizontalArrangement = Arrangement.spacedBy(spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = item.rank.toString(),
+                style = DramaFlowThemeTokens.typography.headlineMedium,
+                color = colors.accentStrong,
+                fontWeight = FontWeight.Bold,
+            )
+            AsyncImage(
+                model = item.card.drama.portraitPosterUrl,
+                contentDescription = item.card.drama.title,
+                modifier = Modifier
+                    .width(88.dp)
+                    .height(124.dp)
+                    .clip(DramaFlowThemeTokens.shapes.medium),
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(spacing.xs),
+            ) {
+                Text(
+                    text = item.card.drama.title,
+                    style = DramaFlowThemeTokens.typography.titleMedium,
+                    color = colors.textPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-        }
-
-        when (watchState.loadState) {
-            DfLoadState.LOADING -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                DfLoadingIndicator()
-            }
-
-            DfLoadState.EMPTY -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                DfEmptyCard(title = "No dramas found", message = "Try switching filters.")
-            }
-
-            DfLoadState.ERROR -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                DfErrorCard(
-                    message = watchState.errorMessage,
-                    actionLabel = "Retry",
-                    onAction = { onAction(FeedAction.Retry) },
+                Text(
+                    text = item.card.drama.tags.joinToString(" · ") { it.label },
+                    color = colors.textSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-            }
-
-            DfLoadState.SUCCESS -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(spacing.md),
-                    horizontalArrangement = Arrangement.spacedBy(spacing.md),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = spacing.section),
+                Text(
+                    text = item.heatText,
+                    color = colors.accentStrong,
+                    style = DramaFlowThemeTokens.typography.bodyMedium,
+                )
+                Text(
+                    text = item.statusText,
+                    color = colors.textSecondary,
+                    style = DramaFlowThemeTokens.typography.labelMedium,
+                )
+                Surface(
+                    shape = DramaFlowThemeTokens.shapes.pill,
+                    color = colors.accentSoft,
                 ) {
-                    items(watchState.items, key = { it.drama.id }) { card ->
-                        WatchDramaGridCard(card = card, onDramaClick = onDramaClick)
-                    }
+                    Text(
+                        text = item.badgeText,
+                        color = colors.accentStrong,
+                        modifier = Modifier.padding(horizontal = spacing.sm, vertical = spacing.xs),
+                    )
                 }
             }
         }
@@ -572,7 +910,78 @@ private fun WatchTabScreen(
 }
 
 @Composable
-private fun WatchDramaGridCard(
+private fun SpotlightDramaCard(
+    card: DramaCard,
+    onDramaClick: (String) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Surface(
+        modifier = Modifier
+            .width(180.dp)
+            .clip(DramaFlowThemeTokens.shapes.large)
+            .clickable { onDramaClick(card.drama.id) },
+        color = colors.whiteCard,
+    ) {
+        Column {
+            AsyncImage(
+                model = card.drama.heroImageUrl.ifBlank { card.drama.portraitPosterUrl },
+                contentDescription = card.drama.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentScale = ContentScale.Crop,
+            )
+            Column(
+                modifier = Modifier.padding(spacing.md),
+                verticalArrangement = Arrangement.spacedBy(spacing.xs),
+            ) {
+                Text(
+                    text = card.drama.title,
+                    style = DramaFlowThemeTokens.typography.titleMedium,
+                    color = colors.textPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = card.drama.channelStatusText(),
+                    style = DramaFlowThemeTokens.typography.labelMedium,
+                    color = colors.textSecondary,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryFilterSection(
+    title: String,
+    options: List<CategoryFilterOption>,
+    selectedId: String,
+    onClick: (String) -> Unit,
+) {
+    val spacing = DramaFlowThemeTokens.spacing
+    val colors = DramaFlowThemeTokens.colors
+    Column(verticalArrangement = Arrangement.spacedBy(spacing.sm)) {
+        Text(
+            text = title,
+            style = DramaFlowThemeTokens.typography.titleMedium,
+            color = colors.textPrimary,
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(spacing.sm)) {
+            items(options, key = { it.id }) { option ->
+                DfCategoryChip(
+                    label = option.label,
+                    selected = selectedId == option.id,
+                    onClick = { onClick(option.id) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryDramaCard(
     card: DramaCard,
     onDramaClick: (String) -> Unit,
 ) {
@@ -607,10 +1016,17 @@ private fun WatchDramaGridCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = card.drama.tags.joinToString(" · ") { it.label } + " · ${card.drama.heatScore} heat",
+                    text = card.drama.tags.joinToString(" · ") { it.label },
                     style = DramaFlowThemeTokens.typography.bodyMedium,
                     color = colors.textSecondary,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${card.drama.heatScore} heat · ${card.drama.channelStatusText()}",
+                    style = DramaFlowThemeTokens.typography.labelMedium,
+                    color = colors.textSecondary,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -618,98 +1034,12 @@ private fun WatchDramaGridCard(
     }
 }
 
-@Composable
-private fun TabPlaceholderScreen(
-    tab: HomePrimaryTab,
-    onSearchClick: () -> Unit,
-    onSelectTab: (HomePrimaryTab) -> Unit,
-) {
-    val spacing = DramaFlowThemeTokens.spacing
-    val colors = DramaFlowThemeTokens.colors
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .padding(horizontal = spacing.lg, vertical = spacing.xl),
-        verticalArrangement = Arrangement.spacedBy(spacing.lg),
-    ) {
-        FeedSearchEntry(
-            hint = "Search title, actor, or genre",
-            darkMode = false,
-            onClick = onSearchClick,
-        )
-        PrimaryTabRow(
-            selectedTab = tab,
-            onSelectTab = onSelectTab,
-            darkMode = false,
-        )
-        DfWhiteMessageCard(
-            title = "${tab.label} is not enabled yet",
-            body = "Recommend and Watch are fully active now. This tab remains a reserved extension point.",
-        )
-        DfPrimaryButton(
-            label = "Back to Recommend",
-            onClick = { onSelectTab(HomePrimaryTab.RECOMMEND) },
-        )
-    }
-}
-
-@Composable
-private fun FeedSearchEntry(
-    hint: String,
-    darkMode: Boolean,
-    onClick: () -> Unit,
-) {
-    val spacing = DramaFlowThemeTokens.spacing
-    val background = if (darkMode) Color.White.copy(alpha = 0.22f) else DramaFlowThemeTokens.colors.surface
-    val textColor = if (darkMode) Color.White.copy(alpha = 0.85f) else DramaFlowThemeTokens.colors.textSecondary
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(DramaFlowThemeTokens.shapes.pill)
-            .clickable(onClick = onClick),
-        color = background,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = spacing.lg, vertical = spacing.md),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Rounded.Search, contentDescription = null, tint = textColor)
-            Spacer(modifier = Modifier.width(spacing.sm))
-            Text(
-                text = hint,
-                color = textColor,
-                style = DramaFlowThemeTokens.typography.bodyLarge,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PrimaryTabRow(
-    selectedTab: HomePrimaryTab,
-    onSelectTab: (HomePrimaryTab) -> Unit,
-    darkMode: Boolean,
-) {
-    val spacing = DramaFlowThemeTokens.spacing
-    val selectedColor = if (darkMode) Color.White else DramaFlowThemeTokens.colors.textPrimary
-    val normalColor = if (darkMode) Color.White.copy(alpha = 0.65f) else DramaFlowThemeTokens.colors.textSecondary
-    Row(horizontalArrangement = Arrangement.spacedBy(spacing.lg)) {
-        HomePrimaryTab.entries.forEach { tab ->
-            Text(
-                text = tab.label,
-                style = if (selectedTab == tab) {
-                    DramaFlowThemeTokens.typography.titleLarge
-                } else {
-                    DramaFlowThemeTokens.typography.titleMedium
-                },
-                color = if (selectedTab == tab) selectedColor else normalColor,
-                modifier = Modifier.clickable { onSelectTab(tab) },
-            )
-        }
-    }
-}
-
 private fun formatCount(value: Int): String {
     return if (value >= 10_000) String.format("%.1fk", value / 1_000f) else value.toString()
+}
+
+private fun Drama.channelStatusText(): String {
+    val releaseState = if (isFeatured) "Ongoing" else "Completed"
+    val accessState = if (isPremiumSeries) "Premium" else "Free"
+    return "$totalEpisodes eps · $releaseState · $accessState"
 }
